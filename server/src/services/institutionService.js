@@ -25,7 +25,7 @@ export const addInstitution = async (data) => {
 
 export const deleteInstitution = async (sender, institution) => {
   try {
-    const institutionToDelete = await Institution.find({institution, deleted: false});
+    const institutionToDelete = await Institution.findOne({ institution, deleted: false, createdBy: sender });
 
     if(!institutionToDelete) {
       throw {
@@ -34,16 +34,9 @@ export const deleteInstitution = async (sender, institution) => {
       }
     }
 
-    if(institutionToDelete.createdBy != sender) {
-      throw {
-        status: 400,
-        message: 'Pogrešan unos!'
-      }
-    }
-
     institutionToDelete.deleted = true;
 
-    await InInstitution.updateMany({ institution }, {$set: { left: true }});
+    await InInstitution.updateMany({ institution: institutionToDelete._id }, { $set: { left: true } });
     await institutionToDelete.save();
     return { message: 'Grupa je uspešno obrisana!' };
   } catch (err) {

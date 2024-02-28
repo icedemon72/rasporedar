@@ -7,6 +7,7 @@ export const addSubject = async (sender, data) => {
   try {
     await authSenderInInstitutionObject(sender, data.institution);
     
+    // add professors check here!
     await Subject.create(data);
     return { message: 'Predmet uspešno kreiran!' }
   } catch (err) {
@@ -138,7 +139,7 @@ export const getAllSubjectsInInstitution = async (sender, institution, fullInfo 
     subjectObj = JSON.parse(JSON.stringify(subjectObj));
 
     if(!fullInfo) {
-      return subjectObj;
+      return subjectObj ? subjectObj : [];
     }
   
     for (let i = 0; i < subjectObj.length; i++) {
@@ -146,10 +147,10 @@ export const getAllSubjectsInInstitution = async (sender, institution, fullInfo 
       const assistents = subjectObj[i].assistents;
   
       subjectObj[i].professors = await getFullInfoOnProfessors(professors);
-      subjectObj[i].assistents = await getFullInfoOnProfessors(assistents)
+      subjectObj[i].assistents = await getFullInfoOnProfessors(assistents);
     }
 
-    return subjectObj;
+    return subjectObj ? subjectObj : [];
 
   } catch (err) {
     throw err;
@@ -200,9 +201,34 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
   }
 }
 
-// FIXME: 
-export const getSubjectById = async (sender, subject) => {
+export const getSubjectById = async (sender, subject, fullInfo = false) => {
   try {
+    let subjectObj = await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 });
+
+    if(!subjectObj) {
+      throw {
+        status: 405,
+        message: 'Ne postoji predmet!'
+      }
+    }
+
+    await senderInInstitutionObject(sender, subjectObj.institution);
+
+    if(!fullInfo) {
+      return subjectObj ? subjectObj : [];
+    }
+
+    subjectObj = JSON.parse(JSON.stringify(subjectObj));
+  
+    for (let i = 0; i < subjectObj.length; i++) {
+      const professors = subjectObj.professors;
+      const assistents = subjectObj.assistents;
+  
+      subjectObj.professors = await getFullInfoOnProfessors(professors);
+      subjectObj.assistents = await getFullInfoOnProfessors(assistents);
+    }
+
+    return subjectObj ? subjectObj : [];
 
   } catch (err) {
     throw err;

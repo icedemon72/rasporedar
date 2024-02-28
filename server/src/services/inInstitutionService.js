@@ -7,7 +7,7 @@ export const joinUserInstitution = async (sender, code) => {
   try {
     await getUserById(sender); // this function has already got throw handle
 
-    const codeInstitution = await Institution.findOne({ code });
+    const codeInstitution = await Institution.findOne({ code, deleted: false });
 
     if(!codeInstitution) {
       throw {
@@ -44,7 +44,7 @@ export const joinUserInstitution = async (sender, code) => {
 
 export const joinModeratorInstitution = async (sender, moderatorCode) => {
   try {
-    const codeInstitution = await Institution.findOne({ moderatorCode });
+    const codeInstitution = await Institution.findOne({ moderatorCode, deleted: false });
 
     if(!codeInstitution) {
       throw {

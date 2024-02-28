@@ -4,11 +4,6 @@ import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleAddProfessor = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.institution).valid) {
       return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
@@ -27,11 +22,6 @@ export const handleAddProfessor = async (req, res) => {
 
 export const handleDeleteProfessor = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.id).valid) {
       return res.status(400).send(isObjectIdValid(req.params.id).message);
     }
@@ -45,11 +35,6 @@ export const handleDeleteProfessor = async (req, res) => {
 
 export const handleEditProfessor = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.id).valid) {
       return res.status(400).send(isObjectIdValid(req.params.id).message);
     }
@@ -80,11 +65,6 @@ export const handleGetProfessor = async (req, res) => {
 
 export const handleGetAllProfessorsInInstitution = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.institution).valid) {
       return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
@@ -98,10 +78,6 @@ export const handleGetAllProfessorsInInstitution = async (req, res) => {
 
 export const handleGetAllProfessorsBySubject = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
 
     if(!isObjectIdValid(req.params.subject).valid) {
       return res.status(400).send(isObjectIdValid(req.params.subject).message);

@@ -37,6 +37,12 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
         method: 'delete',
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
+    }),
+    getProfessorSubjects: builder.query({
+      query: (professor) => ({
+        url: `/professor_subject/${professor}`
+      }),
+      keepUnusedDataFor: 20,
     })
   })
 });
@@ -46,5 +52,6 @@ export const {
   useGetProfessorQuery,
   useAddProfessorMutation,
   useEditProfessorMutation,
-  useDeleteProfessorMutation
+  useDeleteProfessorMutation,
+  useGetProfessorSubjectsQuery
 } = professorsApiSlice;

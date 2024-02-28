@@ -1,3 +1,12 @@
+/*
+
+
+ADD USER IS IN INSTITUTION AND ADMIN CHECK!
+404 IF THEY ARE NOT!!!!!
+
+
+*/
+
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAddProfessorMutation } from "../../app/api/professorsApiSlice";
@@ -38,12 +47,16 @@ const ProfessorsAdd = () => {
     setDoctorate(toChange);
   }
 
-  const handleSubmit = async () => {
+  const handleAddProfessor = async () => {
     // Add input check here!!!
     try {
       // Add check for bachelor, master and doctorate here
+      setEducation({
+        bachelor, master, doctorate
+      });
+
       const body = {
-        name, title, bachelor, master, doctorate, education, bio, references
+        name, title, education, bio, references
       }
       const result = await fetchAddProfessor({institution, body}).unwrap();
     } catch (err) {
@@ -70,7 +83,7 @@ const ProfessorsAdd = () => {
       <input type="text" placeholder="Od" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'from')} />
       <input type="text" placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
       {/* Add this later... <input type="text" placeholder="Reference"></input> */}
-      <button onClick={handleSubmit}>Unesi profesora!</button>
+      <button onClick={handleAddProfessor}>Unesi profesora!</button>
     </>
   )
 }

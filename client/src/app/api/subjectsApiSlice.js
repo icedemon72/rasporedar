@@ -3,14 +3,15 @@ import { apiSlice } from "./apiSlice";
 const subjectsApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getSubject: builder.query({
-      query: id => ({
-        url: `/subject/${id}`
+      query: ({id, fullInfo }) => ({
+        url: `/subject/${id}${fullInfo ? '?fullInfo=1' : ''}`
       }),
       keepUnusedDataFor: 15,
+      providesTags: (result, error) => error ? [] : ['Subject']
     }),
     getSubjects: builder.query({
-      query: institution => ({
-        url: `/institution_subjects/${institution}`
+      query: ({institution, fullInfo}) => ({
+        url: `/institution_subjects/${institution}${fullInfo ? '?fullInfo=1' : ''}`
       }),
       providesTags: (result, error) => error ? [] : ['Subjects']
     }),

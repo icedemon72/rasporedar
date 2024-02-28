@@ -1,4 +1,4 @@
-import { addSubject, deleteSubject, editSubjectInfo, editSubjectProfessor, getAllSubjectsInInstitution, getAllSubjectsOfProfessor } from '../services/subjectService.js';
+import { addSubject, deleteSubject, editSubjectInfo, editSubjectProfessor, getAllSubjectsInInstitution, getAllSubjectsOfProfessor, getSubjectById } from '../services/subjectService.js';
 import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleAddSubject = async (req, res) => {
@@ -78,6 +78,23 @@ export const handleEditSubjectProfessor = async (req, res) => {
 }
 
 // GET
+export const handleGetSubject = async (req, res) => {
+  try {
+    if(!req.query.fullInfo) {
+      req.query.fullInfo = false;
+    }
+
+    if(!isObjectIdValid(req.params.id).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    }
+
+    const done = await getSubjectById(req.userTokenData._id, req.params.id, req.query.fullInfo);
+    return res.status(200).send(done);
+  } catch (err) {
+    return res.status(err.status || 500).send({ message: err.message });
+  }
+}
+
 export const handleGetAllSubjectsInInstitution = async (req, res) => {
   try {
     if(!req.query.fullInfo) {
@@ -95,7 +112,6 @@ export const handleGetAllSubjectsInInstitution = async (req, res) => {
   }
 }
 
-
 // FIXME: add fullInfo
 export const handleGetAllSubjectsOfProfessor = async (req, res) => {
   try {
@@ -103,11 +119,11 @@ export const handleGetAllSubjectsOfProfessor = async (req, res) => {
       req.query.fullInfo = false;
     }
 
-    if(!isObjectIdValid(req.query.professor).valid) {
-      return res.status(400).send(isObjectIdValid(req.query.professor).message);
+    if(!isObjectIdValid(req.params.professor).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.professor).message);
     }
     
-    const done = await getAllSubjectsOfProfessor(req.userTokenData._id, req.query.professor, req.query.fullInfo);
+    const done = await getAllSubjectsOfProfessor(req.userTokenData._id, req.params.professor, req.query.fullInfo);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

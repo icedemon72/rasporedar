@@ -9,10 +9,12 @@ const subjectSchema = mongoose.Schema(
       required: true
     },
     professors: {
-      type: [ ObjectId ]
+      type: [ ObjectId ],
+      index: true
     },
     assistents: {
-      type: [ ObjectId ]
+      type: [ ObjectId ],
+      index: true
     },
     name: {
       type: String

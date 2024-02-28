@@ -105,10 +105,10 @@ export const getUserInstitution = async (user, role = 'all') => {
       return institutionObj;
     } 
     
-    const query = (role === 'all') ? { user, deleted: false } : { user, role, deleted: false };
+    const query = (role === 'all') ? { user, left: false } : { user, role, left: false };
 
     const institutionObj = await InInstitution.find(query, { left: 0 });
-
+   
     if(!institutionObj.length) {
       throw {
         status: 200,
@@ -119,7 +119,7 @@ export const getUserInstitution = async (user, role = 'all') => {
     let result = [];
 
     for(let i = 0; i < institutionObj.length; i++) {
-      const obj = await Institution.findOne({ _id: institutionObj[i].institution }, { deleted: 0, code: 0, moderatorCode: 0, __v: 0 }).lean();
+      const obj = await Institution.findOne({ _id: institutionObj[i].institution, deleted: false }, { deleted: 0, code: 0, moderatorCode: 0, __v: 0 }).lean();
       obj.role = institutionObj[i].role;
       result.push(obj);
     }

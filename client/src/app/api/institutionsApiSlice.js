@@ -10,10 +10,26 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Institutions']
     }),
+    editInstitution: builder.mutation({
+      query: ({id, body}) => ({
+        url: `/institution/${id}`,
+        method: 'PATCH',
+        body
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Institutions'],
+    }),
+    deleteInstitution: builder.mutation({
+      query: id => ({
+        url: `/institution/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Institutions'],
+    }),
     getById: builder.query({
       query: id => ({
         url: `/institution/${id}`
-      })
+      }),
+      providesTags: (result, error) => error ? [] : ['Institution']
     }),
     getAll: builder.query({
       query: () => ({
@@ -47,12 +63,14 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     getRole: builder.query({
       query: (id) => ({
         url: `/institution_role/${id}`
-      })
+      }),
+      providesTags: (result, error) => error ? [] : ['Role']
     }),
     getAuthRole: builder.query({
       query: (id) => ({
         url: `/institution_auth/${id}`
-      })
+      }),
+      providesTags: (result, error) => error ? [] : ['Role']
     }),
     changeRole: builder.mutation({
       query: (institution, user) => ({
@@ -66,8 +84,10 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useAddMutation,
+  useEditInstitutionMutation,
   useGetByIdQuery,
   useGetAllQuery,
+  useDeleteInstitutionMutation,
   useJoinMutation,
   useJoinModeratorMutation,
   useLeaveMutation,

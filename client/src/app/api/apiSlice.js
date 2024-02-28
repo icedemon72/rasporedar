@@ -5,7 +5,10 @@ import url from '../utils/url';
 
 const mutex = new Mutex();
 
-export const tags = ['User', 'Institution', 'Institutions', 'Professors', 'Subjects'];
+export const tags = [
+  'User', 'Institution', 'Institutions', 
+  'Professors', 'Subjects', 'Subject'
+];
 
 const baseQuery = fetchBaseQuery({ 
   baseUrl: `${url}/`, 

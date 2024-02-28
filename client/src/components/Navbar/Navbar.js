@@ -32,6 +32,7 @@ const Navbar = () => {
           {session.accessToken ? 
             <>
               <Link className="p-4 hover:bg-black hover:text-white" to="/institutions">Moje grupe</Link>
+              <Link className="p-4 hover:bg-black hover:text-white" to="/institutions/create">+</Link>
               <button className="p-4 bg-red-500 hover:bg-red-300 " onClick={handleLogout}>
                 Izloguj se!
               </button> 

@@ -90,10 +90,7 @@ export const getAllProfessorsInInstitution = async (sender, institution) => {
     const professorObj = await Professor.find({ institution, deleted: false }, { deleted: 0 }); 
 
     if(!professorObj.length) {
-      throw {
-        status: 200,
-        message: 'Ne postoje profesori'
-      }
+      return [];
     }
 
     return professorObj;

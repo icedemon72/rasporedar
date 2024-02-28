@@ -4,7 +4,6 @@ import { apiSlice } from './api/apiSlice';
 import storage from 'redux-persist/lib/storage';
 
 import sessionReducer from './slices/sessionSlice';
-import institutionsReducer from './slices/institutionsSlice';
 
 const persistConfig = {
   key: 'root',
@@ -13,7 +12,6 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   session: persistReducer(persistConfig, sessionReducer),
-  institutions: institutionsReducer,
   [apiSlice.reducerPath]: apiSlice.reducer
 });
 
