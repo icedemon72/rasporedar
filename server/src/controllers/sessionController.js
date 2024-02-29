@@ -2,13 +2,11 @@ import { checkAccessToken, refreshAccessToken, decodeAccess, setSessionFalse, lo
 
 export const authenticateUser = async (req, res, next) => {
   try {
-    /* TODO  FIX ERROR STATUS CODES, FINISH JWT SHIT PLSSSSS*/
     const bearerHeader = req.headers['authorization'];
-    const method = req.method;
-    const refreshToken = (method === 'POST') ? req.body.refresh_token : req.query.refresh_token;
+    const refreshToken =  req.body.refresh_token;
 
     if (!bearerHeader) {
-      return res.status(403).send({ message: 'No access token!' });
+      return res.status(403).send({ message: 'No bearer header!' });
     }
 
     let accessToken = bearerHeader.split(' ')[1];
@@ -16,7 +14,7 @@ export const authenticateUser = async (req, res, next) => {
     if (!accessToken) {
       return res.status(403).send({ message: 'No access token!' });
     }
-    /* CHANGE AND TEST THIS SHITEEE */
+  
     const userAgent = req.headers['user-agent'];
     if (checkAccessToken(accessToken) === 0) {
       throw { 

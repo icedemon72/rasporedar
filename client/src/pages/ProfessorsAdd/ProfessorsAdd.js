@@ -52,12 +52,13 @@ const ProfessorsAdd = () => {
     try {
       // Add check for bachelor, master and doctorate here
       setEducation({
-        bachelor, master, doctorate
+        bachelor: bachelor, master: master, doctorate: doctorate
       });
 
       const body = {
-        name, title, education, bio, references
+        name, title, education: education, bio, references
       }
+      console.log(body);
       const result = await fetchAddProfessor({institution, body}).unwrap();
     } catch (err) {
       console.log(err);

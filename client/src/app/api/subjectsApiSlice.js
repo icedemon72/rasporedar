@@ -24,7 +24,7 @@ const subjectsApiSlice = apiSlice.injectEndpoints({
     addSubject: builder.mutation({
       query: ({ institution, body }) => ({
         url: `/subject/${institution}`,
-        method: 'post',
+        method: 'POST',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Subjects']

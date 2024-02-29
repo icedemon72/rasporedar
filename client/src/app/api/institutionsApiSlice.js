@@ -5,7 +5,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     add: builder.mutation({
       query: credentials => ({
         url: '/institution',
-        method: 'post',
+        method: 'POST',
         body: credentials
       }),
       invalidatesTags: ['Institutions']
@@ -40,7 +40,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     join: builder.mutation({ 
       query: credentials => ({
         url: '/join',
-        method: 'post',
+        method: 'POST',
         body: credentials
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions'],
@@ -48,7 +48,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     joinModerator: builder.mutation({
       query: credentials => ({
         url: '/join_moderator',
-        method: 'post',
+        method: 'POST',
         body: credentials
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions'],
@@ -56,7 +56,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     leave: builder.mutation({ 
       query: (id) => ({
         url: `/leave/${id}`,
-        method: 'post'
+        method: 'POST'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions']
     }),

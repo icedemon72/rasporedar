@@ -18,15 +18,15 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
     addProfessor: builder.mutation({
       query: ({ institution, body}) => ({
         url: `/professor/${institution}`,
-        method: 'post',
+        method: 'POST',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
     }),
     editProfessor: builder.mutation({
       query: ({ id, body }) => ({
-        url: `professors/${id.id}`,
-        method: 'patch',
+        url: `/professor/${id}`,
+        method: 'PATCH',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
@@ -34,7 +34,7 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
     deleteProfessor: builder.mutation({
       query: (credentials) => ({
         url: `professors/${credentials}`,
-        method: 'delete',
+        method: 'DELETE',
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
     }),

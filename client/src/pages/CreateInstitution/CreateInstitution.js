@@ -41,6 +41,9 @@ const CreateInstitution = () => {
     }
   }
 
+  useEffect(() => {
+    document.title = 'Napravi grupu | Rasporedar';
+  }, []);
   useEffect(() => {}, [ departments.length ]);
 
   return (

@@ -2,6 +2,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetByIdQuery, useGetAuthRoleQuery, useEditInstitutionMutation, useDeleteInstitutionMutation } from '../../app/api/institutionsApiSlice';
 import { useState, useEffect } from 'react';
+import ModalDelete from '../../components/ModalDelete/ModalDelete';
 
 const InstitutionEdit = () => {
   const { id } = useParams();
@@ -10,6 +11,7 @@ const InstitutionEdit = () => {
   const [ fetchEdit ] = useEditInstitutionMutation();
   const [ fetchDelete ] = useDeleteInstitutionMutation();
 
+  const [ open, setOpen ] = useState(false);
   const [ departments, setDepartments ] = useState([]);
   const [ name, setName ] = useState('');
   const [ typeOf, setTypeOf ] = useState('');
@@ -53,7 +55,7 @@ const InstitutionEdit = () => {
   const handleEditInstitution = async () => {
     try {
       const body = { name, typeOf, departments };
-      const result = fetchEdit({ id, body });
+      const result = await fetchEdit({ id, body });
     } catch (err) {
       console.log(err);
     }
@@ -62,8 +64,10 @@ const InstitutionEdit = () => {
   const handleDeleteInstitution = async () => {
     try {
       const result = await fetchDelete(id);
+      setOpen(false);
     } catch (err) {
       console.log(err);
+      setOpen(false);
     }
   }
 
@@ -81,13 +85,13 @@ const InstitutionEdit = () => {
       <label>Tip grupe</label>
       <input type="text" value={typeOf} disabled={getRole.role !== 'Owner'} onChange={(elem) => setTypeOf(elem.target.value)}/>
       { departments.map((elem, index) => {
-        return <div onClick={() => handleDeleteDepartment(index)}>
+        return <div className='cursor-pointer' onClick={() => handleDeleteDepartment(index)}>
           { elem }
         </div>
       })}
       <input type="text" placeholder="Naziv odseka/odeljenja" onKeyUp={(elem) => handleAddDepartment(elem)} onChange={(elem) => setDpt(elem.target.value)} value={dpt}></input>
       <button onClick={handleEditInstitution}>Sačuvaj promene!</button>
-      <button onClick={handleDeleteInstitution}>Obrisi grupu</button>
+      <button onClick={() => setOpen(true)}>Obrisi grupu</button>
       {/* ADD BUTTON HERE AND LOGIC */}
       <br />
       <Link to={`/institutions/${id}/professors`}>Profesori edit</Link>
@@ -111,6 +115,13 @@ const InstitutionEdit = () => {
 
   return (
     <>
+      { open ? 
+        <ModalDelete>
+          <button onClick={() => setOpen(false)}>Odustani</button>
+          <button onClick={handleDeleteInstitution}>Potvrdi</button>
+        </ModalDelete> 
+        : null 
+      }
       { content }
     </>
   )

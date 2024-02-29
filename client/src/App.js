@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import { StrictMode } from 'react';
 
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
@@ -27,7 +28,7 @@ import SubjectsEdit from './pages/SubjectsEdit/SubjectsEdit';
 
 function App() {
   return (
-    <>
+    <StrictMode>
       <BrowserRouter>
         <Navbar />
         <Routes>
@@ -55,7 +56,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
-    </>
+    </StrictMode>
   );
 }
 

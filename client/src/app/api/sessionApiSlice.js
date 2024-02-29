@@ -6,7 +6,7 @@ export const sessionApiSlice = apiSlice.injectEndpoints({
     login: builder.mutation({
       query: credentials => ({
         url: '/login',
-        method: 'post',
+        method: 'POST',
         body: credentials
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
@@ -22,12 +22,16 @@ export const sessionApiSlice = apiSlice.injectEndpoints({
     logout: builder.mutation({
       query: (credentials) => ({
         url: '/logout',
-        method: 'post',
+        method: 'POST',
         body: credentials
       }),
-      async onQueryStarted(arg, { dispatch }) {
-        dispatch(loggedOut());
-        dispatch(apiSlice.util.resetApiState());
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } finally {
+          dispatch(loggedOut());
+          dispatch(apiSlice.util.resetApiState());
+        }
       },
     })
   })

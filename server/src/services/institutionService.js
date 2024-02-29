@@ -25,7 +25,7 @@ export const addInstitution = async (data) => {
 
 export const deleteInstitution = async (sender, institution) => {
   try {
-    const institutionToDelete = await Institution.findOne({ institution, deleted: false, createdBy: sender });
+    const institutionToDelete = await Institution.findOne({ _id: institution, deleted: false, createdBy: sender });
 
     if(!institutionToDelete) {
       throw {
@@ -55,7 +55,7 @@ export const editInstitution = async (sender, institution, data) => {
       }
     }
 
-    await Institution.updateOne(institutionObj, { $set:{
+    await Institution.updateOne({ _id: institutionObj._id }, { $set:{
       name: data.name,
       typeOf: data.typeOf,
       departments: data.departments
