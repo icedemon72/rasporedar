@@ -11,7 +11,7 @@ const ProfessorsEdit = () => {
   const [ fetchEdit ] = useEditProfessorMutation();
   const [ fetchDelete ] = useDeleteProfessorMutation();
 
-  const [ opet, setOpen ] = useState(false);
+  const [ open, setOpen ] = useState(false);
   const [ name, setName ] = useState('');
   const [ title, setTitle ] = useState('');
   const [ bachelor, setBachelor ] = useState({});
@@ -44,6 +44,10 @@ const ProfessorsEdit = () => {
     skip: !session.accessToken || !institution || !id
   });
 
+  const setOpenFalse = () => {
+    setOpen(false);
+  }
+
   const handleChangeEducation = (state, key, value) => {
     if(!state) {
       state = {}
@@ -69,6 +73,16 @@ const ProfessorsEdit = () => {
     }
   }
 
+  const handleDeleteProfessor = async () => {
+    try {
+      const result = await fetchDelete(id);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setOpen(false);
+    }
+  }
+
   let content;
 
   if(isSubjectsSuccess && !isProfessorLoading) {
@@ -91,6 +105,7 @@ const ProfessorsEdit = () => {
       {/* <input type="text" value={title} placeholder="Unesite zvanje profesora" onChange={(elem) => setTitle(elem.target.value)} /> */}
 
       <button onClick={handleEditProfessor}>Sacuvaj promene!</button>
+      <button onClick={() => setOpen(true)}>Obrisi</button>
     </>
   }
 
@@ -98,13 +113,13 @@ const ProfessorsEdit = () => {
     if(professorData) {
       setName(professorData.name);
       setTitle(professorData.title);
-      setBachelor(professorData.education.bachelor);
-      setMaster(professorData.education.master);
-      setDoctorate(professorData.education.doctorate);
+      setBachelor(professorData?.education?.bachelor || {});
+      setMaster(professorData?.education?.master || {});
+      setDoctorate(professorData?.education?.doctorate || {});
       setBio(professorData.bio);
       setReferences(professorData.references);
     }
-    document.title = (professorData) ? `Uredjivanje profesora '${professorData.name}' | Rasporedar` : 'Uredi profesora | Rasporedar';
+    document.title = (professorData) ? `Uredjivanje profesora '${professorData.name}' | Rasporedar` : 'Uredjivanje profesora | Rasporedar';
   }, [ isProfessorSuccess ]);
 
   useEffect(() => {
@@ -116,7 +131,13 @@ const ProfessorsEdit = () => {
   return (
     <>
       <div>ProfessorsEdit</div>
-      {content}
+      { open ?
+      <ModalDelete>
+        <button onClick={() => setOpen(false)}>Odustani</button>
+        <button onClick={handleDeleteProfessor}>Potvrdi</button>
+      </ModalDelete>
+      : null }
+      { content }
     </>
   )
 }

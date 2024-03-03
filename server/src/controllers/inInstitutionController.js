@@ -3,11 +3,6 @@ import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleUserJoinInstitution = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-    
     if(req.body.code.length !== 8) {
       return res.status(400).send({ message: 'Pogrešan kod!' });
     }
@@ -21,11 +16,6 @@ export const handleUserJoinInstitution = async (req, res) => {
 
 export const handleModeratorJoinInstitution = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(req.body.code.length !== 8) {
       return res.status(400).send({ message: 'Pogrešan kod!' });
     }
@@ -39,11 +29,6 @@ export const handleModeratorJoinInstitution = async (req, res) => {
 
 export const handleLeaveInstitution = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!req.body.user) {
       req.body.user = req.userTokenData._id;
     }
@@ -69,11 +54,6 @@ export const handleLeaveInstitution = async (req, res) => {
 
 export const handlePromoteToRole = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.user).valid) {
       return res.status(400).send(isObjectIdValid(req.params.user).message);
     } 
@@ -101,12 +81,6 @@ export const handlePromoteToRole = async (req, res) => {
 // GET
 export const handleGetAllUsersInInstitution = async (req, res) => {
   try {
-    // add page and limit here...
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!isObjectIdValid(req.params.id).valid) {
       return res.status(400).send(isObjectIdValid(req.params.id).message);
     }

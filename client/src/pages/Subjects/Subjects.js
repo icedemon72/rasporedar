@@ -25,14 +25,13 @@ const Subjects = () => {
     content = !data.length ? <>Nema predmeta</> 
     : 
     <>
-      {data.map(elem => {
+      { data.map(elem => {
         return (
           <>
             <Link to={`/institutions/${institution}/subjects/${elem._id}`}><p>{elem.name}</p></Link>
           </>
         )
-
-      })}
+      }) }
     </>
   }
 

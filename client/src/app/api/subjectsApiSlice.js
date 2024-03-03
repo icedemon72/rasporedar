@@ -32,8 +32,15 @@ const subjectsApiSlice = apiSlice.injectEndpoints({
     editSubject: builder.mutation({
       query: ({ id, body }) => ({
         url: `/subject/${id}`,
-        method: 'patch',
+        method: 'PATCH',
         body
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Subjects']
+    }),
+    deleteSubject: builder.mutation({
+      query: (id) => ({
+        url: `/subject/${id}`,
+        method: 'DELETE'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Subjects']
     }),
@@ -45,5 +52,6 @@ export const {
   useGetSubjectsQuery,
   useGetSubjectProfessorsQuery,
   useAddSubjectMutation,
-  useEditSubjectMutation
+  useEditSubjectMutation,
+  useDeleteSubjectMutation
 } = subjectsApiSlice;

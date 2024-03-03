@@ -1,6 +1,7 @@
 import InInstitution from '../models/inInstitutionModel.js';
 import Institution from '../models/institutionModel.js'
-import { senderInInstitutionObject } from '../utils/serviceHelpers.js';
+import { senderInInstitutionObject, ownerSenderInInstitutionObject } from '../utils/serviceHelpers.js';
+import { randomBytes } from 'crypto';
 
 export const addInstitution = async (data) => {
   try {
@@ -67,12 +68,17 @@ export const editInstitution = async (sender, institution, data) => {
   }
 }
 
-export const getInstitutionById = async (sender, institution) => {
+export const getInstitutionById = async (sender, institution, codes = null) => {
   try {
-    await senderInInstitutionObject(sender, institution);
+    const inInstObject = await senderInInstitutionObject(sender, institution);
+    let query = { code: 0, moderatorCode: 0 };
+
+    if(inInstObject.role === 'Owner' && codes) {
+      query = {};
+    }
 
     const institutionObj = await Institution.findOne({ _id: institution }, {
-      deleted: 0, createdBy: 0, code: 0, moderatorCode: 0 
+      deleted: 0, createdBy: 0, ...query 
     });
 
     if(!institutionObj) {
@@ -83,6 +89,24 @@ export const getInstitutionById = async (sender, institution) => {
     }
 
     return institutionObj;    
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const changeCodes = async (sender, institution, codesToChange = {}) => {
+  try {
+    const { code, moderatorCode } = codesToChange;
+    const institutionObj = await ownerSenderInInstitutionObject(sender, institution);
+
+    institutionObj.code = code ?  randomBytes(4).toString('hex') : institutionObj.code;
+    institutionObj.moderatorCode = moderatorCode ?  randomBytes(4).toString('hex') : institutionObj.moderatorCode;
+
+    await institutionObj.save();
+
+    return { message: 'Uspešno izmenjen/i kod/ovi!' }
+    
+
   } catch (err) {
     throw err;
   }

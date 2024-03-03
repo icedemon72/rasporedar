@@ -1,8 +1,8 @@
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-
+import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 
 const Professors = () => {
   const { institution } = useParams();
@@ -18,14 +18,10 @@ const Professors = () => {
     skip: !session.accessToken
   });
 
-  // const { 
-  //   data: getRole, 
-  //   isLoading: isGetRoleLoading, 
-  //   isSuccess: isGetRoleSuccess, 
-  //   isError: isGetRoleError,
-  //   error: getRoleError 
-  // } = useGetAuthRoleQuery(id, { skip: !session.accessToken  });
-
+  const { 
+    data: getRole, 
+    isSuccess: isGetRoleSuccess, 
+  } = useGetRoleQuery(institution, { skip: !session.accessToken  });
 
   let professorsContent;
 
@@ -34,17 +30,17 @@ const Professors = () => {
   } else if (isProfessorsSuccess) {
     professorsContent = 
     <>
-    {/* Add check if user is owner or moderator here */}
-      <Link to={`/institutions/${institution}/professors/add`}>Dodaj profesora</Link>
-      {professors.length ? 
+      { isGetRoleSuccess && getRole.role !== 'User' ? 
+        <Link to={`/institutions/${institution}/professors/add`}>Dodaj profesora</Link>
+        : null }
+      { professors.length ? 
         <>
-          {professors.map(elem => {
+          { professors.map(elem => {
             return <Link to={`/institutions/${institution}/professors/${elem._id}`}><h1>{elem.name}</h1></Link>
-          })}
+          }) }
         </>
         :
         <>Nema profesora</>
-      
       }
     </>
   } else if (isProfessorsError) {

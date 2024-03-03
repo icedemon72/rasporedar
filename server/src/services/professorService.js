@@ -37,7 +37,7 @@ export const deleteProfessor = async (sender, professor) => {
       // basically, this iterates through every subject in the institution, and removes the ID of
       // the professor from every array (both professors' and assistents') using Array.filter()
       for (let i = 0; i < subjectObj.length; i++) {
-        await Subject.updateOne({ _id: subjectObj[i]._id },
+        await Subject.updateOne({ _id: subjectObj[i]._id, deleted: false },
           { $set: {
             professors: subjectObj[i].professors.filter(item => !item.equals(professorObj._id)),
             assistents: subjectObj[i].assistents.filter(item => !item.equals(professorObj._id))

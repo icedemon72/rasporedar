@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { addInstitution, deleteInstitution, editInstitution, getInstitutionById } from '../services/institutionService.js';
+import { addInstitution, deleteInstitution, editInstitution, getInstitutionById, changeCodes } from '../services/institutionService.js';
 
 import { isObjectIdValid } from '../utils/utils.js';
 
@@ -9,21 +9,16 @@ export const handleAddInstitution = async (req, res) => {
     // code gen -> {first 3 letters of the username}{first 3 letters of the institution name}{4 bit code} randomly shuffled
     // mode gen -> {8 bit code}{first 3 letters of the username}{first 3 letters of the institution name} randomly shuffled
     
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
-    const username = req.userTokenData.username;
+    // const username = req.userTokenData.username;
     
-    const usernameSlice = (username.length >= 3) ?  username.slice(0, 3) : username;
-    const institutionNameSlice = (req.body.name.length >= 3) ? req.body.name.slice(0, 3) : req.body.name;
+    // const usernameSlice = (username.length >= 3) ?  username.slice(0, 3) : username;
+    // const institutionNameSlice = (req.body.name.length >= 3) ? req.body.name.slice(0, 3) : req.body.name;
 
-    const randomGeneratedJoinCode = randomBytes(4).toString('hex');
-    const randomGeneratedModeratorCode = randomBytes(4).toString('hex');
+    // const randomGeneratedJoinCode = randomBytes(4).toString('hex');
+    // const randomGeneratedModeratorCode = randomBytes(4).toString('hex');
     
-    const joinCode = generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedJoinCode);
-    const moderatorCode = generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedModeratorCode)
+    const joinCode = randomBytes(4).toString('hex'); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedJoinCode);
+    const moderatorCode = randomBytes(4).toString('hex'); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedModeratorCode)
   
     // add error handling here...
 
@@ -70,6 +65,25 @@ export const handleEditInstitution = async (req, res) => {
   }
 }
 
+export const handleChangeCodes = async (req, res) => {
+  try {
+    if(!isObjectIdValid(req.params.id).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    }
+
+    const { code, moderatorCode } = req.body;
+
+    if(!code && !moderatorCode) {
+      return res.status(400).send({ message: 'Nije naveden kod za promenu!' })
+    }
+
+    const done = await changeCodes(req.userTokenData._id, req.params.id, req.body);
+    return res.status(200).send(done);
+  } catch (err) {
+    return res.status(err.status || 500).send({ message: err.message });
+  }
+}
+
 export const handleGetInstitutonById = async (req, res) => {
   try {
     if(!req.userTokenData) { 
@@ -80,7 +94,11 @@ export const handleGetInstitutonById = async (req, res) => {
       return res.status(400).send(isObjectIdValid(req.params.id).message);
     }
 
-    const done = await getInstitutionById(req.userTokenData._id, req.params.id);
+    if(!req.query.code) {
+      req.query.code = null;
+    }
+
+    const done = await getInstitutionById(req.userTokenData._id, req.params.id, req.query.code);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

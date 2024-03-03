@@ -2,24 +2,33 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { Pencil } from 'lucide-react';
 
 const Institution = () => {
-  const { id } = useParams();
+  const { institution } = useParams();
   const session = useSelector(state => state.session);
 
   const navigate = useNavigate();
 
   const { 
-    data: institution, 
+    data: institutionData, 
     isLoading: isInstitutionLoading, 
     isSuccess: isInstitutionSuccess, 
     isError: isInstitutionError,
     error: institutionError 
-  } = useGetByIdQuery(id, { skip: !session.accessToken  });
+  } = useGetByIdQuery({ id: institution }, {
+    skip: !session.accessToken
+  });
 
-  const { data: getRole, isLoading: isRoleLoading, isSuccess: isRoleSuccess } = useGetRoleQuery(id, { skip: !isInstitutionSuccess });
+  const { 
+    data: getRole, 
+    isLoading: isRoleLoading,
+    isSuccess: isRoleSuccess
+    } = useGetRoleQuery(institution, {
+      skip: !isInstitutionSuccess 
+    });
 
-  if(!id) {
+  if(!institution) {
     navigate('/institutions');  
   }
 
@@ -32,7 +41,9 @@ const Institution = () => {
     
     InstitutionContent = 
     <>
-      { institution.name } { role === 'Owner' ? <Link to={`/institutions/edit/${id}`}>Edit</Link> : null }
+      <div className="flex">
+        { institutionData.name } { role === 'Owner' ? <Link to={`/institutions/edit/${institution}`}><Pencil size={16} /></Link> : null }
+      </div>
     </>
   } else if (isInstitutionError) {
     if(institutionError.status === 404) {
@@ -41,7 +52,7 @@ const Institution = () => {
   }
   
   useEffect(() => {
-    document.title = (institution) ? `${institution.name} | Rasporedar` : 'Grupa | Rasporedar';
+    document.title = (institutionData) ? `${institutionData.name} | Rasporedar` : 'Grupa | Rasporedar';
   }, [ isInstitutionSuccess ]); 
 
   return (

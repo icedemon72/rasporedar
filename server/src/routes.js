@@ -1,5 +1,5 @@
 import { handleGetAllUsersInInstitution, handleGetIsUserAuth, handleGetUserRole, handleLeaveInstitution, handleModeratorJoinInstitution, handlePromoteToRole, handleUserJoinInstitution } from './controllers/inInstitutionController.js';
-import { handleAddInstitution, handleDeleteInstitution, handleEditInstitution, handleGetInstitutonById } from './controllers/institutionController.js';
+import { handleAddInstitution, handleChangeCodes, handleDeleteInstitution, handleEditInstitution, handleGetInstitutonById } from './controllers/institutionController.js';
 import { handleAddProfessor, handleDeleteProfessor, handleEditProfessor, handleGetAllProfessorsBySubject, handleGetAllProfessorsInInstitution, handleGetProfessor } from './controllers/professorController.js';
 import { checkValidAccess, handleLoginUser, handleLogout, handleRefresh } from './controllers/sessionController.js';
 import { handleAddSubject, handleDeleteSubject, handleEditSubjectInfo, handleEditSubjectProfessor, handleGetAllSubjectsInInstitution, handleGetAllSubjectsOfProfessor, handleGetSubject } from './controllers/subjectController.js';
@@ -75,6 +75,10 @@ export default (app) => {
 
   app.patch('/change_role/:institution/:user', authenticate, async (req, res) => {
     handlePromoteToRole(req, res);
+  });
+
+  app.patch('/change_codes/:id', authenticate, async (req, res) => {
+    handleChangeCodes(req, res);
   });
 
   app.get('/institution_users/:id', authenticate, async (req, res) => {

@@ -26,6 +26,11 @@ import Subjects from './pages/Subjects/Subjects';
 import SubjectsAdd from './pages/SubjectsAdd/SubjectsAdd';
 import SubjectsEdit from './pages/SubjectsEdit/SubjectsEdit';
 
+import RouteInInstitution from './components/RouteInInstitution/RouteInInstitution';
+
+// add InInstitution authentication
+// add RoleInInstitution authorization
+
 function App() {
   return (
     <StrictMode>
@@ -38,21 +43,33 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
 
+          {/* Add access token here for these */}
           <Route path="/institutions" element={<Institutions />} />
-          <Route path="/institutions/:id" element={<Institution id=':id' />} />
+          
           <Route path="/institutions/create" element={<CreateInstitution />} />
           <Route path="/institutions/join" element={<JoinInstitution />} />
-          <Route path="/institutions/edit/:id" element={<InstitutionEdit id=':id' />}/>
-          
-          <Route path="/institutions/:institution/professors" element={<Professors institution=':institution'/>}/>
-          <Route path="/institutions/:institution/professors/add" element={<ProfessorsAdd institution=':institution'/>}/>
-          <Route path="/institutions/:institution/professors/:id" element={<Professor institution=':institution' id=':id' />}/>
-          <Route path="/institutions/:institution/professors/:id/edit" element={<ProfessorsEdit institution=':institution' id=':id' />}/>
-        
-          <Route path="/institutions/:institution/subjects" element={<Subjects institution=':institution' />}/>
-          <Route path="/institutions/:institution/subjects/:id" element={<Subject institution=':institution' id=':id'/>} />
-          <Route path="/institutions/:institution/subjects/:id/edit" element={<SubjectsEdit institution=':institution' id=':id'/>} />
-          <Route path="/institutions/:institution/subjects/add" element={<SubjectsAdd institution=':institution' />} />
+
+          {/* Everyone in the institution can access these */}
+          <Route  element={<RouteInInstitution requiredRoles={['User', 'Moderator', 'Owner']}/>}>
+            <Route path="/institutions/:institution" element={<Institution institution=':institution' />} />
+            <Route path="/institutions/:institution/professors" element={<Professors institution=':institution'/>}/>
+            <Route path="/institutions/:institution/professors/:id" element={<Professor institution=':institution' id=':id' />}/>
+            <Route path="/institutions/:institution/subjects" element={<Subjects institution=':institution' />}/>
+            <Route path="/institutions/:institution/subjects/:id" element={<Subject institution=':institution' id=':id'/>} />
+          </Route>
+
+          {/* Only moderators and the owner can access these */}
+          <Route  element={<RouteInInstitution requiredRoles={['Moderator', 'Owner']}/>}>
+            <Route path="/institutions/:institution/professors/add" element={<ProfessorsAdd institution=':institution'/>}/>
+            <Route path="/institutions/:institution/professors/:id/edit" element={<ProfessorsEdit institution=':institution' id=':id' />}/>
+            <Route path="/institutions/:institution/subjects/:id/edit" element={<SubjectsEdit institution=':institution' id=':id'/>} />
+            <Route path="/institutions/:institution/subjects/add" element={<SubjectsAdd institution=':institution' />} />
+          </Route>
+
+          {/* Only the owner can access these */}
+          <Route  element={<RouteInInstitution requiredRoles={['Owner']}/>}>
+            <Route path="/institutions/edit/:institution" element={<InstitutionEdit institution=':institution'/>}/>
+          </Route> 
 
         </Routes>
       </BrowserRouter>

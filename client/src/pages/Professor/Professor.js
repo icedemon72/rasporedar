@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux';
-import { useNavigate, Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useGetProfessorQuery, useGetProfessorSubjectsQuery } from '../../app/api/professorsApiSlice';
 import { useEffect } from 'react';
+import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 
 
 const Professor = () => {
@@ -23,6 +24,14 @@ const Professor = () => {
   } = useGetProfessorSubjectsQuery(id, {
     skip: !session.accessToken || !professorData
   })
+
+  const { 
+    data: getRole, 
+    isLoading: isGetRoleLoading, 
+    isSuccess: isGetRoleSuccess, 
+    isError: isGetRoleError,
+    error: getRoleError 
+  } = useGetRoleQuery(institution, { skip: !session.accessToken  });
   
   let content;
 
@@ -42,7 +51,10 @@ const Professor = () => {
   
   return (
     <>
-      <Link to={`/institutions/${institution}/professors/${id}/edit`}>Edit</Link>
+      { isGetRoleSuccess && getRole.role !== 'User' ? 
+        <Link to={`/institutions/${institution}/professors/${id}/edit`}>Edit</Link> 
+        : null }
+      
       {content}
     </>
   )

@@ -8,7 +8,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: credentials
       }),
-      invalidatesTags: ['Institutions']
+      invalidatesTags: (result, error) => error ? [] : ['Institutions', 'Role']
     }),
     editInstitution: builder.mutation({
       query: ({id, body}) => ({
@@ -25,9 +25,17 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions'],
     }),
+    institutionChangeCode: builder.mutation({
+      query: ({ institution, body }) => ({
+        url: `/change_codes/${institution}`,
+        method: 'PATCH',
+        body
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Institution'],
+    }),
     getById: builder.query({
-      query: id => ({
-        url: `/institution/${id}`
+      query: ({id, code}) => ({
+        url: `/institution/${id}${code ? '?code=1' : ''}`
       }),
       providesTags: (result, error) => error ? [] : ['Institution']
     }),
@@ -43,7 +51,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: credentials
       }),
-      invalidatesTags: (result, error) => error ? [] : ['Institutions'],
+      invalidatesTags: (result, error) => error ? [] : ['Institutions', 'Role'],
     }),
     joinModerator: builder.mutation({
       query: credentials => ({
@@ -51,7 +59,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: credentials
       }),
-      invalidatesTags: (result, error) => error ? [] : ['Institutions'],
+      invalidatesTags: (result, error) => error ? [] : ['Institutions', 'Role'],
     }),
     leave: builder.mutation({ 
       query: (id) => ({
@@ -76,7 +84,8 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
       query: (institution, user) => ({
         url: `/change_role/${institution}/${user}`,
         method: 'patch'
-      })
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Role']
     }),
     
   })
@@ -91,6 +100,7 @@ export const {
   useJoinMutation,
   useJoinModeratorMutation,
   useLeaveMutation,
+  useInstitutionChangeCodeMutation,
   useGetRoleQuery,
   useGetAuthRoleQuery,
   useChangeRoleMutation

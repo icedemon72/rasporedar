@@ -1,23 +1,29 @@
 import React from 'react'
-
-const ModalDelete = ({ display, title, text, children }) => {
+import { AlertTriangle } from 'lucide-react';
+// CHANGE THIS TO ACCEPT A FUNCTION
+const ModalDelete = ({ closeFunc, title, text, children }) => {
+  console.log(closeFunc);
   return (
-    <div className="fixed left-0 top-0 z-[1055] h-full w-full overflow-y-auto overflow-x-outline-none bg-black flex justify-center items-center">
-      <div className="w-[500px] h-[200px] bg-slate-500 rounded-sm">
-        <div className="">
-          <p>{ title }</p>
-        </div>
-        <div className="">
-          <p>{ text }</p>
-        </div>
-        <div className="">
-          { children.map(child => {
-            return <child.type onClick={child.props.onClick}>{ child.props.children }</child.type>
-          })} 
+    <>
+      <div className="fixed left-0 top-0 z-[1054] h-full w-full overflow-y-auto overflow-x-outline-none bg-black bg-opacity-80 flex justify-center items-center">
+        <div className="fixed left-0 top-0 h-full w-full z-[1055]"></div>
+        <div className="w-[500px] h-[250px] z-[1056] bg-white rounded-md py-8 px-16 flex flex-col justify-between">
+        <div className="text-center font-bold text-xl flex justify-center">
+            <p><AlertTriangle color="red" size={46} /></p>
+          </div>
+          <div className="text-center ">
+            <p class="font-bold text-xl">{ title }</p>
+            <p class="text-lg">{ text }</p>
+          </div>
+          <div className="flex flex-row justify-center gap-3">
+            { children.map(child => {
+              return <child.type className={child.props.className} onClick={child.props.onClick}>{ child.props.children }</child.type>
+            })} 
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
-export default ModalDelete
+export default ModalDelete;

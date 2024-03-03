@@ -13,6 +13,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 
+// // Simulating 2s delay
+// app.use(function(req,res,next){
+//   setTimeout(next, 2000)
+// });
+
 app.listen(port, () => {
   connectDB();
   console.log(`Server running at ${host}:${port}`);

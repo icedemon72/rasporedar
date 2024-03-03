@@ -5,21 +5,20 @@ export const addProfessorInArray = (selectedProfessor, professors, fetchedProfes
   // if selectedProfessor isn't default value (0)
   if(selectedProfessor !== '0') {
     const index = professors.indexOf(selectedProfessor);
-
     // if selectedProfessor doesn't exist in array of IDs professors
     if(index === -1) {
       const tempIndex = indexOfKeyInArray(fetchedProfessors, '_id', selectedProfessor);
+      console.log(fetchedProfessors);
       
       let tempProfessors = professors;
       let tempFetched = JSON.parse(JSON.stringify(fetchedProfessors));
-
       // check if ID exists in fetchedProfessors array, if it doesn't it means that it hasn't been added
       // either as professor or as an assistant
       if(tempIndex !== -1 && (type === 'A' || type === 'P')) {
-        tempProfessors.push(selectedProfessor);
+        tempProfessors = [...tempProfessors, selectedProfessor];
         tempFetched[tempIndex].selected = true;
         tempFetched[tempIndex].role = type;
-
+        
         return {
           tempProfessors: tempProfessors,
           tempFetched: tempFetched,

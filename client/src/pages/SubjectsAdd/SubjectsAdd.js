@@ -1,12 +1,3 @@
-/*
-
-
-ADD USER IS IN INSTITUTION AND ADMIN CHECK!
-404 IF THEY ARE NOT!!!!!
-
-
-*/
-
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
