@@ -12,8 +12,10 @@ export const sessionApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setAccess(data.access_token));
-          dispatch(setRefresh(data.refresh_token));
+          setTimeout(() => {
+            dispatch(setAccess(data.access_token));
+            dispatch(setRefresh(data.refresh_token));
+          }, 1000);
         } catch (err) {
           dispatch(loggedOut());
         }

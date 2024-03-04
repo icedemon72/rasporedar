@@ -28,7 +28,7 @@ const Institutions = () => {
           <div className="min-w-full min-h-full rounded overflow-hidden grid content-between place-self-center border-2 border-gray-100">
             <Link to={`/institutions/${elem._id}`}>
               <div className="px-6 py-4">
-                <div className="font-bold text-xl hover:underline">{ elem.name }</div>
+                <div className="font-bold text-xl hover:underline">{ elem.name.length < 25 ? elem.name : `${elem.name.slice(0, 22)}...` }</div>
                 <div className="flex justify-between">
                   <CalendarFold />
                   <div>

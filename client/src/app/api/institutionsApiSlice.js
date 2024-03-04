@@ -16,7 +16,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
         method: 'PATCH',
         body
       }),
-      invalidatesTags: (result, error) => error ? [] : ['Institutions'],
+      invalidatesTags: (result, error) => error ? [] : ['Institutions', 'Institution'],
     }),
     deleteInstitution: builder.mutation({
       query: id => ({

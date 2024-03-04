@@ -47,7 +47,7 @@ export const deleteInstitution = async (sender, institution) => {
 
 export const editInstitution = async (sender, institution, data) => {
   try {
-    const institutionObj = await Institution.findOne({ createdBy: sender, institution });
+    const institutionObj = await Institution.findOne({ createdBy: sender, _id: institution });
 
     if(!institutionObj) {
       throw {

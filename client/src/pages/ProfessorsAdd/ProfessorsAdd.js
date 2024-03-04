@@ -71,20 +71,32 @@ const ProfessorsAdd = () => {
 
   return (
     <>
-      <input type="text" placeholder="Ime i prezime" onChange={(elem) => setName(elem.target.value)} />
-      <input type="text" placeholder="Titula" onChange={(elem) => setTitle(elem.target.value)} />
-      <textarea type="text" placeholder="Profesionalna biografija" onChange={(elem) => setBio(elem.target.value)} />
-      <input type="text" placeholder="Osnovne studije" onChange={(elem) => handleChangeBachelor(elem.target.value, 'institution')}/>
-      <input type="text" placeholder="Od" onChange={(elem) => handleChangeBachelor(elem.target.value, 'from')} />
-      <input type="text" placeholder="Do" onChange={(elem) => handleChangeBachelor(elem.target.value, 'to')} />
-      <input type="text" placeholder="Master studije" onChange={(elem) => handleChangeMaster(elem.target.value, 'institution')}/>
-      <input type="text" placeholder="Od" onChange={(elem) => handleChangeMaster(elem.target.value, 'from')} />
-      <input type="text" placeholder="Do" onChange={(elem) => handleChangeMaster(elem.target.value, 'to')} />
-      <input type="text" placeholder="Doktorske studije" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'institution')}/>
-      <input type="text" placeholder="Od" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'from')} />
-      <input type="text" placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
-      {/* Add this later... <input type="text" placeholder="Reference"></input> */}
-      <button onClick={handleAddProfessor}>Unesi profesora!</button>
+      <div className="w-full flex justify-center">
+        <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
+          <input className="input-field mb-4" type="text" placeholder="Ime i prezime" onChange={(elem) => setName(elem.target.value)} />
+          <input className="input-field mb-4" type="text" placeholder="Titula" onChange={(elem) => setTitle(elem.target.value)} />
+          <textarea className="input-field mb-4" type="text" placeholder="Profesionalna biografija" onChange={(elem) => setBio(elem.target.value)} />
+          <input className="input-field mb-4" type="text" placeholder="Osnovne studije" onChange={(elem) => handleChangeBachelor(elem.target.value, 'institution')}/>
+          <div className="flex justify-center gap-3 w-full">
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeBachelor(elem.target.value, 'from')} />
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeBachelor(elem.target.value, 'to')} />
+          </div>
+          <input className="input-field mb-4" type="text" placeholder="Master studije" onChange={(elem) => handleChangeMaster(elem.target.value, 'institution')}/>
+          <div className="flex justify-center gap-3 w-full">
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeMaster(elem.target.value, 'from')} />
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeMaster(elem.target.value, 'to')} />
+          </div>
+          <input className="input-field mb-4" type="text" placeholder="Doktorske studije" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'institution')}/>
+          <div className="flex justify-center gap-3 w-full">
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'from')} />
+            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
+          </div>
+          {/* Add this later... <input type="text" placeholder="Reference"></input> */}
+          <div className="w-full flex justify-center">
+            <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Unesi profesora!</button>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

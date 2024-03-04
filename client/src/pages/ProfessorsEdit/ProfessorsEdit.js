@@ -3,15 +3,29 @@ import { useSelector } from 'react-redux';
 import { useDeleteProfessorMutation, useEditProfessorMutation, useGetProfessorQuery, useGetProfessorSubjectsQuery } from '../../app/api/professorsApiSlice';
 import { useParams } from 'react-router-dom';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
+import { Save, Trash } from 'lucide-react';
 
 const ProfessorsEdit = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
 
-  const [ fetchEdit ] = useEditProfessorMutation();
-  const [ fetchDelete ] = useDeleteProfessorMutation();
+  const [ 
+    fetchEdit,
+    {
+      isLoading: isFetchEditLoading,
+      isSuccess: isFetchEditSuccess
+    }
+   ] = useEditProfessorMutation();
+  const [ 
+    fetchDelete,
+    {
+      isLoading: isFetchDeleteLoading,
+      isSuccess: isFetchDeleteSuccess
+    }
+   ] = useDeleteProfessorMutation();
 
   const [ open, setOpen ] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
   const [ name, setName ] = useState('');
   const [ title, setTitle ] = useState('');
   const [ bachelor, setBachelor ] = useState({});
@@ -59,6 +73,7 @@ const ProfessorsEdit = () => {
   
   const handleEditProfessor = async () => {
     try {
+      setIsSubmitting(true);
       const education = {
         bachelor: bachelor, master: master || {}, doctorate: doctorate || {}
       }
@@ -70,16 +85,20 @@ const ProfessorsEdit = () => {
       const result = await fetchEdit({id: id, body: body});
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   const handleDeleteProfessor = async () => {
     try {
+      setIsSubmitting(true);
       const result = await fetchDelete(id);
     } catch (err) {
       console.log(err);
     } finally {
       setOpen(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -88,24 +107,35 @@ const ProfessorsEdit = () => {
   if(isSubjectsSuccess && !isProfessorLoading) {
     content = 
     <>
-      <input type="text" value={name} placeholder="Unesite ime i prezime profesora" onChange={(elem) => setName(elem.target.value)} />
-      <input type="text" value={title} placeholder="Unesite zvanje profesora" onChange={(elem) => setTitle(elem.target.value)} />
-      <input type="text" value={bachelor?.institution} placeholder="Unesite OAS" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'institution', elem.target.value))} />
-      <input type="text" value={bachelor?.from} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'from', elem.target.value))} />
-      <input type="text" value={bachelor?.to} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'to', elem.target.value))} />
-      <input type="text" value={master?.institution} placeholder="Unesite MAS" onChange={(elem) => setMaster(handleChangeEducation(master, 'institution', elem.target.value))} />
-      <input type="text" value={master?.from} placeholder="Od" onChange={(elem) => setMaster(handleChangeEducation(master, 'from', elem.target.value))} />
-      <input type="text" value={master?.to} placeholder="Do" onChange={(elem) => setMaster(handleChangeEducation(master, 'to', elem.target.value))} />
-      <input type="text" value={doctorate?.institution} placeholder="Unesite DAS" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'institution', elem.target.value))} />
-      <input type="text" value={doctorate?.from} placeholder="Od" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'from', elem.target.value))} />
-      <input type="text" value={doctorate?.to} placeholder="Do" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'to', elem.target.value))} />
-      <input type="text" value={bio} placeholder="Unesite biografiju profesora" onChange={(elem) => setBio(elem.target.value)} />
+      <input className="input-field mb-4"  type="text" value={name} placeholder="Unesite ime i prezime profesora" onChange={(elem) => setName(elem.target.value)} />
+      <input className="input-field mb-4" type="text" value={title} placeholder="Unesite zvanje profesora" onChange={(elem) => setTitle(elem.target.value)} />
+      <textarea className="input-field mb-4" type="text" value={bio} placeholder="Unesite biografiju profesora" onChange={(elem) => setBio(elem.target.value)}></textarea>
+      <input className="input-field mb-4"  type="text" value={bachelor?.institution} placeholder="Unesite OAS" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'institution', elem.target.value))} />
+      <div className="flex justify-center gap-3 w-full">
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={bachelor?.from} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'from', elem.target.value))} />
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={bachelor?.to} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'to', elem.target.value))} />
+      </div>
+      
+      <input className="input-field mb-4" type="text" value={master?.institution} placeholder="Unesite MAS" onChange={(elem) => setMaster(handleChangeEducation(master, 'institution', elem.target.value))} />
+      <div className="flex justify-center gap-3 w-full">
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={master?.from} placeholder="Od" onChange={(elem) => setMaster(handleChangeEducation(master, 'from', elem.target.value))} />
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={master?.to} placeholder="Do" onChange={(elem) => setMaster(handleChangeEducation(master, 'to', elem.target.value))} />
+      </div>
+      
+      <input className="input-field mb-4" type="text" value={doctorate?.institution} placeholder="Unesite DAS" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'institution', elem.target.value))} />
+      <div className="flex justify-center gap-3 w-full">
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={doctorate?.from} placeholder="Od" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'from', elem.target.value))} />
+        <input className="input-field mb-4 w-full md:w-1/2" type="text" value={doctorate?.to} placeholder="Do" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'to', elem.target.value))} />
+      </div>
       
       {/* Add references later  */}
       {/* <input type="text" value={title} placeholder="Unesite zvanje profesora" onChange={(elem) => setTitle(elem.target.value)} /> */}
-
-      <button onClick={handleEditProfessor}>Sacuvaj promene!</button>
-      <button onClick={() => setOpen(true)}>Obrisi</button>
+      <div className="w-full flex justify-center mt-3">
+        <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditProfessor}><Save /> Sacuvaj promene!</button>
+      </div>
+      <div className="w-full  flex justify-center mt-3">
+        <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-red rounded justify-center"  onClick={() => setOpen(true)}><Trash /> Obrisi</button>
+      </div>
     </>
   }
 
@@ -130,14 +160,20 @@ const ProfessorsEdit = () => {
   
   return (
     <>
-      <div>ProfessorsEdit</div>
       { open ?
-      <ModalDelete>
-        <button onClick={() => setOpen(false)}>Odustani</button>
-        <button onClick={handleDeleteProfessor}>Potvrdi</button>
+      <ModalDelete title={'Brisanje profesora'} text={`Obrisacete profesora ${professorData.name}. Da li ste sigurni?`} closeFunc={() => setOpen(false)}>
+        <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setOpen(false)}>Ne, izadji</button>
+        <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteProfessor}>Da, siguran sam!</button>
       </ModalDelete>
       : null }
-      { content }
+      <div className="w-full flex justify-center">
+        <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
+          { content }
+          { isFetchDeleteLoading || isFetchEditLoading ? <>Loading...</> : null }
+          { isFetchEditSuccess ? <>Uspesna izmena grupe!</> : null }
+          { isFetchDeleteSuccess ? <>Uspesno brisanje grupe!</> : null }
+        </div>
+      </div>
     </>
   )
 }
