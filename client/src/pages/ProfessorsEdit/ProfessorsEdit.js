@@ -16,6 +16,7 @@ const ProfessorsEdit = () => {
       isSuccess: isFetchEditSuccess
     }
    ] = useEditProfessorMutation();
+   
   const [ 
     fetchDelete,
     {
@@ -57,10 +58,6 @@ const ProfessorsEdit = () => {
   } = useGetProfessorSubjectsQuery(id, {
     skip: !session.accessToken || !institution || !id
   });
-
-  const setOpenFalse = () => {
-    setOpen(false);
-  }
 
   const handleChangeEducation = (state, key, value) => {
     if(!state) {
@@ -131,7 +128,7 @@ const ProfessorsEdit = () => {
       {/* Add references later  */}
       {/* <input type="text" value={title} placeholder="Unesite zvanje profesora" onChange={(elem) => setTitle(elem.target.value)} /> */}
       <div className="w-full flex justify-center mt-3">
-        <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditProfessor}><Save /> Sacuvaj promene!</button>
+        <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditProfessor}><Save /> Sacuvaj izmene!</button>
       </div>
       <div className="w-full  flex justify-center mt-3">
         <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-red rounded justify-center"  onClick={() => setOpen(true)}><Trash /> Obrisi</button>
@@ -161,7 +158,7 @@ const ProfessorsEdit = () => {
   return (
     <>
       { open ?
-      <ModalDelete title={'Brisanje profesora'} text={`Obrisacete profesora ${professorData.name}. Da li ste sigurni?`} closeFunc={() => setOpen(false)}>
+      <ModalDelete title={'Brisanje profesora'} text={`Obrisacete profesora '${professorData.name}'. Da li ste sigurni?`} closeFunc={() => setOpen(false)}>
         <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setOpen(false)}>Ne, izadji</button>
         <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteProfessor}>Da, siguran sam!</button>
       </ModalDelete>

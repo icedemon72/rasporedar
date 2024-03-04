@@ -5,7 +5,7 @@ import { useDeleteSubjectMutation, useEditSubjectMutation, useGetSubjectProfesso
 import { addProfessorInArray, deleteProfessorFromArray } from '../../utils/subjectHelper';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
-
+import { Save, Trash } from 'lucide-react';
 const SubjectsEdit = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
@@ -17,6 +17,8 @@ const SubjectsEdit = () => {
 
 
   const [ open, setOpen ] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
+
   const [ name, setName ] = useState('');
   const [ description, setDescription ] = useState('');
   const [ goal, setGoal ] = useState('');
@@ -59,23 +61,27 @@ const SubjectsEdit = () => {
   
   const handleEditSubject =  async () => {
     try {
+      setIsSubmitting(true);
       const body = {
         name, description, goal, result, references
       }
-
       const res = await fetchEdit({ id, body });
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   const handleDeleteSubject = async () => {
     try {
+      setIsSubmitting(true);
       const result = await fetchDelete(id);
     } catch (err) {
       console.log(err);
     } finally {
       setOpen(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -84,16 +90,26 @@ const SubjectsEdit = () => {
   if(isSubjectSuccess) {
     content = 
     <>
-      <input type="text" value={name} placeholder="Unesite naziv predmeta" onChange={(elem) => setName(elem.target.value)} />
-      <textarea type="text" value={description} placeholder="Unesite opis predmeta" onChange={(elem) => setDescription(elem.target.value)}></textarea>
-      <textarea type="text" value={goal} placeholder="Unesite cilj predmeta" onChange={(elem) => setGoal(elem.target.value)}></textarea>
-      <input type="text" value={result} placeholder="Unesite rezultat predmeta" onChange={(elem) => setResult(elem.target.value)} />
-      
-      {/* ADD REFERENCES */}
-      {/* <input type="text" value={name} placeholder="Unesite naziv predmeta" onChange={(elem.target.value) => setName(elem.target.value)} /> */}
-      
-      <button onClick={handleEditSubject}>Sacuvaj izmene</button>
-      <button onClick={() => setOpen(true)}>Obrisi</button>
+      <div className="w-full flex justify-center mt-5">
+        <div className="w-full md:w-1/2 lg:w-1/3">
+          <input className="input-field mb-4" type="text"  value={name} placeholder="Unesite naziv predmeta" onChange={(elem) => setName(elem.target.value)} />
+          <textarea className="input-field mb-4" type="text" value={description} placeholder="Unesite opis predmeta" onChange={(elem) => setDescription(elem.target.value)}></textarea>
+          <textarea className="input-field mb-4" type="text" value={goal} placeholder="Unesite cilj predmeta" onChange={(elem) => setGoal(elem.target.value)}></textarea>
+          <textarea className="input-field mb-4" type="text" value={result} placeholder="Unesite rezultat predmeta"onChange={(elem) => setResult(elem.target.value)}></textarea>
+          <input type="text" value={result}  onChange={(elem) => setResult(elem.target.value)} />
+          
+          {/* ADD REFERENCES */}
+          {/* <input type="text" value={name} placeholder="Unesite naziv predmeta" onChange={(elem.target.value) => setName(elem.target.value)} /> */}
+          
+          <div className="flex justify-center mt-3">
+          <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditSubject}><Save /> Sacuvaj izmene!</button>
+          </div>
+
+          <div className="flex justify-center mt-3">
+          <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-red rounded justify-center" onClick={() => setOpen(true)}><Trash /> Obrisi</button>
+          </div>
+        </div>
+      </div>
     </>
   }
 
@@ -113,9 +129,9 @@ const SubjectsEdit = () => {
   return (
     <>
       { open ? 
-        <ModalDelete>
-          <button onClick={() => setOpen(false)}>Odustani</button>
-          <button onClick={handleDeleteSubject}>Potvrdi</button>
+        <ModalDelete title={'Brisanje predmeta'} text={`Obrisacete predmet '${subjectData.name}'. Da li ste sigurni?`} closeFunc={() => setOpen(false)} >
+          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded"onClick={() => setOpen(false)}>Odustani</button>
+          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteSubject}>Potvrdi</button>
         </ModalDelete>
       : null }
 

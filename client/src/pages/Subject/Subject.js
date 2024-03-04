@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom';
 import { useGetSubjectQuery } from '../../app/api/subjectsApiSlice';
+import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 
 const Subject = () => {
   const session = useSelector(state => state.session);
@@ -17,6 +18,11 @@ const Subject = () => {
   } = useGetSubjectQuery({id: id, fullInfo: true}, {
     skip: !id || !institution || !session.accessToken
   });
+
+  const { 
+    data: getRole, 
+    isSuccess: isGetRoleSuccess, 
+  } = useGetRoleQuery(institution, { skip: !session.accessToken  });
 
   let content;
 
@@ -35,7 +41,11 @@ const Subject = () => {
   }, [ isSuccess ]);
   return (
     <>
-      <Link to={`/institutions/${institution}/subjects/${id}/edit`}>Edit</Link>
+      { isGetRoleSuccess && getRole.role !== 'User' ? 
+        <Link to={`/institutions/${institution}/subjects/${id}/edit`}>Edit</Link>
+        : null 
+      }
+      
       { content }
     </>
   )

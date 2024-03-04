@@ -31,6 +31,7 @@ const SubjectsAdd = () => {
   const [ name, setName ] = useState('');
   const [ description, setDescription] = useState('');
   const [ goal, setGoal ] = useState('');
+  const [ result, setResult ] = useState('');
   const [ references, setReferences] = useState([]);
   
   const handleAddProfessor = () => {
@@ -98,7 +99,8 @@ const SubjectsAdd = () => {
         name,
         description,
         goal,
-        references
+        references,
+        result
       }
 
       const result = await fetchAddSubject({institution, body});
@@ -137,48 +139,49 @@ const SubjectsAdd = () => {
       <>
         <div className="w-full flex justify-center">
           <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
-              <input type="text" className="input-field mb-4" placeholder="Naziv predmeta" onChange={(elem) => setName(elem.target.value)} />
-              <textarea className="input-field mb-4" onChange={(elem) => setDescription(elem.target.value)} placeholder="Opis predmeta"></textarea>
-              <textarea className="input-field mb-4" onChange={(elem) => setGoal(elem.target.value)} placeholder="Cilj predmeta"></textarea>
-              {/* References should work on enter! */}
-              {/* <input type="text" onChange={(elem) => setGoal(elem.target.value)} placeholder="Refe"></input> */}
-              {fetchedProfessors.map(elem => {
-                if(elem.selected && elem.role === 'P') {
-                  return <>
-                    <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                    <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
-                  </>
-                }
-              })}
-              <div className="flex gap-3 items-center justify-center mb-4">
-                <select className="input-field w-4/5" ref={inputPrRef}>
-                  {!professors.length ? <option value="0">Dodaj profesora kasnije</option> : null}
-                  {content}
-                </select>
-                <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddProfessor : null}><PlusCircle /></button>
+            <input type="text" className="input-field mb-4" placeholder="Naziv predmeta" onChange={(elem) => setName(elem.target.value)} />
+            <textarea className="input-field mb-4" onChange={(elem) => setDescription(elem.target.value)} placeholder="Opis predmeta"></textarea>
+            <textarea className="input-field mb-4" onChange={(elem) => setGoal(elem.target.value)} placeholder="Cilj predmeta"></textarea>
+            <textarea className="input-field mb-4" onChange={(elem) => setResult(elem.target.value)} placeholder="Rezultat predmeta"></textarea>
+            {/* References should work on enter! */}
+            {/* <input type="text" onChange={(elem) => setGoal(elem.target.value)} placeholder="Refe"></input> */}
+            {fetchedProfessors.map(elem => {
+              if(elem.selected && elem.role === 'P') {
+                return <>
+                  <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                  <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
+                </>
+              }
+            })}
+            <div className="flex gap-3 items-center justify-center mb-4">
+              <select className="input-field w-4/5" ref={inputPrRef}>
+                {!professors.length ? <option value="0">Dodaj profesora kasnije</option> : null}
+                {content}
+              </select>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddProfessor : null}><PlusCircle /></button>
 
-              </div>
-              
+            </div>
+            
 
-              {fetchedProfessors.map(elem => {
-                if(elem.selected && elem.role === 'A') {
-                  return <>
-                    <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                    <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
-                  </>
-                }
-              })}
-              <div className="flex gap-3 items-center justify-center mb-4">
-                <select className="input-field w-4/5" ref={inputAsRef}>
-                  <option value="0">Dodaj asistenta kasnije</option>
-                  {content}
-                </select>
-                <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddAssistent : null}><PlusCircle /></button>
-              </div>
-              
-              <div className="flex justify-center">
-                <button onClick={handleAddSubject}>Dodaj predmet</button>
-              </div>
+            {fetchedProfessors.map(elem => {
+              if(elem.selected && elem.role === 'A') {
+                return <>
+                  <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                  <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
+                </>
+              }
+            })}
+            <div className="flex gap-3 items-center justify-center mb-4">
+              <select className="input-field w-4/5" ref={inputAsRef}>
+                <option value="0">Dodaj asistenta kasnije</option>
+                {content}
+              </select>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddAssistent : null}><PlusCircle /></button>
+            </div>
+            
+            <div className="flex justify-center">
+              <button onClick={handleAddSubject}>Dodaj predmet</button>
+            </div>
           </div>
         </div>
       </>
