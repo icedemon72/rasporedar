@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
-import { addProfessorInArray, deleteProfessorFromArray } from '../../utils/subjectHelper';
 import { useAddSubjectMutation } from '../../app/api/subjectsApiSlice';
 import { PlusCircle, Trash } from 'lucide-react';
+import { indexOfKeyInArray, excludeSameIDsFromArray } from '../../utils/objectArrays';
 
 /* ADD ASS functionality!!!! */
 const SubjectsAdd = () => {
@@ -25,7 +25,6 @@ const SubjectsAdd = () => {
 
   const [ fetchAddSubject ] = useAddSubjectMutation();
 
-  const [ fetchedProfessors, setFetchedProfessors ] = useState([]);
   const [ professors, setProfessors ] = useState([]);
   const [ assistents, setAssistents ] = useState([]);
   const [ name, setName ] = useState('');
@@ -35,61 +34,35 @@ const SubjectsAdd = () => {
   const [ references, setReferences] = useState([]);
   
   const handleAddProfessor = () => {
-    const selectedProfessor = inputPrRef.current.value;
-    
-    let {
-      tempProfessors,
-      tempFetched,
-      done
-    } = addProfessorInArray(selectedProfessor, professors, fetchedProfessors, 'P');
-    
-    if(done) {
-      setProfessors(tempProfessors);
-      setFetchedProfessors(tempFetched);
+    if(inputPrRef.current.value !== '0') {
+      let index = indexOfKeyInArray(data, '_id', inputPrRef.current.value);
+      if(index !== -1) {
+        const tempArray = [ ...professors, data[index] ];
+        setProfessors(tempArray);
+      }
     }
   } 
 
   const handleDeleteProfessor = (professor) => {
-    let {
-      tempProfessors,
-      tempFetched,
-      done
-    } = deleteProfessorFromArray(professor, professors, fetchedProfessors);
-    
-    if(done) {
-      setProfessors(tempProfessors);
-      setFetchedProfessors(tempFetched);
-    }
+    const tempProfessors = excludeSameIDsFromArray(professors, [{ _id: professor }]);
+    setProfessors(tempProfessors);
   }
   
   const handleAddAssistent = () => {
-    const selectedProfessor = inputAsRef.current.value;
-    
-    let {
-      tempProfessors,
-      tempFetched,
-      done
-    } = addProfessorInArray(selectedProfessor, assistents, fetchedProfessors, 'A');
-    
-    if(done) {
-      setAssistents(tempProfessors);
-      setFetchedProfessors(tempFetched);
-    }
-  }
-
-  const handleDeleteAssistent = (professor) => {
-    let {
-      tempProfessors,
-      tempFetched,
-      done
-    } = deleteProfessorFromArray(professor, assistents, fetchedProfessors);
-    
-    if(done) {
-      setAssistents(tempProfessors);
-      setFetchedProfessors(tempFetched);
+    if(inputAsRef.current.value !== '0') {
+      let index = indexOfKeyInArray(data, '_id', inputAsRef.current.value);
+      if(index !== -1) {
+        const tempArray = [ ...assistents, data[index] ];
+        setAssistents(tempArray);
+      }
     }
   }
   
+  const handleDeleteAssistent = (professor) => {
+    const tempAssistents = excludeSameIDsFromArray(assistents, [{ _id: professor }]);
+    setAssistents(tempAssistents);
+  }
+
   const handleAddSubject = async () => {
     // add input check here!!!
     try {
@@ -117,11 +90,9 @@ const SubjectsAdd = () => {
     if(data.message) {
       content = null;
     } else {
-      content = fetchedProfessors.map(elem => {
-        if(!elem.selected) {
-          return <option value={elem._id}>{ elem.name }</option>
-        }
-      });
+      content = excludeSameIDsFromArray(data, [ ...professors, ...assistents ]).map(elem => {
+        return <option value={elem._id}>{ elem.name }</option>
+      })
     }
   }
   
@@ -129,10 +100,6 @@ const SubjectsAdd = () => {
     document.title = 'Dodaj predmet | Rasporedar';
   }, []);
 
-  useEffect(() => {
-    setFetchedProfessors(data || []);
-  }, [ isSuccess ]);
-  
   return (
     <>
       { isSuccess ? 
@@ -145,38 +112,34 @@ const SubjectsAdd = () => {
             <textarea className="input-field mb-4" onChange={(elem) => setResult(elem.target.value)} placeholder="Rezultat predmeta"></textarea>
             {/* References should work on enter! */}
             {/* <input type="text" onChange={(elem) => setGoal(elem.target.value)} placeholder="Refe"></input> */}
-            {fetchedProfessors.map(elem => {
-              if(elem.selected && elem.role === 'P') {
-                return <>
-                  <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                  <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
-                </>
-              }
-            })}
+            { professors.map(elem => {
+              return <>
+                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
+              </>
+            }) }
             <div className="flex gap-3 items-center justify-center mb-4">
               <select className="input-field w-4/5" ref={inputPrRef}>
                 {!professors.length ? <option value="0">Dodaj profesora kasnije</option> : null}
-                {content}
+                { content }
               </select>
-              <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddProfessor : null}><PlusCircle /></button>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!data.length} onClick={data.length ? handleAddProfessor : null}><PlusCircle /></button>
 
             </div>
             
 
-            {fetchedProfessors.map(elem => {
-              if(elem.selected && elem.role === 'A') {
-                return <>
-                  <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                  <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
-                </>
-              }
-            })}
+            { assistents.map(elem => {
+              return <>
+                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
+              </>
+              })}
             <div className="flex gap-3 items-center justify-center mb-4">
               <select className="input-field w-4/5" ref={inputAsRef}>
                 <option value="0">Dodaj asistenta kasnije</option>
                 {content}
               </select>
-              <button className="w-1/5 p-2 flex justify-center" disabled={!fetchedProfessors.length} onClick={fetchedProfessors.length ? handleAddAssistent : null}><PlusCircle /></button>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!data.length} onClick={data.length ? handleAddAssistent : null}><PlusCircle /></button>
             </div>
             
             <div className="flex justify-center">

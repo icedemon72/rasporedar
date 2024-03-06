@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDeleteSubjectMutation, useEditSubjectMutation, useGetSubjectProfessorsQuery, useGetSubjectQuery } from '../../app/api/subjectsApiSlice';
-import { addProfessorInArray, deleteProfessorFromArray } from '../../utils/subjectHelper';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
-import { Save, Trash } from 'lucide-react';
+import { Save, Trash, PlusCircle } from 'lucide-react';
+import { indexOfKeyInArray, excludeSameIDsFromArray } from '../../utils/objectArrays';
+
 const SubjectsEdit = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
@@ -25,7 +26,6 @@ const SubjectsEdit = () => {
   const [ result, setResult ] = useState('');
   const [ references, setReferences ] = useState([]);
 
-  const [ fetchedProfessors, setFetchedProfessors ] = useState([]);
   const [ professors, setProfessors ] = useState([]);
   const [ assistents, setAssistents ] = useState([]);
 
@@ -36,28 +36,59 @@ const SubjectsEdit = () => {
     isError: isSubjectError,
     error: subjectError
   } = useGetSubjectQuery({ id, fullInfo: true }, {
-    skip: !session.accessToken || !id
+    skip: !session.accessToken || !id,
   });
 
-  // const {
-  //   data: professorsSubjectData,
-  //   isSuccess: isProfessorsSubjectSuccess,
-  //   isLoading: isProfessorsSubjectLoading,
-  //   isError: isProfessorsSubjectError,
-  //   error: professorsSubjectErrror
-  // } = useGetSubjectProfessorsQuery(id, {
-  //   skip: !subjectData || isSubjectError
-  // })
+  const {
+    data: professorsData,
+    isSuccess: isProfessorsSuccess,
+    isLoading: isProfessorsLoading,
+    isError: isProfessorsError,
+    error: professorsError
+  } = useGetProfessorsQuery(institution, {
+    skip: !session.accessToken || !id,
+  });
 
-  // const {
-  //   data: professorsData,
-  //   isSuccess: isProfessorsSuccess,
-  //   isLoading: isProfessorsLoading,
-  //   isError: isProfessorsError,
-  //   error: professorsError
-  // } = useGetProfessorsQuery(institution, {
-  //   skip: !professorsSubjectData || isProfessorsSubjectError
-  // });
+  const {
+    data: professorsSubjectData,
+    isSuccess: isProfessorsSubjectSuccess,
+    isLoading: isProfessorsSubjectLoading,
+    isError: isProfessorsSubjectError,
+    error: professorsSubjectErrror
+  } = useGetSubjectProfessorsQuery(id, {
+    skip: !session.accessToken || !id,
+  });
+
+
+  const handleAddProfessor = () => {
+    if(inputPrRef.current.value !== '0') {
+      let index = indexOfKeyInArray(professorsData, '_id', inputPrRef.current.value);
+      if(index !== -1) {
+        const tempArray = [ ...professors, professorsData[index] ];
+        setProfessors(tempArray);
+      }
+    }
+  } 
+
+  const handleDeleteProfessor = (professor) => {
+    const tempProfessors = excludeSameIDsFromArray(professors, [{ _id: professor }]);
+    setProfessors(tempProfessors);
+  }
+  
+  const handleAddAssistent = () => {
+    if(inputAsRef.current.value !== '0') {
+      let index = indexOfKeyInArray(professorsData, '_id', inputAsRef.current.value);
+      if(index !== -1) {
+        const tempArray = [ ...assistents, professorsData[index] ];
+        setAssistents(tempArray);
+      }
+    }
+  }
+
+  const handleDeleteAssistent = (professor) => {
+    const tempAssistents = excludeSameIDsFromArray(professors, [{ _id: professor }]);
+    setAssistents(tempAssistents);
+  }
   
   const handleEditSubject =  async () => {
     try {
@@ -87,7 +118,7 @@ const SubjectsEdit = () => {
 
   let content;
 
-  if(isSubjectSuccess) {
+  if(isSubjectSuccess && isProfessorsSuccess) {
     content = 
     <>
       <div className="w-full flex justify-center mt-5">
@@ -96,10 +127,44 @@ const SubjectsEdit = () => {
           <textarea className="input-field mb-4" type="text" value={description} placeholder="Unesite opis predmeta" onChange={(elem) => setDescription(elem.target.value)}></textarea>
           <textarea className="input-field mb-4" type="text" value={goal} placeholder="Unesite cilj predmeta" onChange={(elem) => setGoal(elem.target.value)}></textarea>
           <textarea className="input-field mb-4" type="text" value={result} placeholder="Unesite rezultat predmeta"onChange={(elem) => setResult(elem.target.value)}></textarea>
-          <input type="text" value={result}  onChange={(elem) => setResult(elem.target.value)} />
           
           {/* ADD REFERENCES */}
           {/* <input type="text" value={name} placeholder="Unesite naziv predmeta" onChange={(elem.target.value) => setName(elem.target.value)} /> */}
+          { professors.map(elem => {
+              return <>
+                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
+              </>
+            })}
+            <div className="flex gap-3 items-center justify-center mb-4">
+              <select className="input-field w-4/5" ref={inputPrRef}>
+                <option value="0">Izaberite profesora</option>
+                { 
+                  excludeSameIDsFromArray(professorsData, [ ...professors, ...assistents ]).map(elem => {
+                    return <option value={elem._id}>{ elem.name }</option>
+                  })
+                }
+              </select>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!professorsData.length} onClick={professorsData.length ? handleAddProfessor : null}><PlusCircle /></button>
+            </div>
+          
+            { assistents.map(elem => {
+              return <>
+                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
+                <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
+              </>
+            })}
+            <div className="flex gap-3 items-center justify-center mb-4">
+              <select className="input-field w-4/5" ref={inputAsRef}>
+              <option value="0">Izaberite asistenta</option>
+                { 
+                  excludeSameIDsFromArray(professorsData, [ ...professors, ...assistents ]).map(elem => {
+                    return <option value={elem._id}>{ elem.name }</option>
+                  }) 
+                }
+              </select>
+              <button className="w-1/5 p-2 flex justify-center" disabled={!professorsData.length} onClick={professorsData.length ? handleAddAssistent : null}><PlusCircle /></button>
+            </div>
           
           <div className="flex justify-center mt-3">
           <button disabled={isSubmitting} className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditSubject}><Save /> Sacuvaj izmene!</button>
@@ -111,6 +176,8 @@ const SubjectsEdit = () => {
         </div>
       </div>
     </>
+  } else if(isSubjectLoading) {
+    content = <>Loading...</>
   }
 
 
@@ -125,7 +192,17 @@ const SubjectsEdit = () => {
 
     document.title = (subjectData) ? `Uredjivanje predmeta '${subjectData.name}' | Rasporedar` : `Uredjivanje predmeta | Rasporedar`;
   }, [ isSubjectSuccess ]);
+
   
+  useEffect(() => {
+    if(professorsSubjectData) {
+      setProfessors(professorsSubjectData.professors);
+      setAssistents(professorsSubjectData.assistents);
+    }
+  }, [ isProfessorsSubjectSuccess ]);
+
+
+
   return (
     <>
       { open ? 
