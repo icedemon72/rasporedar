@@ -92,10 +92,10 @@ const CreateInstitution = () => {
             </div>
             {departments.map((elem, i) => {
               return (
-                <div class="flex flex-row justify-between mt-2">
+                <div className="flex flex-row justify-between mt-2">
                   <div>{i + 1}</div>
                   <p>{elem}</p>
-                  <div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
+                  <div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
                 </div>
               );
             })

@@ -12,7 +12,6 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: `/professor/${id}`
       }),
-      keepUnusedDataFor: 15,
       providesTags: (result, error) => error ? [] : ['Professor']
     }),
     addProfessor: builder.mutation({
@@ -29,7 +28,7 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
         method: 'PATCH',
         body
       }),
-      invalidatesTags: (result, error) => error ? [] : ['Professors']
+      invalidatesTags: (result, error) => error ? [] : ['Professors', 'Professor']
     }),
     deleteProfessor: builder.mutation({
       query: (id) => ({
@@ -42,6 +41,7 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
       query: (professor) => ({
         url: `/professor_subject/${professor}`
       }),
+      providesTags: (result, error) => error ? [] : ['SubjectProfessors'],
       keepUnusedDataFor: 20,
     })
   })

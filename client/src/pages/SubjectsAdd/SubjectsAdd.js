@@ -30,7 +30,7 @@ const SubjectsAdd = () => {
   const [ name, setName ] = useState('');
   const [ description, setDescription] = useState('');
   const [ goal, setGoal ] = useState('');
-  const [ result, setResult ] = useState('');
+  const [ subjResult, setResult ] = useState('');
   const [ references, setReferences] = useState([]);
   
   const handleAddProfessor = () => {
@@ -73,7 +73,7 @@ const SubjectsAdd = () => {
         description,
         goal,
         references,
-        result
+        result: subjResult
       }
 
       const result = await fetchAddSubject({institution, body});

@@ -28,6 +28,10 @@ import SubjectsEdit from './pages/SubjectsEdit/SubjectsEdit';
 
 import RouteInInstitution from './components/RouteInInstitution/RouteInInstitution';
 
+import Schedules from './pages/Schedules/Schedules';
+import Schedule from './pages/Schedule/Schedule';
+import SchedulesAdd from './pages/SchedulesAdd/SchedulesAdd';
+import SchedulesEdit from './pages/SchedulesEdit/SchedulesEdit';
 // add InInstitution authentication
 // add RoleInInstitution authorization
 
@@ -56,14 +60,18 @@ function App() {
             <Route path="/institutions/:institution/professors/:id" element={<Professor institution=':institution' id=':id' />}/>
             <Route path="/institutions/:institution/subjects" element={<Subjects institution=':institution' />}/>
             <Route path="/institutions/:institution/subjects/:id" element={<Subject institution=':institution' id=':id'/>} />
+            <Route path="/institutions/:institution/schedules" element={<Schedules institution=':institution' />} />
+            <Route path="/institutions/:institution/schedules/:id" element={<Schedule institution=':institution' id=':id' />} />
           </Route>
 
           {/* Only moderators and the owner can access these */}
           <Route  element={<RouteInInstitution requiredRoles={['Moderator', 'Owner']}/>}>
             <Route path="/institutions/:institution/professors/add" element={<ProfessorsAdd institution=':institution'/>}/>
             <Route path="/institutions/:institution/professors/:id/edit" element={<ProfessorsEdit institution=':institution' id=':id' />}/>
-            <Route path="/institutions/:institution/subjects/:id/edit" element={<SubjectsEdit institution=':institution' id=':id'/>} />
             <Route path="/institutions/:institution/subjects/add" element={<SubjectsAdd institution=':institution' />} />
+            <Route path="/institutions/:institution/subjects/:id/edit" element={<SubjectsEdit institution=':institution' id=':id'/>} />
+            <Route path="/institutions/:institution/schedules/add" element={<SchedulesAdd institution=':institution' />} />
+            <Route path="/institutions/:institution/schedules/:id/edit" element={<SchedulesEdit institution=':institution' id=':id' />} />
           </Route>
 
           {/* Only the owner can access these */}

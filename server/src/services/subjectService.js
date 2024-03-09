@@ -40,7 +40,7 @@ export const deleteSubject = async (sender, subject) => {
 
 export const editSubjectInfo = async (sender, subject, data) => {
   try {
-    const subjectObj = await Subject.findOne({_id: subject, deleted: false});
+    const subjectObj = await Subject.findOne({ _id: subject, deleted: false });
 
     if(!subjectObj) {
       throw {
@@ -56,7 +56,9 @@ export const editSubjectInfo = async (sender, subject, data) => {
       description: data.description || subjectObj.description,
       goal: data.goal || subjectObj.goal,
       result: data.result || subjectObj.result,
-      references: data.references || subjectObj.references
+      references: data.references || subjectObj.references,
+      professors: data.professors || subjectObj.professors,
+      assistents: data.assistents || subjectObj.assistents
     }});
 
     return { message: 'Uspešno editovan predmet!' };
@@ -181,14 +183,6 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
       assistents: professor,
       deleted: false
     }, { deleted: 0, professors: 0, assistents: 0 });
-
-
-    if(!professorSubjectObj.length && !assistentSubjectObj.length) {
-      throw {
-        status: 200,
-        message: 'Profesor nema nijedan predmet'
-      }
-    }
 
     const subjectObj = {
       professor: professorSubjectObj,

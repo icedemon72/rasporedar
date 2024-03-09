@@ -193,8 +193,9 @@ const InstitutionEdit = () => {
       { isFetchEditSuccess ? <>Grupa je uspesno izmenjena! </> : null }
       { isFetchDeleteSuccess ? <>Uspešno brisanje grupe!</> : null }
 
-      <Link to={`/institutions/${institution}/professors`}>Profesori edit</Link>
-      <Link to={`/institutions/${institution}/subjects`}>Predmeti edit</Link>
+      <Link className="block" to={`/institutions/${institution}/professors`}>Profesori</Link>
+      <Link className="block" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
+      <Link className="block" to={`/institutions/${institution}/schedules`}>Rasporedi</Link>
       
       {/* Schedule link */}
       {/* <Link to={}></Link> */}

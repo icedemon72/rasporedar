@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { addProfessor, deleteProfessor, editProfessor, getAllProfessorsInInstitution, getAllProfessorsInSubject, getProfessorById } from '../services/professorService.js';
 import { isObjectIdValid } from '../utils/utils.js';
 

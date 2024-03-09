@@ -86,16 +86,21 @@ const SubjectsEdit = () => {
   }
 
   const handleDeleteAssistent = (professor) => {
-    const tempAssistents = excludeSameIDsFromArray(professors, [{ _id: professor }]);
+    const tempAssistents = excludeSameIDsFromArray(assistents, [{ _id: professor }]);
     setAssistents(tempAssistents);
   }
   
   const handleEditSubject =  async () => {
     try {
       setIsSubmitting(true);
+      const prof = professors.map(prof => prof._id);
+      const ass = assistents.map(ass => ass._id);
       const body = {
-        name, description, goal, result, references
+        name, description, goal, result, references, 
+        professors: prof,
+        assistents: ass
       }
+      console.log(ass);
       const res = await fetchEdit({ id, body });
     } catch (err) {
       console.log(err);

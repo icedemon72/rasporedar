@@ -4,6 +4,9 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const groupSubSchema = mongoose.Schema(
   {
+    day: {
+      type: String
+    },
     subject: { 
       type: [ ObjectId ]  
     },
@@ -34,6 +37,9 @@ const scheduleSchema = mongoose.Schema(
     institution: { // institution to which the schedule belongs
       type: ObjectId,
       required: true
+    },
+    title: {
+      type: String,
     },
     days: { // days included in schedule
       type: [ String ],

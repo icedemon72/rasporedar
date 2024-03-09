@@ -3,7 +3,7 @@ import { apiSlice } from "./apiSlice";
 const subjectsApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getSubject: builder.query({
-      query: ({id, fullInfo }) => ({
+      query: ({ id, fullInfo }) => ({
         url: `/subject/${id}${fullInfo ? '?fullInfo=1' : ''}`
       }),
       keepUnusedDataFor: 15,
@@ -35,7 +35,7 @@ const subjectsApiSlice = apiSlice.injectEndpoints({
         method: 'PATCH',
         body
       }),
-      invalidatesTags: (result, error) => error ? [] : ['Subjects']
+      invalidatesTags: (result, error) => error ? [] : ['Subjects', 'SubjectProfessors']
     }),
     deleteSubject: builder.mutation({
       query: (id) => ({
