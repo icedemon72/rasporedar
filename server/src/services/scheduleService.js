@@ -15,6 +15,7 @@ export const addSchedule = async (sender = null, institution, data) => {
       //       to: ['08:40', '09:25'],
       //       location: ['Sala 1', 'Sala 2']
     //       ],
+    //       
     //       ...
     //     ]
     //   },
@@ -24,30 +25,30 @@ export const addSchedule = async (sender = null, institution, data) => {
     //   published: true,
     //   deleted: false
     // }
-    data = {
-      instances: {
-        titles: ['I-2'],
-        schedules: [
-          [
-            {
-              day: 'Ponedeljak',
-              subject: ['65e9dbd54a29320fc18438e0'],
-              lecturer: ['65e745e1a456e109c48a1643'],
-              from: ['08:00'],
-              to: ['08:40'],
-              location: ['Sala 1']
-            }
-          ]
-        ]
-      },
-      institution: institution,
-      style: 'default',
-      validUntil: '2024-03-10',
-      published: false
-    }
+    // data = {
+    //   instances: {
+    //     titles: ['I-2'],
+    //     schedules: [
+    //       [
+    //         {
+    //           day: 'Ponedeljak',
+    //           subject: ['65e9dbd54a29320fc18438e0'],
+    //           lecturer: ['65e745e1a456e109c48a1643'],
+    //           from: ['08:00'],
+    //           to: ['08:40'],
+    //           location: ['Sala 1']
+    //         }
+    //       ]
+    //     ]
+    //   },
+    //   institution: institution,
+    //   style: 'default',
+    //   validUntil: '2024-03-10',
+    //   published: false
+    // }
 
-    await Schedule.create(data);
-    return { message: 'Uspešno kreiran raspored!' }
+    const scheduleObj = await Schedule.create(data);
+    return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
   } catch (err) {
     throw err;
   }

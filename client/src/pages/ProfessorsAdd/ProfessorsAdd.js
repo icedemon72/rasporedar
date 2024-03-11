@@ -17,7 +17,7 @@ const ProfessorsAdd = () => {
   const [ bachelor, setBachelor ] = useState({});
   const [ master, setMaster ] = useState({});
   const [ doctorate, setDoctorate ] = useState({});
-  const [ education, setEducation ] = useState({});
+  // const [ education, setEducation ] = useState({});
   const [ bio, setBio ] = useState('');
   const [ referenceItem, setReferenceItem ] = useState('');
   const [ references, setReferences ] = useState([]);
@@ -69,9 +69,9 @@ const ProfessorsAdd = () => {
     // Add input check here!!!
     try {
       // Add check for bachelor, master and doctorate here
-      setEducation({
+      const education = {
         bachelor: bachelor, master: master, doctorate: doctorate
-      });
+      };
 
       const body = {
         name, title, education: education, bio, references

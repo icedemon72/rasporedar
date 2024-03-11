@@ -129,31 +129,11 @@ export const getAllSubjectsInInstitution = async (sender, institution, fullInfo 
   try {
     await senderInInstitutionObject(sender, institution);
 
-    let subjectObj = await Subject.find({ institution, deleted: false }, { deleted: 0 });
-    
-    if(!subjectObj) {
-      throw {
-        status: 200,
-        message: 'Grupa nema predmete'
-      }
-    }
+    const subjectObj = !fullInfo ? 
+      await Subject.find({ institution, deleted: false }, { deleted: 0 })
+      : await Subject.find({ institution, deleted: false }, { deleted: 0 }).populate({ path: 'professors assistents', match: { deleted: false }, select: 'name title' });
 
-    subjectObj = JSON.parse(JSON.stringify(subjectObj));
-
-    if(!fullInfo) {
-      return subjectObj ? subjectObj : [];
-    }
-  
-    for (let i = 0; i < subjectObj.length; i++) {
-      const professors = subjectObj[i].professors;
-      const assistents = subjectObj[i].assistents;
-  
-      subjectObj[i].professors = await getFullInfoOnProfessors(professors);
-      subjectObj[i].assistents = await getFullInfoOnProfessors(assistents);
-    }
-
-    return subjectObj ? subjectObj : [];
-
+    return subjectObj;
   } catch (err) {
     throw err;
   }
@@ -197,32 +177,20 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
 
 export const getSubjectById = async (sender, subject, fullInfo = false) => {
   try {
-    let subjectObj = await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 });
+    const subjectObj = fullInfo ? 
+      await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 })
+      : await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 }).populate({ path: 'professors assistents', select: 'name title', match: { deleted: false } });
 
     if(!subjectObj) {
       throw {
-        status: 405,
+        status: 404,
         message: 'Ne postoji predmet!'
       }
     }
 
     await senderInInstitutionObject(sender, subjectObj.institution);
-
-    if(!fullInfo) {
-      return subjectObj ? subjectObj : [];
-    }
-
-    subjectObj = JSON.parse(JSON.stringify(subjectObj));
-  
-    for (let i = 0; i < subjectObj.length; i++) {
-      const professors = subjectObj.professors;
-      const assistents = subjectObj.assistents;
-  
-      subjectObj.professors = await getFullInfoOnProfessors(professors);
-      subjectObj.assistents = await getFullInfoOnProfessors(assistents);
-    }
-
-    return subjectObj ? subjectObj : [];
+    
+    return subjectObj;
 
   } catch (err) {
     throw err;

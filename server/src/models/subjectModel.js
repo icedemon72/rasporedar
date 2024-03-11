@@ -8,14 +8,20 @@ const subjectSchema = mongoose.Schema(
       type: ObjectId,
       required: true
     },
-    professors: {
-      type: [ ObjectId ],
-      index: true
-    },
-    assistents: {
-      type: [ ObjectId ],
-      index: true
-    },
+    professors: [
+      {
+        type: ObjectId ,
+        ref: 'Professor',
+        index: true
+      }
+    ],
+    assistents: [
+      {
+        type: ObjectId ,
+        ref: 'Professor',
+        index: true
+      }
+    ],
     name: {
       type: String
     },
