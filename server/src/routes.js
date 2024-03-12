@@ -11,6 +11,9 @@ import authenticate from './middleware/authenticate.js'
 import authorize from './middleware/authorize.js'
 
 export default (app) => {
+  app.get('/thanks', async (req, res) => {
+    return res.status(200).send({ message: 'Hvala Vam što koristite naše usluge! :)' });
+  });
   /* USERS */
   app.post('/login', async (req, res) => {
     handleLoginUser(req, res);

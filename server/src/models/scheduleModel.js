@@ -2,25 +2,39 @@ import mongoose from 'mongoose';
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const groupSubSchema = mongoose.Schema(
+const dataSubSchema = mongoose.Schema(
   {
     day: {
       type: String
     },
     subject: { 
-      type: [ ObjectId ]  
+      type: ObjectId
     },
     lecturer: {
-      type: [ ObjectId ]
+      type: ObjectId
     },
     from: {
-      type: [ String ]
+      type: String 
     },
     to: {
-      type: [ String ]
+      type: String
     },
     location: {
-      type: [ String ]
+      type: String
+    },
+    index: {
+      type: Number
+    }
+  }
+)
+
+const groupSubSchema = mongoose.Schema(
+  {
+    group: {
+      type: String
+    },
+    data: {
+      type: [ dataSubSchema ]
     }
   }
 );
@@ -28,11 +42,7 @@ const groupSubSchema = mongoose.Schema(
 const scheduleSchema = mongoose.Schema(
   {
     instances: {
-      titles: { type: [ String ]}, // for example: group I, Informatics department etc.
-      schedules: {
-        type: [[ groupSubSchema ]],
-        default: () => ({})
-      }
+      type: [ groupSubSchema ]
     },
     institution: { // institution to which the schedule belongs
       type: ObjectId,
@@ -50,7 +60,7 @@ const scheduleSchema = mongoose.Schema(
       default: 'default'
     },
     validUntil: { // shows until when the schedule is valid
-      type: Date 
+      type: Date
     },
     published: {
       type: Boolean,

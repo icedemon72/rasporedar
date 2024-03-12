@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { Clock, Trash } from 'lucide-react';
 import { useGetSubjectsQuery } from '../../app/api/subjectsApiSlice';
-import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
+import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import ScheduleSubjectAdd from '../../components/ScheduleSubjectAdd/ScheduleSubjectAdd';
 import ScheduleTimeAdd from '../../components/ScheduleTimeAdd/ScheduleTimeAdd';
@@ -28,10 +28,14 @@ const SchedulesAdd = () => {
   const [ groups, setGroups ] = useState(['Grupa 1']);
   const [ days, setDays ] = useState(['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
   
-  let toAssign = { 
-    ...groups.reduce((group, curr) => (group[curr] = {...days.reduce((days, curr) => (days[curr] = [], days), {})}, group), {})
-  }
-  
+  // ...groups.reduce((group, curr) => (group[curr] = {...days.reduce((days, curr) => (days[curr] = [], days), {})}, group), {})
+  let toAssign = groups.map(group => {
+    return {
+      group,
+      data: days.reduce((day, curr) => (day[curr] = [{}], day), {})
+    }
+  });
+
   const [ rows, setRows ] = useState(toAssign);
   const [ indexes, setIndexes ] = useState({ groupIndex: null, i: null, j: null });
   
@@ -40,6 +44,14 @@ const SchedulesAdd = () => {
     isLoading: isGetRoleLoading,
     isSuccess: isGetRoleSuccess, 
   } = useGetRoleQuery(institution, { 
+    skip: !institution || !session.accessToken
+  });
+
+  const {
+    data: institutionData,
+    isLoading: isInstitutionLoading,
+    isSuccess: isInstitutionSuccess
+  } = useGetByIdQuery({ id: institution }, { 
     skip: !institution || !session.accessToken
   });
 
@@ -66,30 +78,28 @@ const SchedulesAdd = () => {
   const handleAddSubject = (subject, lecturer, time, location = null) => {
     const { groupIndex, i, j } = indexes;
     if(j < days.length && j >= 0) {
-      const group = groups[groupIndex];
       const day = days[j];
-      let tempRows = { ...rows };
-      let rowsObj = tempRows[group];
+      let tempRows = [ ...rows ];
+      let rowsObj = tempRows[groupIndex].data;
       
       rowsObj[day][i] = (systemType !== 'school') ?
         { ...rowsObj[day][i], subject, lecturer, from: time.startTime, to: time.endTime, location } 
           : { ...rowsObj[day][i], subject, lecturer, location };
       
-      tempRows[group] = rowsObj;
+      tempRows[groupIndex].data = rowsObj;
       setRows(tempRows);
       setIsSubjectOpen(false);
     }
   }
 
   const handleAddItem = (group) => {
-    const rowsObj = rows[group];
-    if(rowsObj && rowsObj[Object.keys(rowsObj)[0]].length < 16) {
-      Object.keys(rowsObj).map(key => {
-        return rowsObj[key] = [...rowsObj[key], { }];
+    const rowsObj = rows[group].data;
+    if(rowsObj && rowsObj[days[0]].length < 16) {
+      days.map(key => {
+        return rowsObj[key] = [ ...rowsObj[key], {} ];
       });
-
-      let tempRows = { ...rows };
-      tempRows[group] = rowsObj;
+      let tempRows = [ ...rows ];
+      tempRows[group].data = rowsObj;
       setAdded(prev => !prev);
       setRows(tempRows);
     }
@@ -97,14 +107,12 @@ const SchedulesAdd = () => {
 
   const handleAddTime = (startTime, endTime) => {
     if(systemType === 'school') {
-      const group = groups[indexes.groupIndex];
-      let tempRows = { ...rows };
-      let rowsObj = tempRows[group];
-      Object.keys(tempRows[group]).forEach(key => {
+      let tempRows = [ ...rows ];
+      let rowsObj = tempRows[indexes.groupIndex].data;
+      Object.keys(rowsObj).forEach(key => {
         rowsObj[key][indexes.i] = { ...rowsObj[key][indexes.i], from: startTime, to: endTime };
       });
-      tempRows[group] = rowsObj;
-      console.log(tempRows);
+      tempRows[indexes.groupIndex].data = rowsObj;
       setRows(tempRows);
       setIsTimeOpen(false);
     }
@@ -114,7 +122,7 @@ const SchedulesAdd = () => {
     try {
 
     } catch (err) {
-
+      console.log(err);
     }
   }
 
@@ -139,6 +147,13 @@ const SchedulesAdd = () => {
           <input className="input-field mb-4" placeholder="Unesite podnaslov..." onChange={(elem) => setSubtitle(elem.target.value)} />
           <label className="block text-gray-700 text-sm font-bold mb-2">Komentar nakon rasporeda</label>
           <input className="input-field mb-4" placeholder="Unesite komentar..." onChange={(elem) => setComment(elem.target.value)} />
+          <select className="input-field mb-4">
+            <option value="0">Izaberite { systemType === 'school' ? 'razred, odeljenje' : 'odsek, katedru' }</option>
+            { isInstitutionLoading ? <>Loading...</> : null }
+            { isInstitutionSuccess ? 
+              institutionData.departments.map(dpt => <option value={ dpt }>{ dpt }</option>)
+            : null }
+          </select>
           <label className="block text-gray-700 text-sm font-bold mb-2">Stil rasporeda</label>
           <select className="input-field mb-4" onChange={(elem) => setStyle(elem.target.value)}>
             <option value="default">Podrazumevni stil</option>
@@ -175,14 +190,14 @@ const SchedulesAdd = () => {
                         
             <div className="w-full border">
               {
-                groups.map((group, groupIndex) => {
+                rows.map((item, groupIndex) => {
                   return (
                     <>
                       {
-                        rows[group][days[0]].map((_, index) => {
+                        item.data[days[0]].map((_, index) => {
                           return (
                             <>
-                              { index === 0 && groups.length !== 1 ? <div className="w-full text-center">{ group }</div> : null }
+                              { index === 0 && groups.length !== 1 ? <div className="w-full text-center">{ item.group }</div> : null }
                               <div className="flex w-full justify-between border-b-4">
                                 <div className="flex w-full justify-center items-center min-h-[100px] border-r-2">
                                   <div className={clsx(systemType === 'school' ? 'w-1/4' : 'w-full', "text-center")}>
@@ -190,10 +205,10 @@ const SchedulesAdd = () => {
                                   </div>
                                   { systemType === 'school' ?
                                     <div className="flex justify-center items-center w-3/4" onClick={() => handleSetTimeOpen(groupIndex, index)}>
-                                      { console.log('hey', rows[group])}
-                                      { rows[group][days[0]][index]?.from ? 
+                                      { console.log('hey', item.data)}
+                                      { item.data[days[0]][index]?.from ? 
                                       <>
-                                        { rows[group][days[0]][index].from  } - { rows[group][days[0]][index].to  }
+                                        { item.data[days[0]][index].from  } - { item.data[days[0]][index].to  }
                                       </> : <Clock size={16}/>}
                                     </div> : <></>
                                   }
@@ -205,21 +220,21 @@ const SchedulesAdd = () => {
                                       <>
                                       {/* Change onClick here to be edit if it is already set! */}
                                         <div className="flex flex-col justify-center w-full items-center cursor-pointer hover:bg-slate-200" onClick={() => handleSetOpen(groupIndex, index, ind)}>
-                                          { rows[group][key][index]?.subject?.name ? 
+                                          { item.data[key][index]?.subject?.name ? 
                                           <>
                                             <div className="w-full flex flex-col justify-center text-center border-b-2 font-bold">
-                                              { rows[group][key][index].subject.name }
+                                              { item.data[key][index].subject.name }
                                               { systemType !== 'school' ? 
                                                 <div className="block">
-                                                  ({ rows[group][key][index]?.from } - { rows[group][key][index]?.to })
+                                                  ({item.data[key][index]?.from } - { item.data[key][index]?.to })
                                                 </div> : null }
                                             </div>
-                                            { rows[group][key][index]?.lecturer?.name ? 
-                                              <div className="w-full flex justify-center text-sm">{ rows[group][key][index].lecturer.name }</div>
+                                            { item.data[key][index]?.lecturer?.name ? 
+                                              <div className="w-full flex justify-center text-sm">{ item.data[key][index].lecturer.name }</div>
                                             : null}
                                             {
-                                              rows[group][key][index]?.location ? 
-                                              <div className="text-xs block">{rows[group][key][index].location}</div> : null
+                                              item.data[key][index]?.location ? 
+                                              <div className="text-xs block">{item.data[key][index].location}</div> : null
                                             }
                                           </> 
                                           : '+' 
@@ -238,7 +253,7 @@ const SchedulesAdd = () => {
                           )
                         })
                       }
-                      <div className="border w-full text-center" onClick={() => handleAddItem(group)}>+</div>
+                      <div className="border w-full text-center" onClick={() => handleAddItem(groupIndex)}>+</div>
                     </> 
                   )
                 })
@@ -248,7 +263,7 @@ const SchedulesAdd = () => {
         </div>
       </div>
 
-      <div className="w-full flex justify-center mt-5">
+      <div className="w-full flex justify-center my-5">
         <div className="w-full md:w-1/3 lg:w-1/4 flex justify-between gap-7">
           <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
           <button className="btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleSaveSchedule}>Sačuvaj raspored!</button>
