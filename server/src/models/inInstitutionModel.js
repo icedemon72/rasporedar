@@ -8,7 +8,9 @@ const inInstitutionSchema = mongoose.Schema(
       type: ObjectId
     },
     institution: {
-      type: ObjectId
+      type: ObjectId,
+      index: true,
+      ref: 'institution'
     },
     left: { // whether the user left institution for some reason
       type: Boolean,

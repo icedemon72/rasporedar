@@ -11,7 +11,9 @@ const professorSchema = mongoose.Schema(
       type: String
     },
     institution: {
-      type: ObjectId
+      type: ObjectId,
+      index: true,
+      ref: 'institution'
     },
     education: {
       bachelor: {

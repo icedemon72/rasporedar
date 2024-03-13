@@ -20,5 +20,6 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  
+  useAddScheduleMutation,
+  useGetSchedulesQuery
 } = schedulesApiSlice;

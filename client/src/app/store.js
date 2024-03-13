@@ -4,6 +4,7 @@ import { apiSlice } from './api/apiSlice';
 import storage from 'redux-persist/lib/storage';
 
 import sessionReducer from './slices/sessionSlice';
+import scheduleReducer from './slices/scheduleSlice';
 
 const persistConfig = {
   key: 'root',
@@ -12,6 +13,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   session: persistReducer(persistConfig, sessionReducer),
+  schedule: scheduleReducer,
   [apiSlice.reducerPath]: apiSlice.reducer
 });
 

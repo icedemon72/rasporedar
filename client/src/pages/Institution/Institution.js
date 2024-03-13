@@ -24,9 +24,9 @@ const Institution = () => {
     data: getRole, 
     isLoading: isRoleLoading,
     isSuccess: isRoleSuccess
-    } = useGetRoleQuery(institution, {
-      skip: !isInstitutionSuccess 
-    });
+  } = useGetRoleQuery(institution, {
+    skip: !isInstitutionSuccess 
+  });
 
   if(!institution) {
     navigate('/institutions');  
@@ -43,6 +43,18 @@ const Institution = () => {
     <>
       <div className="flex">
         { institutionData.name } { role === 'Owner' ? <Link to={`/institutions/edit/${institution}`}><Pencil size={16} /></Link> : null }
+        {/* { institutionData.departments.length ? 
+          institutionData.departments.map(dpt => {
+            return (
+              <>
+                <Link to={`/institutions/${institution}/department/${dpt.split(' ').join('-')}`}>{ dpt }</Link>
+              </>
+            )
+          })
+          :
+          null
+           
+        } */}
       </div>
     </>
   } else if (isInstitutionError) {

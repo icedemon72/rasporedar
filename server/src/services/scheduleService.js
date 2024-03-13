@@ -3,51 +3,11 @@ import { authSenderInInstitutionObject, senderInInstitutionObject } from '../uti
 
 export const addSchedule = async (sender = null, institution, data) => {
   try {
-    // {
-    //   instances: {
-    //     titles: ['Inf 1', 'Inf 2'],
-    //     schedules: [
-    //       [
-      //       day: 'Ponedeljak',
-      //       subject: [ '123', '345' ],
-      //       lecturer: ['123', '345'],
-      //       from: ['08:00', '08:45'],
-      //       to: ['08:40', '09:25'],
-      //       location: ['Sala 1', 'Sala 2']
-    //       ],
-    //       
-    //       ...
-    //     ]
-    //   },
-    //   days: ['P', 'U'...],
-    //   style: 'default',
-    //   validUnti: '2024-10-04',
-    //   published: true,
-    //   deleted: false
-    // }
-    // data = {
-    //   instances: {
-    //     titles: ['I-2'],
-    //     schedules: [
-    //       [
-    //         {
-    //           day: 'Ponedeljak',
-    //           subject: ['65e9dbd54a29320fc18438e0'],
-    //           lecturer: ['65e745e1a456e109c48a1643'],
-    //           from: ['08:00'],
-    //           to: ['08:40'],
-    //           location: ['Sala 1']
-    //         }
-    //       ]
-    //     ]
-    //   },
-    //   institution: institution,
-    //   style: 'default',
-    //   validUntil: '2024-03-10',
-    //   published: false
-    // }
-
-    const scheduleObj = await Schedule.create(data);
+    const body = {
+      ...data,
+      institution
+    }
+    const scheduleObj = await Schedule.create(body);
     return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
   } catch (err) {
     throw err;
@@ -97,8 +57,9 @@ export const getAllSchedulesInInstitution = async (sender, institution, publishe
       await authSenderInInstitutionObject(sender, institution) :
       await senderInInstitutionObject(sender, institution);
 
-    const schedulesObj = await Schedule.find({ institution, deleted: false, published: published });
-
+    const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
+                                                                            // change this to true later
+    const schedulesObj = await Schedule.find({ institution, deleted: false, published: false }, toExclude);
     return schedulesObj;
   } catch (err) {
     throw err;

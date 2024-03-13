@@ -2,16 +2,26 @@ import mongoose from 'mongoose';
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const dataSubSchema = mongoose.Schema(
+const defaultTimesSubSchema = mongoose.Schema(
   {
-    day: {
+    from: {
       type: String
     },
+    to: {
+      type: String
+    }
+  }
+);
+
+const dataSubSchema = mongoose.Schema(
+  {
     subject: { 
-      type: ObjectId
+      type: ObjectId,
+      ref: 'subject'
     },
     lecturer: {
-      type: ObjectId
+      type: ObjectId,
+      ref: 'professor'
     },
     from: {
       type: String 
@@ -26,7 +36,7 @@ const dataSubSchema = mongoose.Schema(
       type: Number
     }
   }
-)
+);
 
 const groupSubSchema = mongoose.Schema(
   {
@@ -35,6 +45,9 @@ const groupSubSchema = mongoose.Schema(
     },
     data: {
       type: [ dataSubSchema ]
+    },
+    defaultTimes: {
+      type: [ defaultTimesSubSchema ]
     }
   }
 );
@@ -46,10 +59,22 @@ const scheduleSchema = mongoose.Schema(
     },
     institution: { // institution to which the schedule belongs
       type: ObjectId,
-      required: true
+      required: true,
+      ref: 'institution',
+      index: true
+    },
+    department: {
+      type: String,
+      index: true
     },
     title: {
       type: String,
+    },
+    subtitle: {
+      type: String
+    },
+    comment: {
+      type: String
     },
     days: { // days included in schedule
       type: [ String ],
@@ -59,8 +84,16 @@ const scheduleSchema = mongoose.Schema(
       type: String,
       default: 'default'
     },
+    systemType: {
+      type: String,
+      default: 'school'
+    },
     validUntil: { // shows until when the schedule is valid
       type: Date
+    },
+    createdBy: {
+      type: ObjectId,
+      ref: 'user'
     },
     published: {
       type: Boolean,

@@ -6,7 +6,8 @@ const subjectSchema = mongoose.Schema(
   {
     institution: {
       type: ObjectId,
-      required: true
+      required: true,
+      index: true
     },
     professors: [
       {

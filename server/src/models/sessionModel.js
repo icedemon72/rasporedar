@@ -6,11 +6,13 @@ const sessionSchema = mongoose.Schema(
   {
     user: {
       type: ObjectId,
-      required: true
+      required: true,
+      index: true
     },
     refreshToken: {
       type: String,
-      required: true
+      required: true,
+      index: true
     },
     active: {
       type: Boolean
