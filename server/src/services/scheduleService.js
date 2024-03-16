@@ -78,7 +78,11 @@ export const getSchedule = async (sender, institution, schedule) =>{
   try {
     await senderInInstitutionObject(sender, institution);
 
-    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
+    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false })
+      .populate({
+        path: 'instances.data.subject instances.data.lecturer',
+        select: '_id name'
+      });
     
     if(!scheduleObj) {
       throw {
@@ -87,24 +91,8 @@ export const getSchedule = async (sender, institution, schedule) =>{
       }
     }
 
-    // ovde sam stao!
-
     if(!scheduleObj.published) {
       await authSenderInInstitutionObject(sender, institution);
-    }
-
-    // horror inbound...
-    for(let i = 0; i < scheduleObj.instances.length; i++) {
-      for(let j = 0; j < scheduleObj.instances[i].data.length; j++) {
-        for(let k = 0; k < scheduleObj.instances[i].data[j].length; k++) {
-          let subject = scheduleObj.instances[i].data[j][k].subject;
-          if(subject) {
-            scheduleObj.instances[i].data[j][k].subject = await Subject.findOne({ _id: subject }, { _id: 1, name: 1 });
-            let professor = scheduleObj.instances[i].data[j][k].lecturer;
-            scheduleObj.instances[i].data[j][k].lecturer = await Professor.findOne({ _id: professor }, { _id: 1, name: 1 });
-          }
-        }
-      }
     }
 
     return scheduleObj;
