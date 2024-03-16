@@ -7,7 +7,7 @@ export const handleUserJoinInstitution = async (req, res) => {
       return res.status(400).send({ message: 'Pogrešan kod!' });
     }
 
-    const done = await joinUserInstitution(req.userTokenData._id, req.body.code);    
+    const done = await joinUserInstitution(req.userTokenData._id, req.body.code.toUpperCase());    
     return res.status(201).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -20,7 +20,7 @@ export const handleModeratorJoinInstitution = async (req, res) => {
       return res.status(400).send({ message: 'Pogrešan kod!' });
     }
 
-    const done = await joinModeratorInstitution(req.userTokenData._id, req.body.code)
+    const done = await joinModeratorInstitution(req.userTokenData._id, req.body.code.toUpperCase())
     return res.status(201).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

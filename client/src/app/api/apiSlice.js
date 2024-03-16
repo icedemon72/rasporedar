@@ -37,7 +37,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       const release = await mutex.acquire();
       
       try {
-        const refreshToken = api.getState().session.refreshToken;
+        const refreshToken = api.getState().session?.refreshToken;
 
         if(refreshToken) {
           const refreshResult = await baseQuery({ 

@@ -110,7 +110,7 @@ const ProfessorsAdd = () => {
             <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
           </div>
           <div className="w-full flex mb-4">
-            <input className="input-field w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} />
+            <input className="input-field w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} onKeyUp={(elem) => handleAddReference(elem)}/>
             <button className="input-field w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex justify-center" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
           </div>
 

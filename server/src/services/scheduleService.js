@@ -1,12 +1,20 @@
+import Professor from "../models/professorModel.js";
 import Schedule from "../models/scheduleModel.js";
+import Subject from "../models/subjectModel.js";
 import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
-export const addSchedule = async (sender = null, institution, data) => {
+export const addSchedule = async (sender, institution, data) => {
   try {
     const body = {
       ...data,
-      institution
+      instances: data.data,
+      institution,
+      published: false,
+      deleted: false,
     }
+
+
+
     const scheduleObj = await Schedule.create(body);
     return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
   } catch (err) {
@@ -58,11 +66,49 @@ export const getAllSchedulesInInstitution = async (sender, institution, publishe
       await senderInInstitutionObject(sender, institution);
 
     const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
-                                                                            // change this to true later
-    const schedulesObj = await Schedule.find({ institution, deleted: false, published: false }, toExclude);
+                                                                            // add published later
+    const schedulesObj = await Schedule.find({ institution, deleted: false }, toExclude);
     return schedulesObj;
   } catch (err) {
     throw err;
   }
 }
 
+export const getSchedule = async (sender, institution, schedule) =>{
+  try {
+    await senderInInstitutionObject(sender, institution);
+
+    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
+    
+    if(!scheduleObj) {
+      throw {
+        status: 404,
+        message: 'Raspored ne postoji!'
+      }
+    }
+
+    // ovde sam stao!
+
+    if(!scheduleObj.published) {
+      await authSenderInInstitutionObject(sender, institution);
+    }
+
+    // horror inbound...
+    for(let i = 0; i < scheduleObj.instances.length; i++) {
+      for(let j = 0; j < scheduleObj.instances[i].data.length; j++) {
+        for(let k = 0; k < scheduleObj.instances[i].data[j].length; k++) {
+          let subject = scheduleObj.instances[i].data[j][k].subject;
+          if(subject) {
+            scheduleObj.instances[i].data[j][k].subject = await Subject.findOne({ _id: subject }, { _id: 1, name: 1 });
+            let professor = scheduleObj.instances[i].data[j][k].lecturer;
+            scheduleObj.instances[i].data[j][k].lecturer = await Professor.findOne({ _id: professor }, { _id: 1, name: 1 });
+          }
+        }
+      }
+    }
+
+    return scheduleObj;
+  } catch (err) {
+    throw err;
+  }
+}

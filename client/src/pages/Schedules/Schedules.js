@@ -48,6 +48,8 @@ const Schedules = () => {
           <div className="bg-red-200">
             { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${schedule._id}/edit`}>Edit</Link> : null }
             { schedule.title }
+            { schedule.department }
+            { schedule.validUntil ? <>Vazi do { schedule.validUntil }</> : null}
           </div>
         </>
       )

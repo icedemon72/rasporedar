@@ -30,6 +30,8 @@ export const sessionApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
+        } catch(err) {
+          console.log('error', err);
         } finally {
           dispatch(loggedOut());
           dispatch(apiSlice.util.resetApiState());

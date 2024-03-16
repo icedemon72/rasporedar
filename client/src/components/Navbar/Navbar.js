@@ -8,15 +8,26 @@ import { Menu, XCircle } from 'lucide-react';
 
 const Navbar = () => {
   const session = useSelector(state => state.session);
-  const [ fetchLogout ] = useLogoutMutation();
+  const [ fetchLogout, 
+    {
+      isLoading: isFetchLogoutLoading,
+      isSuccess: isFetchLogoutSuccess,
+      isError: isFetchLogoutError
+    } 
+  ] = useLogoutMutation();
 
   const navigate = useNavigate();
   const location = useLocation();
   const [ open, setOpen ] = useState(false);
 
   const handleLogout = async () => {
-    await fetchLogout({ refresh_token: session.refreshToken });
-    navigate('/login');
+    try {
+      const result = await fetchLogout({ refresh_token: session.refreshToken }).unwrap();
+    } catch (err) {
+      console.log('err1', err);
+    } finally {
+      navigate('/login');
+    }
   }
   
 

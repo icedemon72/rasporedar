@@ -10,18 +10,19 @@ const defaultTimesSubSchema = mongoose.Schema(
     to: {
       type: String
     }
-  }
+  },
+  { _id: false }
 );
 
 const dataSubSchema = mongoose.Schema(
   {
     subject: { 
       type: ObjectId,
-      ref: 'subject'
+      ref: 'Subject'
     },
     lecturer: {
       type: ObjectId,
-      ref: 'professor'
+      ref: 'Professor'
     },
     from: {
       type: String 
@@ -35,7 +36,8 @@ const dataSubSchema = mongoose.Schema(
     index: {
       type: Number
     }
-  }
+  },
+  { _id: false }
 );
 
 const groupSubSchema = mongoose.Schema(
@@ -44,12 +46,13 @@ const groupSubSchema = mongoose.Schema(
       type: String
     },
     data: {
-      type: [ dataSubSchema ]
+      type: [[ dataSubSchema ]]
     },
     defaultTimes: {
       type: [ defaultTimesSubSchema ]
     }
-  }
+  },
+  { _id: false }
 );
 
 const scheduleSchema = mongoose.Schema(
@@ -79,6 +82,10 @@ const scheduleSchema = mongoose.Schema(
     days: { // days included in schedule
       type: [ String ],
       default: ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
+    },
+    groups: {
+      type: [ String ],
+      default: ['Grupa 1']
     },
     style: {
       type: String,

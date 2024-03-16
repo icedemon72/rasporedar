@@ -44,13 +44,11 @@ const SchedulesAdd = () => {
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
   const [ department, setDepartment ] = useState('0');
   const [ added, setAdded ] = useState(false);
-  const [ groups, setGroups ] = useState(['Grupa 1', 'Grupa 2']);
+  const [ groups, setGroups ] = useState(['Grupa 1']);
   const [ days, setDays ] = useState(['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
   
-  // ...groups.reduce((group, curr) => (group[curr] = {...days.reduce((days, curr) => (days[curr] = [], days), {})}, group), {})
-  let toAssign = groups.map(group => {
+  const toAssign = groups.map(group => {
     return {
-      group,
       data: Array(days.length).fill([]),
       defaultTimes: [
         {
@@ -91,16 +89,19 @@ const SchedulesAdd = () => {
   });
 
 
+  // opens the modal for adding subjects
   const handleSetOpen = (groupIndex, i, j) => {
     setIndexes(prev => prev = { groupIndex: groupIndex, i: i, j: j });
     setIsSubjectOpen(true);
   }  
 
+  // opens the modal for adding time in college sys type
   const handleSetTimeOpen = (groupIndex, i) => {
     setIndexes({ ...indexes, groupIndex: groupIndex, i: i });
     setIsTimeOpen(true);
   } 
 
+  // this function adds subject, professor etc. to row's data array
   const handleAddSubject = (subject, lecturer, time, location = null) => {
     const { groupIndex, i, j } = indexes;
     if(j < days.length && j >= 0) {
@@ -116,6 +117,7 @@ const SchedulesAdd = () => {
     }
   }
 
+  // this function adds an empty object (an item) to rows state
   const handleAddItem = (group) => {
     const rowsObj = rows[group].data;
     if(rowsObj && rowsObj[0].length < 16) {
@@ -130,6 +132,7 @@ const SchedulesAdd = () => {
     }
   }
 
+  // this function adds time to the whole row (used in school system types)
   const handleAddTime = (startTime, endTime) => {
     if(systemType === 'school') {
       setRows(prev => {
@@ -172,16 +175,32 @@ const SchedulesAdd = () => {
       const body = {
         title, days, style, validUntil, 
         systemType, subtitle, comment,
-        department, data: tempRows
+        department, groups, data: tempRows
       }
 
       const result = await fetchAddSchedule({ institution, body }).unwrap();
       
+      setTimeout(() => {
+        navigate(`/institutions/${institution}/schedules/${result._id}`);
+      }, 1000);
+
     } catch (err) {
       console.log(err);
     }
   }
 
+  const handleDeleteGroup = (index) => {
+    if(index < groups.length) {
+      let tempRows = rows, tempGroups = groups;
+      tempRows.splice(index, 1);
+      tempGroups.splice(index, 1);
+      setRows(tempRows);
+      setGroups(tempGroups);
+      setAdded(prev => !prev);
+    }
+  }
+
+  // FIXME:
   const handleDeleteSchedule = () => {
     window.location.reload();
   }
@@ -190,16 +209,51 @@ const SchedulesAdd = () => {
     document.title = 'Dodaj raspored | Rasporedar';
   }, []);
 
+  // FIXME: ADD DELETE SUPPORT AND FIX THIS CODEEE (I GUESS)
   useEffect(() => {
-    groups.forEach((_, index) => {
-      if(!rows[index].data[0].length) {
-        handleAddItem(index);
-      }
+    groups.forEach((group, index) => {
+      if(rows.length <= index) {
+        setRows(prev => [ ...prev, {
+          data: Array(days.length).fill([]),
+          defaultTimes: [
+            {
+              from: '',
+              to: ''
+            }
+          ]
+        }]);
+      }       
     });
   }, [ groups ]);
   
+  useEffect(() => {
+    rows.forEach((row, index) => {
+      if(!row.data[0].length) {
+        handleAddItem(index);
+      }
+    });
+  }, [ rows.length ]);
+
   let content;
   if(isGetRoleSuccess && isSubjectsSuccess) {
+
+    const firstProps = {
+      setTitle,
+      setSubtitle,
+      setComment,
+      setDepartment,
+      isInstitutionLoading,
+      isInstitutionSuccess,
+      institutionData,
+      setStyle,
+      systemType,
+      setSystemType,
+      setValidUntil,
+      setGroups,
+      groups,
+      handleDeleteGroup,
+    }
+
     content = 
     <>
       { step === 0 ? 
@@ -207,11 +261,7 @@ const SchedulesAdd = () => {
           <div className="w-full flex justify-center">
             <div className="w-full md:w-1/2 lg:w-1/3">
               <ScheduleScreenOne 
-                setTitle setSubtitle={setSubtitle}
-                setComment={setComment} setDepartment={setDepartment}
-                isInstitutionLoading={isInstitutionLoading} isInstitutionSuccess={isInstitutionSuccess}
-                institutionData={institutionData} setStyle={setStyle} systemType={systemType} 
-                setSystemType={setSystemType} setValidUntil={setValidUntil}
+                {...firstProps}
               />
             </div>
           </div>

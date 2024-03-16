@@ -99,8 +99,8 @@ export const changeCodes = async (sender, institution, codesToChange = {}) => {
     const { code, moderatorCode } = codesToChange;
     const institutionObj = await ownerSenderInInstitutionObject(sender, institution);
 
-    institutionObj.code = code ?  randomBytes(4).toString('hex') : institutionObj.code;
-    institutionObj.moderatorCode = moderatorCode ?  randomBytes(4).toString('hex') : institutionObj.moderatorCode;
+    institutionObj.code = code ?  randomBytes(4).toString('hex').toUpperCase() : institutionObj.code;
+    institutionObj.moderatorCode = moderatorCode ?  randomBytes(4).toString('hex').toUpperCase() : institutionObj.moderatorCode;
 
     await institutionObj.save();
 

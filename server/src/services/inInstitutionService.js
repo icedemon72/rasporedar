@@ -7,7 +7,7 @@ export const joinUserInstitution = async (sender, code) => {
   try {
     await getUserById(sender); // this function has already got throw handle
 
-    const codeInstitution = await Institution.findOne({ code, deleted: false });
+    const codeInstitution = await Institution.findOne({ code: code, deleted: false });
 
     if(!codeInstitution) {
       throw {
@@ -60,7 +60,6 @@ export const joinModeratorInstitution = async (sender, moderatorCode) => {
     });
 
     if(alreadyJoined) {
-      console.log(alreadyJoined);
       if(alreadyJoined.role !== 'User') {
         throw {
           status: 400,

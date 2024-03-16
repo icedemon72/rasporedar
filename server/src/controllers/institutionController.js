@@ -17,8 +17,8 @@ export const handleAddInstitution = async (req, res) => {
     // const randomGeneratedJoinCode = randomBytes(4).toString('hex');
     // const randomGeneratedModeratorCode = randomBytes(4).toString('hex');
     
-    const joinCode = randomBytes(4).toString('hex'); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedJoinCode);
-    const moderatorCode = randomBytes(4).toString('hex'); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedModeratorCode)
+    const joinCode = randomBytes(4).toString('hex').toUpperCase(); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedJoinCode);
+    const moderatorCode = randomBytes(4).toString('hex').toUpperCase(); //generateSecretCodes(usernameSlice, institutionNameSlice, randomGeneratedModeratorCode)
   
     // add error handling here...
 
