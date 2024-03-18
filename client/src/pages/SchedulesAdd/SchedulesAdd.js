@@ -1,24 +1,32 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
-import { Clock, Trash } from 'lucide-react';
 import { useGetSubjectsQuery } from '../../app/api/subjectsApiSlice';
 import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
-import { useAddScheduleMutation } from '../../app/api/schedulesApiSlice';
+import { useAddScheduleMutation, useEditScheduleMutation } from '../../app/api/schedulesApiSlice';
 
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import ScheduleSubjectAdd from '../../components/ScheduleSubjectAdd/ScheduleSubjectAdd';
 import ScheduleTimeAdd from '../../components/ScheduleTimeAdd/ScheduleTimeAdd';
-import clsx from 'clsx';
 
 import deepClone from 'deep-clone'
 import ScheduleScreenOne from '../../components/ScheduleScreenOne/ScheduleScreenOne';
 import ScheduleScreenTwo from '../../components/ScheduleScreenTwo/ScheduleScreenTwo';
 
-const SchedulesAdd = () => {
+const SchedulesAdd = ({ edit = false, ...props }) => {
   const session = useSelector(state => state.session);
   const navigate = useNavigate();
   const { institution } = useParams();
+
+  const [
+    fetchEditSchedule,
+    {
+      data: fetchEditScheduleData,
+      isLoading: isFetchEditScheduleLoading,
+      isSuccess: isFetchEditScheduleSuccess,
+      isError: isFetchEditScheduleError
+    }
+  ] = useEditScheduleMutation();
 
   const [
     fetchAddSchedule,
@@ -31,35 +39,38 @@ const SchedulesAdd = () => {
   ] = useAddScheduleMutation();
 
   /* These could go in a separate component ? */
-  const [ title, setTitle ] = useState(''); 
-  const [ style, setStyle ] = useState('default');
-  const [ validUntil, setValidUntil ] = useState('');
-  const [ systemType, setSystemType ] = useState('school');
-  const [ subtitle, setSubtitle ] = useState('');
-  const [ comment, setComment ] = useState('');
+  const [ title, setTitle ] = useState(props.title || ''); 
+  const [ style, setStyle ] = useState(props.style || 'default');
+  const [ validUntil, setValidUntil ] = useState(props.validUntil || '');
+  const [ systemType, setSystemType ] = useState(props.systemType || 'school');
+  const [ subtitle, setSubtitle ] = useState(props.subtitle || '');
+  const [ comment, setComment ] = useState(props.comment || '');
 
   const [ step, setStep ] = useState(0);
   const [ isSubjectOpen, setIsSubjectOpen ] = useState(false);
   const [ isTimeOpen, setIsTimeOpen ] = useState(false);
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
-  const [ department, setDepartment ] = useState('0');
+  const [ department, setDepartment ] = useState(props.department || '0');
   const [ added, setAdded ] = useState(false);
-  const [ groups, setGroups ] = useState(['Grupa 1']);
-  const [ days, setDays ] = useState(['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
-  
-  const toAssign = groups.map(group => {
-    return {
-      data: Array(days.length).fill([]),
-      defaultTimes: [
-        {
-          from: '',
-          to: ''
-        }
-      ]
-    }
-  });
+  const [ groups, setGroups ] = useState([...props.groups] || ['Grupa 1']);
+  const [ days, setDays ] = useState([...props.days] || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
+  let toAssign;
 
-  const [ rows, setRows ] = useState(toAssign);
+  if(!props?.rows) {
+    toAssign = groups.map(group => {
+      return {
+        data: Array(days.length).fill([]),
+        defaultTimes: [
+          {
+            from: '',
+            to: ''
+          }
+        ]
+      }
+    });
+  }
+
+  const [ rows, setRows ] = useState(deepClone(props.rows) || toAssign);
   const [ indexes, setIndexes ] = useState({ groupIndex: null, i: null, j: null });
   
   const { 
@@ -146,7 +157,7 @@ const SchedulesAdd = () => {
     }
   }
 
-  const handleSaveSchedule = async () => {
+  const handleSaveSchedule = async (edit = false) => {
     try {
       let tempRows = deepClone(rows);
       
@@ -178,10 +189,13 @@ const SchedulesAdd = () => {
         department, groups, data: tempRows
       }
 
-      const result = await fetchAddSchedule({ institution, body }).unwrap();
-      
+      // TODO: add edit 
+      const result = !edit ? 
+        await fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap() 
+        : await fetchAddSchedule({ institution, body }).unwrap();
+
       setTimeout(() => {
-        navigate(`/institutions/${institution}/schedules/${result._id}`);
+        navigate(`/institutions/${institution}/schedules/${result._id}/edit`);
       }, 1000);
 
     } catch (err) {
@@ -209,7 +223,6 @@ const SchedulesAdd = () => {
     document.title = 'Dodaj raspored | Rasporedar';
   }, []);
 
-  // FIXME: ADD DELETE SUPPORT AND FIX THIS CODEEE (I GUESS)
   useEffect(() => {
     groups.forEach((group, index) => {
       if(rows.length <= index) {
@@ -239,19 +252,26 @@ const SchedulesAdd = () => {
 
     const firstProps = {
       setTitle,
+      title,
       setSubtitle,
+      subtitle,
       setComment,
+      comment,
       setDepartment,
+      department,
       isInstitutionLoading,
       isInstitutionSuccess,
       institutionData,
       setStyle,
+      style,
       systemType,
       setSystemType,
       setValidUntil,
+      validUntil,
       setGroups,
       groups,
       handleDeleteGroup,
+      edit
     }
 
     content = 
@@ -277,7 +297,7 @@ const SchedulesAdd = () => {
               <ScheduleScreenTwo 
                 days={days} rows={rows} groups={groups}
                 handleSetTimeOpen={handleSetTimeOpen} handleSetOpen={handleSetOpen}
-                systemType={systemType} handleAddItem={handleAddItem}
+                systemType={systemType} handleAddItem={handleAddItem} edit={true}
               />
             </div>
           </div>
@@ -286,7 +306,7 @@ const SchedulesAdd = () => {
             <div className="w-full md:w-1/3 lg:w-1/4 flex justify-between gap-7">
               <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
               <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
-              <button className="btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleSaveSchedule}>Sačuvaj raspored!</button>
+              <button className="btn-green w-full md:w-1/2 lg:w-1/3" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => edit ? handleSaveSchedule() : handleSaveSchedule(true)}>Sačuvaj raspored!</button>
             </div>
           </div>
         </>
@@ -308,6 +328,7 @@ const SchedulesAdd = () => {
         addSubject={handleAddSubject}
         indexes={indexes}
         systemType={systemType}
+        data={rows[indexes.groupIndex].data[indexes.j][indexes.i]}
       /> : null }
       
       { isTimeOpen ? 

@@ -6,18 +6,25 @@ const ScheduleSubjectAdd = ({
   subjects, systemType,
   closeFunc, className, 
   addSubject, days, indexes,
-
+  data
 }) => {
-  const [ selectedSubject, setSelectedSubject ] = useState('0');
+  const [ selectedSubject, setSelectedSubject ] = useState(data?.subject?._id || '0');
   const [ selectedProfessorType, setSelectedProfessorType ] = useState('professor');
-  const [ selectedProfessor, setSelectedProfessor ] = useState('0');
-  const [ startTime, setStartTime ] = useState('');
-  const [ endTime, setEndTime ] = useState('');
+  const [ selectedProfessor, setSelectedProfessor ] = useState(data?.lecturer?._id || '0');
+  const [ startTime, setStartTime ] = useState(data?.from || '');
+  const [ endTime, setEndTime ] = useState(data?.to || '');
   const [ location, setLocation ] = useState('');
+
+  if(data?.lecturer?._id && selectedProfessorType === 'professor') {
+    const isProfessor = subjects[indexOfKeyInArray(subjects, '_id', selectedSubject)].professors.find(professor => professor._id === data?.lecturer?._id);
+    if(!isProfessor) {
+      setSelectedProfessorType('assistent');
+    }
+  }
 
   const handleChangeSubject = (id) => {
     setSelectedSubject(id);
-  }
+  } 
 
   const closingElem = useRef(null);
 
@@ -50,9 +57,9 @@ const ScheduleSubjectAdd = ({
   content = 
   <>
     <div className={className}>
-      <p>{ days[indexes.j] }, { indexes.i + 1}. čas</p>
+      <p>{ days[indexes.j] }, { indexes.i + 1}. { systemType !== 'school' ? 'predavanje' : 'čas' }</p>
       <label className="block text-gray-700 text-sm font-bold my-2">Predmet</label> 
-      <select className="input-field mb-4" onChange={(elem) => handleChangeSubject(elem.target.value)}>
+      <select className="input-field mb-4" value={selectedSubject} onChange={(elem) => handleChangeSubject(elem.target.value)}>
         <option value="0">Izaberite predmet</option>
         {
           subjects.map(subject => {
@@ -70,7 +77,7 @@ const ScheduleSubjectAdd = ({
           { systemType !== 'school' ? 
             <>
               <label className="block text-gray-700 text-sm font-bold mb-2">Tip profesora</label> 
-              <select className="input-field mb-4" onChange={(elem) => setSelectedProfessorType(elem.target.value)}>
+              <select className="input-field mb-4" value={selectedProfessorType} onChange={(elem) => setSelectedProfessorType(elem.target.value)}>
                 <option value="professor">Profesor (predavanja)</option>
                 <option value="assistent">Asistent (vežbe)</option>
               </select>
@@ -78,7 +85,7 @@ const ScheduleSubjectAdd = ({
             : null }
           
           <label className="block text-gray-700 text-sm font-bold mb-2">Predavač</label>
-          <select className="input-field mb-4" onChange={(elem) => setSelectedProfessor(elem.target.value)}>
+          <select className="input-field mb-4" value={selectedProfessor} onChange={(elem) => setSelectedProfessor(elem.target.value)}>
             <option value="0">Izaberite { systemType !== 'school' ? 'profesora/asistenta' : 'nastavnika/predavača' }</option>
             { 
               selectedProfessorType === 'professor' ? 
@@ -94,11 +101,11 @@ const ScheduleSubjectAdd = ({
                 <div className="flex items-center w-full gap-3 mt-3">
                   <div className="flex-col basis-1/2">
                     <label className="block text-gray-700 text-xs font-bold uppercase">Od</label>
-                    <input type="time" className="input-field" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]" onChange={(elem) => setStartTime(elem.target.value)} />
+                    <input type="time" className="input-field" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]" value={startTime} onChange={(elem) => setStartTime(elem.target.value)} />
                   </div>
                   <div className="flex-col basis-1/2">
                     <label className="block text-gray-700 text-xs font-bold uppercase">Do</label>
-                    <input type="time" className="input-field basis-1/2" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]"  onChange={(elem) => setEndTime(elem.target.value)}/>
+                    <input type="time" className="input-field basis-1/2" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]" value={endTime} onChange={(elem) => setEndTime(elem.target.value)}/>
                   </div>
                 </div>
                 <span className="text-xs block text-slate-500 mt-2">*AM = prepodne, PM = poslepodne</span>
@@ -109,7 +116,9 @@ const ScheduleSubjectAdd = ({
             }
             <label className="block text-gray-700 text-sm font-bold mb-2">Kabinet/sala/učionica</label>
             <input className="input-field mb-4" type="text" onChange={(elem) => setLocation(elem.target.value)} />
-          <button className="input-field mt-5" disabled={selectedProfessor === '0'}  onClick={handleAddSubject}>Izaberi predmet</button>
+          <button className="input-field mt-5" disabled={selectedProfessor === '0'}  onClick={handleAddSubject}>
+            { data?.subject ? 'Izmeni' : 'Izaberi'}
+          </button>
         </>
       : null }
     </div>

@@ -20,7 +20,8 @@ export const RouteInInstitution = ({
   } = useGetRoleQuery(institution, { skip: !session.accessToken  });
   
   if(!isGetRoleLoading && isGetRoleSuccess) {
-    return (requiredRoles.indexOf(getRole?.role) !== -1) ? <Outlet /> : <Navigate to="/error"  replace/>
+    // TODO: add accessToken support here!
+    return (requiredRoles.indexOf(getRole?.role) !== -1) ? <Outlet /> : <Navigate to="/error" replace/>
   }
 };
 

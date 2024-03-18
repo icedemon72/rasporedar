@@ -43,13 +43,27 @@ const Schedules = () => {
     content = <>Loading...</>
   } else if (isSchedulesSuccess) {
     content = schedulesData.map(schedule => {
+      let fullDate = '';
+      if(schedule.validUntil) {
+        const date = new Date(schedule.validUntil);
+
+        const yyyy = date.getFullYear();
+        const mm = ((date.getMonth() + 1) < 10) ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+        const dd = (date.getDate() < 10) ? `0${date.getDate()}` : date.getDate();
+
+        fullDate = `${dd}.${mm}.${yyyy}.`;
+
+      }
+      
       return (
         <>
           <div className="bg-red-200">
             { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${schedule._id}/edit`}>Edit</Link> : null }
-            { schedule.title }
+            <Link className="hover:bg-slate-200 rounded-sm" to={`/institutions/${institution}/schedules/${schedule._id}`}>
+              { schedule.title || 'Raspored bez naziva' } 
+            </Link>
             { schedule.department }
-            { schedule.validUntil ? <>Vazi do { schedule.validUntil }</> : null}
+            { schedule.validUntil ? <>Vazi do { fullDate }</> : null}
           </div>
         </>
       )

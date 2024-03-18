@@ -24,7 +24,7 @@ export const handleEditSchedule = async (req, res) => {
       return res.status(400).send(isObjectIdValid(req.params.schedule).message);
     }
 
-    const done = await editSchedule(req.userTokenData._id, req.params.institution, req.params.schedule);
+    const done = await editSchedule(req.userTokenData._id, req.params.institution, req.params.schedule, req.body);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

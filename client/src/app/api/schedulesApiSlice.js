@@ -11,6 +11,15 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error) => error ? [] : ['Schedule'], 
       invalidatesTags: (result, error) => error ? [] : ['Schedules']
     }),
+    editSchedule: builder.mutation({
+      query: ({ institution, schedule, body }) => ({
+        url: `/schedule/${institution}/${schedule}`,
+        method: 'PATCH',
+        body
+      }),
+      invalidatesTags: (result, error) => error ? [] : ['Schedules', 'Schedule'],
+      providesTags: (result, error) => error ? [] : ['Schedule']
+    }),
     getSchedules: builder.query({
       query: ({ institution, fullInfo }) => ({
         url: `/schedule/${institution}${fullInfo ? '?fullInfo=1' : ''}`
@@ -28,6 +37,7 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useAddScheduleMutation,
+  useEditScheduleMutation,
   useGetSchedulesQuery,
   useGetScheduleByIdQuery
 } = schedulesApiSlice;

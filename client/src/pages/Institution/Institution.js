@@ -56,6 +56,9 @@ const Institution = () => {
            
         } */}
       </div>
+          <Link className="block" to={`/institutions/${institution}/schedules`}>Rasporedi</Link>
+          <Link className="block" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
+          <Link className="block" to={`/institutions/${institution}/professors`}>Profesori</Link>
     </>
   } else if (isInstitutionError) {
     if(institutionError.status === 404) {

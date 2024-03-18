@@ -3,7 +3,7 @@ import { Clock, Trash } from 'lucide-react';
 import clsx from 'clsx';
 import ScheduleItem from './ScheduleItem';
 
-const ScheduleRow = ({editable, groupIndex, item, index, ...props}) => {
+const ScheduleRow = ({ editable, groupIndex, item, index, ...props }) => {
   return (
     <div className="flex w-full justify-between border-b-4">
       <div className="flex w-full justify-center items-center min-h-[100px] border-r-2">

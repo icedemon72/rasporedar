@@ -11,9 +11,8 @@ export const addSchedule = async (sender, institution, data) => {
       institution,
       published: false,
       deleted: false,
+      createdBy: sender
     }
-
-
 
     const scheduleObj = await Schedule.create(body);
     return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
@@ -26,7 +25,7 @@ export const editSchedule = async (sender, institution, schedule, data) => {
   try {
     await authSenderInInstitutionObject(sender, institution);
 
-    const scheduleObj = await Schedule.findOne({_id: schedule, institution: institution, deleted: false });
+    const scheduleObj = await Schedule.findOne({ _id: schedule, institution: institution, deleted: false });
 
     if(!scheduleObj) {
       throw {
@@ -38,12 +37,20 @@ export const editSchedule = async (sender, institution, schedule, data) => {
     // FIXME: change this
     await Schedule.updateOne({ _id: scheduleObj._id }, {
       $set: {
-        ...data
+        department: data.department || scheduleObj.department,
+        title: data.title || scheduleObj.title,
+        subtitle: data.subtitle || scheduleObj.subtitle,
+        comment: data.comment || scheduleObj.comment,
+        days: data.days || scheduleObj.days,
+        groups: data.groups || scheduleObj.groups,
+        style: data.style || scheduleObj.style,
+        systemType: data.systemType || scheduleObj.systemType,
+        validUntil: data.validUntil || scheduleObj.validUntil,
+        instances: data.data || scheduleObj.instances
       }
     });
 
-    return { message: 'Uspešno izmenjen raspored!' };
-
+    return { message: 'Uspešno izmenjen raspored!', _id: scheduleObj._id };
 
   } catch (err) {
     throw err;
@@ -91,9 +98,10 @@ export const getSchedule = async (sender, institution, schedule) =>{
       }
     }
 
-    if(!scheduleObj.published) {
-      await authSenderInInstitutionObject(sender, institution);
-    }
+    // TODO: uncomment this after creating publishing... I guess
+    // if(!scheduleObj.published) {
+    //   await authSenderInInstitutionObject(sender, institution);
+    // }
 
     return scheduleObj;
   } catch (err) {

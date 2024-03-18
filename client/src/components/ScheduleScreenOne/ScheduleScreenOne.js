@@ -1,17 +1,20 @@
 import { useRef, useState } from 'react';
 import { addItemToArrayOnKey, deleteItemFromArray } from '../../utils/updateArray';
 import { Trash, PlusCircle } from 'lucide-react';
+import ModalDelete from '../ModalDelete/ModalDelete';
 
 const ScheduleScreenOne = ({
   setTitle, setSubtitle, setComment, setDepartment,
   isInstitutionLoading, isInstitutionSuccess, institutionData,
   setStyle, systemType, setSystemType, setValidUntil, groups, setGroups,
-  handleDeleteGroup
+  handleDeleteGroup, ...props
 }) => {
 
   // const [ groupsArray, setGroupsArray ] = useState(groups || ['Grupa 1']);
   const [ group, setGroup ] = useState('');
   const [ added, setAdded ] = useState(false);
+  const [ clickedIndex, setClickedIndex ] = useState(null);
+  const [ isDeleteGroupOpen, setIsDeleteGroupOpen ] = useState(false);
   const inputRef = useRef(null);
 
   const handleAddGroup = (elem, key = 'Enter') => {
@@ -31,15 +34,26 @@ const ScheduleScreenOne = ({
     }
   }
 
+  const handleOpenModal = (index) => {
+    setClickedIndex(index);
+    setIsDeleteGroupOpen(true);
+  }
+
+  const handleDeleteGroupFunc = () => {
+    handleDeleteGroup(clickedIndex);
+    setClickedIndex(null);
+    setIsDeleteGroupOpen(false);
+  }
+
   return (
     <>
       <label className="block text-gray-700 text-sm font-bold mb-2">Naslov rasporeda</label>
-      <input className="input-field mb-4" placeholder="Unesite naslov..." onChange={(elem) => setTitle(elem.target.value)} />
+      <input className="input-field mb-4" placeholder="Unesite naslov..." value={props.title} onChange={(elem) => setTitle(elem.target.value)} />
       <label className="block text-gray-700 text-sm font-bold mb-2">Podnaslov rasporeda</label>
-      <input className="input-field mb-4" placeholder="Unesite podnaslov..." onChange={(elem) => setSubtitle(elem.target.value)} />
+      <input className="input-field mb-4" placeholder="Unesite podnaslov..." value={props.subtitle}  onChange={(elem) => setSubtitle(elem.target.value)} />
       <label className="block text-gray-700 text-sm font-bold mb-2">Komentar nakon rasporeda</label>
-      <input className="input-field mb-4" placeholder="Unesite komentar..." onChange={(elem) => setComment(elem.target.value)} />
-      <select className="input-field mb-4" onChange={(elem) => setDepartment(elem.target.value)}>
+      <input className="input-field mb-4" placeholder="Unesite komentar..." value={props.comment} onChange={(elem) => setComment(elem.target.value)} />
+      <select className="input-field mb-4" value={props.department} onChange={(elem) => setDepartment(elem.target.value)}>
         <option value="0">Izaberite { systemType === 'school' ? 'razred, odeljenje' : 'odsek, katedru' }</option>
         { isInstitutionLoading ? <>Loading...</> : null }
         { isInstitutionSuccess ? 
@@ -47,12 +61,12 @@ const ScheduleScreenOne = ({
         : null }
       </select>
       <label className="block text-gray-700 text-sm font-bold mb-2">Stil rasporeda</label>
-      <select className="input-field mb-4" onChange={(elem) => setStyle(elem.target.value)}>
+      <select className="input-field mb-4" value={props.style} onChange={(elem) => setStyle(elem.target.value)} >
         <option value="default">Podrazumevni stil</option>
         <option value="ice">Hladni stil</option>
       </select>
       <label className="block text-gray-700 text-sm font-bold mb-2">Tip rasporeda </label>
-      <select className="input-field mb-4" onChange={(elem) => setSystemType(elem.target.value)}>
+      <select className="input-field mb-4" value={systemType} onChange={(elem) => setSystemType(elem.target.value)}>
         <option value="school">Skolski</option>
         <option value="college">Fakultetski</option>
       </select>
@@ -61,7 +75,7 @@ const ScheduleScreenOne = ({
           <div class="flex flex-row justify-between mt-2">
             <div>{i + 1}</div>
             <p>{gr}</p>
-            <div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteGroup(i)}><Trash /></div> 
+            <div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleOpenModal(i)}><Trash /></div> 
           </div>
         </>)
       : null }
@@ -71,8 +85,17 @@ const ScheduleScreenOne = ({
         <button className="input-field w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex justify-center" onClick={() => handleAddGroup(inputRef.current, null)}><PlusCircle /></button>
       </div>
       <label className="block text-gray-700 text-sm font-bold mb-2">Vazi do: </label>
-      <input className="input-field" type="date" onChange={(elem) => setValidUntil(elem.target.value)} />
+      <input className="input-field" type="date" onChange={(elem) => setValidUntil(elem.target.value)} value={props.validUntil} />
       <label className="block text-xs font-bold mb-4 text-gray-500">*Ostavite prazno ukoliko ne zelite da naznacite</label>
+
+
+      { isDeleteGroupOpen ? 
+        <ModalDelete title={'Brisanje grupe'} text={`Obrisaćete grupu '${groups[clickedIndex]}' i sve informacije o njoj (predmete u rasporedu, termine itd.). Da li ste sigurni?`} closeFunc={() => setIsDeleteGroupOpen(false)}>
+          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setIsDeleteGroupOpen(false)}>Odustani</button>
+          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteGroupFunc}>Potvrdi</button>
+        </ModalDelete>
+        : null
+      }
     </>
   )
 }

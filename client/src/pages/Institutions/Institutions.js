@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetAllQuery } from '../../app/api/institutionsApiSlice';
 import { Link } from 'react-router-dom';
-
-import { CalendarFold, Crown, Shield, CircleUserRound  } from 'lucide-react';
+import { CalendarFold, Crown, Shield, CircleUserRound, GraduationCap, LibraryBig } from 'lucide-react';
 
 const Institutions = () => {
   const session = useSelector(state => state.session);
@@ -30,7 +29,17 @@ const Institutions = () => {
               <div className="px-6 py-4">
                 <div className="font-bold text-xl hover:underline">{ elem.name.length < 25 ? elem.name : `${elem.name.slice(0, 22)}...` }</div>
                 <div className="flex justify-between">
-                  <CalendarFold />
+                  <div className="flex gap-2">
+                    <Link className="hover:bg-slate-400 p-1 rounded-sm" to={`/institutions/${elem._id}/schedules/`}>
+                      <CalendarFold />
+                    </Link>
+                    <Link className="hover:bg-slate-400 p-1 rounded-sm" to={`/institutions/${elem._id}/professors/`}>
+                      <GraduationCap />
+                    </Link>
+                    <Link className="hover:bg-slate-400 p-1 rounded-sm" to={`/institutions/${elem._id}/subjects/`}>
+                      <LibraryBig />
+                    </Link>
+                  </div>
                   <div>
                     { elem.role === 'Owner' ? <Crown color="green" /> : elem.role === 'Moderator' ? <Shield /> : <CircleUserRound /> }
                   </div>

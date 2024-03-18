@@ -33,8 +33,21 @@ const SchedulesEdit = () => {
   if(isScheduleLoading) {
     content = <>Loading...</>
   } else if (isScheduleSuccess) {
-    let groups = scheduleData.instances.map(elem => elem.group);
-    content = <SchedulesAdd rows={scheduleData.instances} days={scheduleData.days} groups={groups} />
+    const props = {
+      _id: scheduleData._id,
+      title: scheduleData.title,
+      style: scheduleData.style,
+      validUntil: scheduleData.validUntil,
+      systemType: scheduleData.systemType,
+      subtitle: scheduleData.subtitle,
+      comment: scheduleData.comment,
+      department: scheduleData.department,
+      groups: scheduleData.groups,
+      days:  scheduleData.days,
+      rows: scheduleData.instances
+    }
+
+    content = <SchedulesAdd { ...props } edit={true}/>
   }
 
   useEffect(() => {
