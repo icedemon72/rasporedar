@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { indexOfKeyInArray } from '../../utils/objectArrays';
-import { useParams } from 'react-router-dom';
+import { Trash } from 'lucide-react';
 
 const ScheduleSubjectAdd = ({
   subjects, systemType,
   closeFunc, className, 
   addSubject, days, indexes,
-  data
+  handleDeleteSubject, data
 }) => {
   const [ selectedSubject, setSelectedSubject ] = useState(data?.subject?._id || '0');
   const [ selectedProfessorType, setSelectedProfessorType ] = useState('professor');
@@ -15,7 +15,7 @@ const ScheduleSubjectAdd = ({
   const [ endTime, setEndTime ] = useState(data?.to || '');
   const [ location, setLocation ] = useState('');
 
-  if(data?.lecturer?._id && selectedProfessorType === 'professor') {
+  if(data?.lecturer?._id && selectedProfessorType === 'professor' && selectedSubject !== '0') {
     const isProfessor = subjects[indexOfKeyInArray(subjects, '_id', selectedSubject)].professors.find(professor => professor._id === data?.lecturer?._id);
     if(!isProfessor) {
       setSelectedProfessorType('assistent');
@@ -57,6 +57,9 @@ const ScheduleSubjectAdd = ({
   content = 
   <>
     <div className={className}>
+      { data?.subject ? 
+        <button className="float-right" onClick={handleDeleteSubject}><Trash /></button>
+      : null}
       <p>{ days[indexes.j] }, { indexes.i + 1}. { systemType !== 'school' ? 'predavanje' : 'čas' }</p>
       <label className="block text-gray-700 text-sm font-bold my-2">Predmet</label> 
       <select className="input-field mb-4" value={selectedSubject} onChange={(elem) => handleChangeSubject(elem.target.value)}>
@@ -71,6 +74,8 @@ const ScheduleSubjectAdd = ({
           })
         }
       </select>
+
+      
       
       { selectedSubject !== '0' ? 
         <>

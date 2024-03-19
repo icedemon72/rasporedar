@@ -10,7 +10,6 @@ const ScheduleItem = ({
 
   return (
     <>
-      {/* Change onClick here to be edit if it is already set! */}
       <div className="flex flex-col justify-center w-full items-center cursor-pointer hover:bg-slate-200" onClick={ editable ? () => handleSetOpen(groupIndex, index, ind) : undefined }>
       { item?.subject?.name ? 
         <>

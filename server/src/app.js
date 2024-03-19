@@ -23,4 +23,15 @@ app.listen(port, () => {
   console.log(`Server running at ${host}:${port}`);
 });
 
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+      const formattedError = {
+          status: 400,
+          message: err.message,
+      };
+      return res.status(400).json(formattedError);
+  }
+  next();
+});
+
 routes(app);

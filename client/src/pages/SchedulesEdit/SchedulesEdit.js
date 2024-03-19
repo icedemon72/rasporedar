@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useGetScheduleByIdQuery } from '../../app/api/schedulesApiSlice';
+import { useEditScheduleMutation, useGetScheduleByIdQuery } from '../../app/api/schedulesApiSlice';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
@@ -9,6 +9,16 @@ import SchedulesAdd from '../SchedulesAdd/SchedulesAdd';
 const SchedulesEdit = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
+
+  const [
+    fetchEditSchedule,
+    {
+      data: fetchEditScheduleData,
+      isLoading: isFetchEditScheduleLoading,
+      isSuccess: isFetchEditScheduleSuccess,
+      isError: isFetchEditScheduleError
+    }
+  ] = useEditScheduleMutation();
 
   const { 
     data: getRole, 
@@ -44,7 +54,11 @@ const SchedulesEdit = () => {
       department: scheduleData.department,
       groups: scheduleData.groups,
       days:  scheduleData.days,
-      rows: scheduleData.instances
+      rows: scheduleData.instances,
+      fetchEditSchedule,
+      isFetchEditScheduleLoading,
+      isFetchEditScheduleSuccess,
+      isFetchEditScheduleError
     }
 
     content = <SchedulesAdd { ...props } edit={true}/>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { useGetSubjectsQuery } from '../../app/api/subjectsApiSlice';
 import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
-import { useAddScheduleMutation, useEditScheduleMutation } from '../../app/api/schedulesApiSlice';
+import { useAddScheduleMutation } from '../../app/api/schedulesApiSlice';
 
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import ScheduleSubjectAdd from '../../components/ScheduleSubjectAdd/ScheduleSubjectAdd';
@@ -17,16 +17,6 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   const session = useSelector(state => state.session);
   const navigate = useNavigate();
   const { institution } = useParams();
-
-  const [
-    fetchEditSchedule,
-    {
-      data: fetchEditScheduleData,
-      isLoading: isFetchEditScheduleLoading,
-      isSuccess: isFetchEditScheduleSuccess,
-      isError: isFetchEditScheduleError
-    }
-  ] = useEditScheduleMutation();
 
   const [
     fetchAddSchedule,
@@ -52,8 +42,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   const [ isDeleteOpen, setIsDeleteOpen ] = useState(false);
   const [ department, setDepartment ] = useState(props.department || '0');
   const [ added, setAdded ] = useState(false);
-  const [ groups, setGroups ] = useState([...props.groups] || ['Grupa 1']);
-  const [ days, setDays ] = useState([...props.days] || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
+  const [ groups, setGroups ] = useState(props.groups || ['Grupa 1']);
+  const [ days, setDays ] = useState(props.days || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
   let toAssign;
 
   if(!props?.rows) {
@@ -122,10 +112,22 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
           : { ...prev[groupIndex].data[j][i], subject, lecturer, location };
         
         return prev;
-      });
+      });     
 
       setIsSubjectOpen(false);
     }
+  }
+
+  const handleDeleteSubject = () => {
+    const { groupIndex, i, j } = indexes;
+    if(j < days.length && j >= 0) {
+      setRows(prev => {
+        prev[groupIndex].data[j][i] = {};
+        return prev;
+      });
+    }
+
+    setIsSubjectOpen(false);
   }
 
   // this function adds an empty object (an item) to rows state
@@ -191,7 +193,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
       // TODO: add edit 
       const result = !edit ? 
-        await fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap() 
+        await props.fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap() 
         : await fetchAddSchedule({ institution, body }).unwrap();
 
       setTimeout(() => {
@@ -220,7 +222,9 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   }
 
   useEffect(() => {
-    document.title = 'Dodaj raspored | Rasporedar';
+    if(!props?.rows) {
+      document.title = 'Dodaj raspored | Rasporedar';
+    }
   }, []);
 
   useEffect(() => {
@@ -321,15 +325,17 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   return (
     <>
       { isSubjectOpen ? 
-      <ScheduleSubjectAdd 
-        subjects={subjects}
-        closeFunc={() => setIsSubjectOpen(false)} 
-        days={days}
-        addSubject={handleAddSubject}
-        indexes={indexes}
-        systemType={systemType}
-        data={rows[indexes.groupIndex].data[indexes.j][indexes.i]}
-      /> : null }
+        <ScheduleSubjectAdd 
+          subjects={subjects}
+          closeFunc={() => setIsSubjectOpen(false)} 
+          days={days}
+          addSubject={handleAddSubject}
+          indexes={indexes}
+          systemType={systemType}
+          handleDeleteSubject={handleDeleteSubject}
+          data={rows[indexes.groupIndex].data[indexes.j][indexes.i]}
+        /> 
+        : null }
       
       { isTimeOpen ? 
         <ScheduleTimeAdd 
