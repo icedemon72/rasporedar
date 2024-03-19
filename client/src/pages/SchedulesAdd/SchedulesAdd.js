@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { useGetSubjectsQuery } from '../../app/api/subjectsApiSlice';
 import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
-import { useAddScheduleMutation } from '../../app/api/schedulesApiSlice';
+import { useAddScheduleMutation, useDeleteScheduleMutation } from '../../app/api/schedulesApiSlice';
 
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import ScheduleSubjectAdd from '../../components/ScheduleSubjectAdd/ScheduleSubjectAdd';
@@ -27,6 +27,16 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       isError: isFetchAddScheduleError
     }
   ] = useAddScheduleMutation();
+
+  const [ 
+    fetchDeleteSchedule,
+    {
+      data: fetchDeleteScheduleData,
+      isLoading: isFetchDeleteScheduleLoading,
+      isSuccess: isFetchDeleteScheduleSuccess,
+      isError: isFetchDeleteScheduleError
+    }
+  ] = useDeleteScheduleMutation();
 
   /* These could go in a separate component ? */
   const [ title, setTitle ] = useState(props.title || ''); 
@@ -159,7 +169,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     }
   }
 
-  const handleSaveSchedule = async (edit = false) => {
+  const handleSaveSchedule = async (edit = false, published = false) => {
     try {
       let tempRows = deepClone(rows);
       
@@ -188,7 +198,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       const body = {
         title, days, style, validUntil, 
         systemType, subtitle, comment,
-        department, groups, data: tempRows
+        department, groups, data: tempRows,
+        published
       }
 
       // TODO: add edit 
@@ -218,7 +229,16 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
   // FIXME:
   const handleDeleteSchedule = () => {
-    window.location.reload();
+    if(!edit) {
+      // change this...
+      window.location.reload();
+    } else {
+      try {
+        const result = fetchDeleteSchedule({ institution, schedule: props._id }).unwrap();
+      } catch (err) {
+        console.log(err);
+      }
+    }
   }
 
   useEffect(() => {
@@ -307,10 +327,11 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
           </div>
           
           <div className="w-full flex justify-center my-5">
-            <div className="w-full md:w-1/3 lg:w-1/4 flex justify-between gap-7">
-              <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
-              <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
-              <button className="btn-green w-full md:w-1/2 lg:w-1/3" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => edit ? handleSaveSchedule() : handleSaveSchedule(true)}>Sačuvaj raspored!</button>
+            <div className="w-full md:w-1/3 lg:w-1/2 flex justify-between gap-7">
+              <button className="btn-red w-full md:w-1/2 lg:w-2/5" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
+              <button className="btn-red w-full md:w-1/2 lg:w-2/5" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
+              <button className="btn-green w-full md:w-1/2 lg:w-2/5" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit)}>Sačuvaj raspored!</button>
+              <button className="btn-green w-full md:w-1/2 lg:w-2/5" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, true)}>Sačuvaj i objavi raspored!</button>
             </div>
           </div>
         </>

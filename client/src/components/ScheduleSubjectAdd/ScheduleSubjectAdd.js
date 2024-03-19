@@ -13,7 +13,7 @@ const ScheduleSubjectAdd = ({
   const [ selectedProfessor, setSelectedProfessor ] = useState(data?.lecturer?._id || '0');
   const [ startTime, setStartTime ] = useState(data?.from || '');
   const [ endTime, setEndTime ] = useState(data?.to || '');
-  const [ location, setLocation ] = useState('');
+  const [ location, setLocation ] = useState(data?.location || '');
 
   if(data?.lecturer?._id && selectedProfessorType === 'professor' && selectedSubject !== '0') {
     const isProfessor = subjects[indexOfKeyInArray(subjects, '_id', selectedSubject)].professors.find(professor => professor._id === data?.lecturer?._id);
@@ -120,7 +120,7 @@ const ScheduleSubjectAdd = ({
               : null
             }
             <label className="block text-gray-700 text-sm font-bold mb-2">Kabinet/sala/učionica</label>
-            <input className="input-field mb-4" type="text" onChange={(elem) => setLocation(elem.target.value)} />
+            <input className="input-field mb-4" type="text" value={location} onChange={(elem) => setLocation(elem.target.value)} />
           <button className="input-field mt-5" disabled={selectedProfessor === '0'}  onClick={handleAddSubject}>
             { data?.subject ? 'Izmeni' : 'Izaberi'}
           </button>

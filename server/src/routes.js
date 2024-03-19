@@ -1,7 +1,7 @@
 import { handleGetAllUsersInInstitution, handleGetIsUserAuth, handleGetUserRole, handleLeaveInstitution, handleModeratorJoinInstitution, handlePromoteToRole, handleUserJoinInstitution } from './controllers/inInstitutionController.js';
 import { handleAddInstitution, handleChangeCodes, handleDeleteInstitution, handleEditInstitution, handleGetInstitutonById } from './controllers/institutionController.js';
 import { handleAddProfessor, handleDeleteProfessor, handleEditProfessor, handleGetAllProfessorsBySubject, handleGetAllProfessorsInInstitution, handleGetProfessor } from './controllers/professorController.js';
-import { handleAddSchedule, handleEditSchedule, handleGetAllSchedulesInInstitution, handleGetSchedule } from './controllers/scheduleController.js';
+import { handleAddSchedule, handleDeleteSchedule, handleEditSchedule, handleGetAllSchedulesInInstitution, handleGetSchedule } from './controllers/scheduleController.js';
 import { checkValidAccess, handleLoginUser, handleLogout, handleRefresh } from './controllers/sessionController.js';
 import { handleAddSubject, handleDeleteSubject, handleEditSubjectInfo, handleEditSubjectProfessor, handleGetAllSubjectsInInstitution, handleGetAllSubjectsOfProfessor, handleGetSubject } from './controllers/subjectController.js';
 import { handleEditUser, handleGetUserById, handleGetUserInstitutions, handleUserRegister } from './controllers/userController.js';
@@ -166,6 +166,11 @@ export default (app) => {
 
   app.patch('/schedule/:institution/:schedule', authenticate, async (req, res) => {
     handleEditSchedule(req, res);
+  });
+  
+
+  app.delete('/schedule/:institution/:schedule', authenticate, async (req, res) => {
+    handleDeleteSchedule(req, res);
   });
 
 }

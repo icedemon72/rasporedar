@@ -35,7 +35,7 @@ const ScheduleRow = ({ editable, groupIndex, item, index, ...props }) => {
           )
         })
       }
-      {editable ? <div className="hidden md:block relative left-3 lg:left-4 basis-0 w-0"><Trash className="w-20 cursor-pointer hover:bg-gray-200" /></div> : null}
+      { editable ? <div className="hidden md:block relative left-3 lg:left-4 basis-0 w-0"><Trash className="w-20 cursor-pointer hover:bg-gray-200" /></div> : null}
       
     </div>
   )

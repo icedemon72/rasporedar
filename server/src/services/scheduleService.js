@@ -9,7 +9,6 @@ export const addSchedule = async (sender, institution, data) => {
       ...data,
       instances: data.data,
       institution,
-      published: false,
       deleted: false,
       createdBy: sender
     }
@@ -60,6 +59,21 @@ export const editSchedule = async (sender, institution, schedule, data) => {
 export const deleteSchedule = async (sender, institution, schedule) => {
   try {
     await authSenderInInstitutionObject(sender, institution);
+
+    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
+
+    if(!scheduleObj) {
+      throw {
+        status: 400,
+        message: 'Ne postoji raspored ili je već obrisan!'
+      }
+    }
+
+    scheduleObj.deleted = true;
+    await scheduleObj.save();
+
+    return { message: `Raspored sa ID-em ${schedule} je uspešno obrisan!` }; 
+
   } catch (err) {
     throw err;
   }
@@ -73,8 +87,8 @@ export const getAllSchedulesInInstitution = async (sender, institution, publishe
       await senderInInstitutionObject(sender, institution);
 
     const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
-                                                                            // add published later
-    const schedulesObj = await Schedule.find({ institution, deleted: false }, toExclude);
+    const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude);
+    
     return schedulesObj;
   } catch (err) {
     throw err;
@@ -98,10 +112,9 @@ export const getSchedule = async (sender, institution, schedule) =>{
       }
     }
 
-    // TODO: uncomment this after creating publishing... I guess
-    // if(!scheduleObj.published) {
-    //   await authSenderInInstitutionObject(sender, institution);
-    // }
+    if(!scheduleObj.published) {
+      await authSenderInInstitutionObject(sender, institution);
+    }
 
     return scheduleObj;
   } catch (err) {
