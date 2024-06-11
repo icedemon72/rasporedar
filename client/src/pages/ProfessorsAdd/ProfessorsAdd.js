@@ -1,9 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useAddProfessorMutation } from "../../app/api/professorsApiSlice";
 import { useSelector } from "react-redux";
 import { PlusCircle, Trash } from "lucide-react";
 import { addItemToArrayOnKey, deleteItemFromArray } from "../../utils/updateArray";
+import Input from './../../components/Input/Input';
+import Textarea from "../../components/Input/Textarea";
+import { Helmet } from "react-helmet";
+import MutationState from "../../components/MutationState/MutationState";
+import CardContainer from "../../components/CardContainer/CardContainer";
 
 const ProfessorsAdd = () => {
   const session = useSelector(state => state.session);
@@ -27,7 +32,8 @@ const ProfessorsAdd = () => {
     {
       isLoading: isFetchAddProfessorLoading,
       isSuccess: isFetchAddProfessorSuccess,
-      isError: isFetchAddProfessorError
+      isError: isFetchAddProfessorError,
+			error: fetchAddProfessorError
     }
    ] = useAddProfessorMutation();
 
@@ -65,8 +71,10 @@ const ProfessorsAdd = () => {
     }
   }
 
-  const handleAddProfessor = async () => {
+  const handleAddProfessor = async (event) => {
     // Add input check here!!!
+		event.preventDefault();
+		event.stopPropagation();
     try {
       // Add check for bachelor, master and doctorate here
       const education = {
@@ -76,60 +84,95 @@ const ProfessorsAdd = () => {
       const body = {
         name, title, education: education, bio, references
       }
-      console.log(body);
+      
       const result = await fetchAddProfessor({institution, body}).unwrap();
+
+			setTimeout(() => {
+				navigate(`/institutions/${institution}/professors/${result._id}`)
+			}, 1000);
+
     } catch (err) {
-      console.log(err);
+			console.log(err);
     }
   }
 
-  useEffect(() => {
-    document.title = 'Dodaj profesora | Rasporedar';
-  }, []);
-
   return (
     <>
-      <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
-          <input className="input-field mb-4" type="text" placeholder="Ime i prezime" onChange={(elem) => setName(elem.target.value)} />
-          <input className="input-field mb-4" type="text" placeholder="Titula" onChange={(elem) => setTitle(elem.target.value)} />
-          <textarea className="input-field mb-4" type="text" placeholder="Profesionalna biografija" onChange={(elem) => setBio(elem.target.value)} />
-          <input className="input-field mb-4" type="text" placeholder="Osnovne studije" onChange={(elem) => handleChangeBachelor(elem.target.value, 'institution')}/>
-          <div className="flex justify-center gap-3 w-full">
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeBachelor(elem.target.value, 'from')} />
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeBachelor(elem.target.value, 'to')} />
-          </div>
-          <input className="input-field mb-4" type="text" placeholder="Master studije" onChange={(elem) => handleChangeMaster(elem.target.value, 'institution')}/>
-          <div className="flex justify-center gap-3 w-full">
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeMaster(elem.target.value, 'from')} />
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeMaster(elem.target.value, 'to')} />
-          </div>
-          <input className="input-field mb-4" type="text" placeholder="Doktorske studije" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'institution')}/>
-          <div className="flex justify-center gap-3 w-full">
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'from')} />
-            <input className="input-field mb-4 w-full md:w-1/2" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
-          </div>
-          <div className="w-full flex mb-4">
-            <input className="input-field w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} onKeyUp={(elem) => handleAddReference(elem)}/>
-            <button className="input-field w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex justify-center" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
+			<MutationState 
+				isLoading={isFetchAddProfessorLoading}
+				isSuccess={isFetchAddProfessorSuccess}
+				isError={isFetchAddProfessorError}
+				error={fetchAddProfessorError}
+				successMessage="Uspešno dodat profesor!"
+			/>
+			<Helmet>
+				<title>Dodaj profesora | Rasporedar</title>
+			</Helmet>
+
+      <CardContainer large={true}>
+				<h1 className="text-xl font-bold text-center py-5">Dodaj profesora</h1>
+        <form>
+					<div className="mb-4">
+						<Input id="name" type="text" name="Ime i prezime" placeholder="Marko Marković" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
+					</div>
+
+					<div className="mb-4">
+						<Input id="title" type="text" name="Zvanje" placeholder="Prof. dr." setVal={(elem) => setTitle(elem.target.value)} inputVal={title} />
+					</div>
+
+					<div className="mb-4">
+						<Textarea id="bio" name="Stručna biografija profesora" placeholder="Profesionalna biografija" setVal={(elem) => setBio(elem.target.value)} inputVal={bio} />
+					</div>
+
+					<div className="mb-4">
+						<Input id="bachelor" type="text" name="Osnovne studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => handleChangeBachelor(elem.target.value, 'institution')} />
+						
+						<div className="flex justify-center gap-3 w-full mt-2">
+							<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeBachelor(elem.target.value, 'from')} />
+							<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeBachelor(elem.target.value, 'to')} />
+						</div>
+					</div>
+          
+					<div className="mb-4">
+						<Input id="master" type="text" name="Master studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => handleChangeMaster(elem.target.value, 'institution')}  />
+						
+						<div className="flex justify-center gap-3 w-full mt-2">
+							<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeMaster(elem.target.value, 'from')} />
+							<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeMaster(elem.target.value, 'to')} />
+						</div>
+					</div>
+
+					<div className="mb-4">
+						<Input id="master" type="text" name="Doktorske studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => handleChangeDoctorate(elem.target.value, 'institution')} />
+
+						<div className="flex justify-center gap-3 w-full mt-2">
+							<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'from')} />
+							<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => handleChangeDoctorate(elem.target.value, 'to')} />
+						</div>
+					</div>
+
+					<label className="label-primary">Reference</label>
+          <div className="w-full flex gap-1 mb-4">
+            <input className="input-primary" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} onKeyUp={(elem) => handleAddReference(elem)}/>
+            <button type="button" className="btn-plus" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
           </div>
 
           { references.map((elem, i) => {
             return (
-              <div class="flex flex-row justify-between mt-2">
+              <div className="flex flex-row justify-between mt-2">
                 <div>{i + 1}</div>
                 <p>{elem}</p>
-                <div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteReference(i)}><Trash /></div> 
+                <div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteReference(i)}><Trash /></div> 
               </div>
             );
           })
           }
 
-          <div className="w-full flex justify-center">
-            <button className="btn-red w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Unesi profesora!</button>
+          <div className="w-full flex justify-center mt-6">
+            <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Unesi profesora!</button>
           </div>
-        </div>
-      </div>
+        </form>
+      </CardContainer>
     </>
   )
 }

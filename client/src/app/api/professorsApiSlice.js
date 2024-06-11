@@ -4,42 +4,42 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getProfessors: builder.query({
       query: (id) => ({
-        url: `/institution_professors/${id}`
+        url: `/institutions/${id}/professors`
       }),
       providesTags: ['Professors']
     }),
     getProfessor: builder.query({
-      query: (id) => ({
-        url: `/professor/${id}`
+      query: ({ institution, id}) => ({
+        url: `/institutions/${institution}/professors/${id}`
       }),
       providesTags: (result, error) => error ? [] : ['Professor']
     }),
     addProfessor: builder.mutation({
       query: ({ institution, body}) => ({
-        url: `/professor/${institution}`,
+        url: `/institutions/${institution}/professors`,
         method: 'POST',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
     }),
     editProfessor: builder.mutation({
-      query: ({ id, body }) => ({
-        url: `/professor/${id}`,
+      query: ({ institution, id, body }) => ({
+        url: `/institutions/${institution}/professors/${id}`,
         method: 'PATCH',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors', 'Professor']
     }),
     deleteProfessor: builder.mutation({
-      query: (id) => ({
-        url: `professor/${id}`,
+      query: ({ institution, id }) => ({
+        url: `/institutions/${institution}professors/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']
     }),
     getProfessorSubjects: builder.query({
-      query: (professor) => ({
-        url: `/professor_subject/${professor}`
+      query: ({ institution, id }) => ({
+        url: `/institutions/${institution}/professors/${id}/subjects`
       }),
       providesTags: (result, error) => error ? [] : ['SubjectProfessors'],
       keepUnusedDataFor: 20,

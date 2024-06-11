@@ -21,11 +21,11 @@ export const handleAddProfessor = async (req, res) => {
 
 export const handleDeleteProfessor = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.professor).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.professor).message);
     }
 
-    const done = await deleteProfessor(req.userTokenData._id, req.params.id);
+    const done = await deleteProfessor(req.userTokenData._id, req.params.professor);
     return res.status(201).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -34,11 +34,11 @@ export const handleDeleteProfessor = async (req, res) => {
 
 export const handleEditProfessor = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.professor).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.professor).message);
     }
 
-    const done = await editProfessor(req.userTokenData._id, req.params.id, req.body);
+    const done = await editProfessor(req.userTokenData._id, req.params.professor, req.body);
     
     return res.status(200).send(done);
     
@@ -51,11 +51,7 @@ export const handleEditProfessor = async (req, res) => {
 // GET
 export const handleGetProfessor = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
-    }
-
-    const done = await getProfessorById(req.userTokenData._id, req.params.id);
+    const done = await getProfessorById(req.userTokenData._id, req.params.professor);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

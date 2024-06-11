@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGetAllQuery } from '../../app/api/institutionsApiSlice';
-import { useParams } from 'react-router-dom';
-import { clsx } from 'clsx';
+import SidebarItem from './SidebarItem';
+import { useSelector } from 'react-redux';
 const Sidebar = ({ open, btn }) => {
+	const session = useSelector(state => state.session);
 
   const {
     data: institutions,
@@ -10,29 +11,53 @@ const Sidebar = ({ open, btn }) => {
     isSuccess: isInstitutionSuccess,
     isError: isInstitutionError,
     error: institutionsError
-  } = useGetAllQuery();
-
-  const { institution } = useParams();
+  } = useGetAllQuery(null, {
+		skip: !session.refreshToken
+	});
 
   let content;
 
   if(isInstitutionSuccess) {
     content = <>
       { institutions.map(x => {
-        return <p class="block">{ x.name }</p>
+        return <SidebarItem text={ x.name } url={`/institutions/${x._id}`}></SidebarItem>
       }) }
     </>
   }
 
-  return (
+	// TODO: fix fixed responsive problems...
+	return (
     <>
-    { open ? 
-      <nav className="fixed left-0 top-[56px] bg-slate-500 h-full z-[1000] min-w-[300px] max-w-full animate-in slide-in-from-left duration-300 ">
-        <div className='flex flex-col'>
-          { content }
-        </div>
-      </nav>
-    : null }
+    { 
+			open &&
+				<nav className="min-h-screen h-full w-full lg:w-[500px] fixed left-0 top-[74px] bg-white z-[99999] animate-in slide-in-from-left duration-300 lg:border-r-2 border-t-2 border-black overflow-y-auto">
+					<div className='min-h-[calc(100vh+76px)] flex flex-col'>
+						<SidebarItem url="/" text="Početna"/>
+						<SidebarItem url="/about" text="O nama" />
+						<SidebarItem url="/contact" text="Kontakt" />
+						<hr className="my-2" />
+						{
+							session.refreshToken 
+							? 
+								<>
+									<SidebarItem url="/institutions" text="Moje grupe" />
+									<SidebarItem url="/institutions/join" text="Pridruži se grupi" />
+									<SidebarItem url="/institutions/create" text="Nova grupa" />
+									<hr className="my-2" />
+									{ content }
+									<hr className="my-2" />
+									<SidebarItem url="/logout" text="Odjavi se" />
+								</>
+							: 
+								<>
+									<SidebarItem url="/login" text="Prijava" />
+									<SidebarItem url="/register" text="Registracija" />
+								</>
+						}
+						
+					</div>
+				</nav>
+		}
     </>
   )
 }

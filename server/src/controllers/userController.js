@@ -15,7 +15,7 @@ export const handleUserRegister = async (req, res) => {
     return res.status(200).send(done);
 
   } catch (err) {
-    return res.status(err.status || 500).send(err.message);
+    return res.status(err.status || 500).send({ message: err.message });
   }
 }
 
@@ -32,7 +32,7 @@ export const handleEditUser = async (req, res) => {
     return res.status(200).send(done);
 
   } catch (err) {
-    return res.status(err.status || 500).send(err.message);
+    return res.status(err.status || 500).send({ message: err.message });
   }
 }
 
@@ -65,7 +65,7 @@ export const handleGetUserInstitutions = async (req, res) => {
     const done = await getUserInstitution(req.params.id, req.query.role);
     return res.status(200).send(done);
   } catch (err) {
-    return res.status(err.status || 500).send(err.message);
+    return res.status(err.status || 500).send({ message: err.message });
   }
 }
 
@@ -91,6 +91,6 @@ export const handleGetUserById = async (req, res) => {
     const done = await getUserById(req.params.id);
     return res.status(200).send(done);
   } catch (err) {
-    return res.status(err.status || 500).send(err.message);
+    return res.status(err.status || 500).send({ message: err.message });
   }
 }

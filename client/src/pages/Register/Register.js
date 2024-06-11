@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useRegisterMutation } from '../../app/api/userApiSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Input from '../../components/Input/Input';
+import { Helmet } from 'react-helmet';
+import MutationState from '../../components/MutationState/MutationState';
+import CardContainer from '../../components/CardContainer/CardContainer';
 
 const Register = () => {
   const session = useSelector(state => state.session);
   const navigate = useNavigate();
   const [ 
-    fetchRegister,
+    register,
     {
-      isLoading: isFetchRegisterLoading,
-      isSuccess: isFetchRegisterSuccess,
-      isError: isFetchRegisterError
+      isLoading: isRegisterLoading,
+      isSuccess: isRegisterSuccess,
+      isError: isRegisterError,
+			error: registerError
     }
    ] = useRegisterMutation();
 
@@ -21,43 +26,66 @@ const Register = () => {
   const [ password, setPassword ] = useState('');
   const [ name, setName ] = useState('');
 
-  const handleRegister = async () => {
+  const handleRegister = async (event) => {
     try {
-      // check input here!!!
+			event.preventDefault();
+    	event.stopPropagation();
       const body = { username, email, password, name };
-      const result = await fetchRegister(body).unwrap();
+      await register(body).unwrap();
+
       setTimeout(() => {
         navigate('/login');
       }, 1000);
+
     } catch (err) {
       console.log(err);
     }
   }
 
   useEffect(() => {
-    document.title = 'Registracija | Rasporedar'
-
-    if(session.accessToken) {
+    if(session.refreshToken) {
       navigate('/');
     }
   })
 
   return (
     <>
-      <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 lg:w-1/4 mt-10">
-          <input className="input-field mb-4" type="text" placeholder="Korisnicko ime" onChange={(elem) => setUsername(elem.target.value)} />
-          <input className="input-field mb-4" type="email" placeholder="E-adresa" onChange={(elem) => setEmail(elem.target.value)} />
-          <input className="input-field mb-4" type="password" placeholder="Lozinka" onChange={(elem) => setPassword(elem.target.value)} />
-          <input className="input-field mb-4" type="text" placeholder="Ime i prezime" onChange={(elem) => setName(elem.target.value)} />
-          <div className="w-full flex justify-center">
-            <button className="btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleRegister}>Registruj se!</button>
+			<Helmet>
+				<title>Registracija | Rasporedar</title>
+			</Helmet>
+
+			<MutationState 
+				isLoading={isRegisterLoading}
+				isSuccess={isRegisterSuccess}
+				isError={isRegisterError}
+				error={registerError}
+				successMessage='Uspešna registracija!'
+			/>
+
+      <CardContainer>
+				<h1 class="text-xl font-bold text-center py-5">Registracija</h1>
+        <form onSubmit={handleRegister}>
+					<div class="mb-2">
+						<Input id="username" type="text" name="Korisničko ime" placeholder="marko.markovic" setVal={(elem) => setUsername(elem.target.value)} inputVal={username} />
+					</div>
+					<div class="mb-2">
+						<Input id="email" type="email" name="E-adresa" placeholder="marko.markovic@primer.com" setVal={(elem) => setEmail(elem.target.value)} inputVal={email} />
+					</div>
+					<div class="mb-2">
+						<Input id="password" type="password" name="Lozinka" placeholder="•••••••" setVal={(elem) => setPassword(elem.target.value)} inputVal={password} />
+					</div>
+					<div class="mb-2">
+						<Input id="name" type="text" name="Ime i prezime" placeholder="Marko Marković" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
+					</div>
+        
+          <div className="w-full flex justify-center my-3">
+            <button className="w-full btn-primary" type="submit">Registruj se!</button>
           </div>
-          { isFetchRegisterLoading ? <>Loading...</> : null }
-          { isFetchRegisterSuccess ? <>Uspesna registracija!</> : null }
-          { isFetchRegisterError ? <>Greska!</> : null }
-        </div>
-      </div>
+
+					<p className="block text-sm">Imaš nalog? <Link class="underline hover:no-underline cursor-pointer" to="/login">Prijavi se!</Link></p>
+          
+        </form>
+      </CardContainer>
     </>
   )
 }

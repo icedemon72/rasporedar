@@ -3,43 +3,43 @@ import { apiSlice } from "./apiSlice";
 const subjectsApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getSubject: builder.query({
-      query: ({ id, fullInfo }) => ({
-        url: `/subject/${id}${fullInfo ? '?fullInfo=1' : ''}`
+      query: ({ institution, id, fullInfo }) => ({
+        url: `/institutions/${institution}/subjects/${id}${fullInfo ? '?fullInfo=1' : ''}`
       }),
       keepUnusedDataFor: 15,
       providesTags: (result, error) => error ? [] : ['Subject']
     }),
     getSubjects: builder.query({
       query: ({institution, fullInfo}) => ({
-        url: `/institution_subjects/${institution}${fullInfo ? '?fullInfo=1' : ''}`
+        url: `/institutions/${institution}/subjects${fullInfo ? '?fullInfo=1' : ''}`
       }),
       providesTags: (result, error) => error ? [] : ['Subjects']
     }),
     getSubjectProfessors: builder.query({
-      query: id => ({
-        url: `/subject_professors/${id}`
+      query: ({ institution, id })=> ({
+        url: `/institutions/${institution}/subjects/professors/`
       }),
       keepUnusedDataFor: 20,
     }),
     addSubject: builder.mutation({
       query: ({ institution, body }) => ({
-        url: `/subject/${institution}`,
+        url: `/institutions/${institution}/subjects`,
         method: 'POST',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Subjects']
     }), 
     editSubject: builder.mutation({
-      query: ({ id, body }) => ({
-        url: `/subject/${id}`,
+      query: ({ institution, id, body }) => ({
+        url: `/institutions/${institution}/subjects/${id}`,
         method: 'PATCH',
         body
       }),
       invalidatesTags: (result, error) => error ? [] : ['Subjects', 'SubjectProfessors']
     }),
     deleteSubject: builder.mutation({
-      query: (id) => ({
-        url: `/subject/${id}`,
+      query: ({ institution, id }) => ({
+        url: `/institutions/${institution}/subject/${id}`,
         method: 'DELETE'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Subjects']

@@ -24,11 +24,11 @@ export const handleAddSubject = async (req, res) => {
 
 export const handleDeleteSubject = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.subject).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.subject).message);
     }
 
-    const done = await deleteSubject(req.userTokenData._id, req.params.id);
+    const done = await deleteSubject(req.userTokenData._id, req.params.subject);
     return res.status(204).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -37,11 +37,11 @@ export const handleDeleteSubject = async (req, res) => {
 
 export const handleEditSubjectInfo = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.subject).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.subject).message);
     }
 
-    const done = await editSubjectInfo(req.userTokenData, req.params.id, req.body);
+    const done = await editSubjectInfo(req.userTokenData, req.params.subject, req.body);
     return res.status(200).send(done);
     
   } catch (err) {
@@ -84,11 +84,11 @@ export const handleGetSubject = async (req, res) => {
       req.query.fullInfo = false;
     }
 
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.subject).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.subject).message);
     }
 
-    const done = await getSubjectById(req.userTokenData._id, req.params.id, req.query.fullInfo);
+    const done = await getSubjectById(req.userTokenData._id, req.params.subject, req.query.fullInfo);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -101,11 +101,11 @@ export const handleGetAllSubjectsInInstitution = async (req, res) => {
       req.query.fullInfo = false;
     }
 
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.institution).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
 
-    const done = await getAllSubjectsInInstitution(req.userTokenData._id, req.params.id, req.query.fullInfo);
+    const done = await getAllSubjectsInInstitution(req.userTokenData._id, req.params.institution, req.query.fullInfo);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

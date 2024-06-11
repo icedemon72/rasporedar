@@ -40,11 +40,11 @@ export const handleAddInstitution = async (req, res) => {
 
 export const handleDeleteInstitution = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.institution).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
 
-    const done = await deleteInstitution(req.userTokenData._id, req.params.id);
+    const done = await deleteInstitution(req.userTokenData._id, req.params.institution);
     return res.status(200).send(done);
 
   } catch (err) {
@@ -54,11 +54,11 @@ export const handleDeleteInstitution = async (req, res) => {
 
 export const handleEditInstitution = async (req, res) => {
   try {    
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.institution).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
 
-    const done = await editInstitution(req.userTokenData._id, req.params.id, req.body);
+    const done = await editInstitution(req.userTokenData._id, req.params.institution, req.body);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -67,8 +67,8 @@ export const handleEditInstitution = async (req, res) => {
 
 export const handleChangeCodes = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.institution).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
 
     const { code, moderatorCode } = req.body;
@@ -77,7 +77,7 @@ export const handleChangeCodes = async (req, res) => {
       return res.status(400).send({ message: 'Nije naveden kod za promenu!' })
     }
 
-    const done = await changeCodes(req.userTokenData._id, req.params.id, req.body);
+    const done = await changeCodes(req.userTokenData._id, req.params.institution, req.body);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -90,15 +90,15 @@ export const handleGetInstitutonById = async (req, res) => {
       return res.status(401).send({message: 'No access token'});
     }
 
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
+    if(!isObjectIdValid(req.params.institution).valid) {
+      return res.status(400).send(isObjectIdValid(req.params.institution).message);
     }
 
     if(!req.query.code) {
       req.query.code = null;
     }
 
-    const done = await getInstitutionById(req.userTokenData._id, req.params.id, req.query.code);
+    const done = await getInstitutionById(req.userTokenData._id, req.params.institution, req.query.code);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

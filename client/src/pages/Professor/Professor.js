@@ -4,6 +4,9 @@ import { useGetProfessorQuery, useGetProfessorSubjectsQuery } from '../../app/ap
 import { useEffect, useState } from 'react';
 import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import { Pencil } from 'lucide-react';
+import MutationState from '../../components/MutationState/MutationState';
+import CollapseContainer from '../../components/CollapseContainer/CollapseContainer';
+import DataTable from '../../components/DataTable/DataTable';
 
 
 const Professor = () => {
@@ -18,90 +21,110 @@ const Professor = () => {
     isLoading: isProfessorLoading,
     isSuccess: isProfessorSuccess,
     isError: isProfessorError
-  } = useGetProfessorQuery(id, {
-    skip: !session.accessToken || !id || !institution
+  } = useGetProfessorQuery({ institution, id }, {
+    skip: !session.refreshToken || !id || !institution
   });
 
   const {
     data: subjectsData,
     isLoading: isSubjectsLoading,
     isSuccess: isSubjectsSuccess
-  } = useGetProfessorSubjectsQuery(id, {
-    skip: !session.accessToken || !professorData
+  } = useGetProfessorSubjectsQuery({ institution, id }, {
+    skip: !session.refreshToken || !professorData
   })
 
   const { 
     data: getRole, 
     isLoading: isGetRoleLoading, 
     isSuccess: isGetRoleSuccess, 
-    isError: isGetRoleError,
-    error: getRoleError 
-  } = useGetRoleQuery(institution, { skip: !session.accessToken  });
+    isError: isGetRoleError
+  } = useGetRoleQuery(institution, { skip: !session.refreshToken  });
   
   let content;
 
-  if(isSubjectsLoading) {
-    content = <>Loading</>
-  } else if (isSubjectsSuccess && isProfessorSuccess && isGetRoleSuccess) {
+  if (isSubjectsSuccess && isProfessorSuccess && isGetRoleSuccess) {
     content = 
     <>
-      <p className="input-field mb-4 flex">{professorData.title} {professorData.name}  
-        { getRole.role !== 'User' ?
-          <Link className="mx-2" to={`/institutions/${institution}/professors/${id}/edit`}><Pencil size={16} /></Link> 
-          : null }
-      </p>
-      <p className="input-field mb-4">{professorData.bio || 'Profesor nema biografiju'}</p>
-      <p className="input-field mb-4">{professorData.education?.bachelor?.institution || '-'}</p>
-      <div className="flex justify-center gap-3 w-full">
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.from || '-' }</p>
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.to || '-' }</p>
+			<h1 className="text-xl font-bold text-center py-5">{ professorData.name }</h1>
+      <p class="label-primary">Ime i prezime</p>
+			<div className="input-primary mb-4 flex items-center gap-2">{professorData.title} {professorData.name}  
+        { getRole.role !== 'User' && <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer" to={`/institutions/${institution}/professors/${id}/edit`}><Pencil size={16} /></Link> }
       </div>
 
-      <p className="input-field mb-4">{professorData.education?.master?.institution || '-'}</p>
+			<div calssName="mb-4">
+				<CollapseContainer label="Stručna biografija" data={professorData.bio} />
+			</div>
+
+			<p class="label-primary">Osnovne studije</p>
+			<div className="input-primary mb-4">{professorData.education?.bachelor?.institution || '-'}</div>
       <div className="flex justify-center gap-3 w-full">
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.master?.from || '-' }</p>
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.master?.to || '-'}</p>
+        <p className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.from || '-' }</p>
+        <p className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.to || '-' }</p>
       </div>
 
-      <p className="input-field mb-4">{professorData.education?.doctorate?.institution || '-'}</p>
+			<p class="label-primary">Master studije</p>
+      <div className="input-primary mb-2">{professorData.education?.master?.institution || '-'}</div>
       <div className="flex justify-center gap-3 w-full">
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.doctorate?.from || '-' }</p>
-        <p className="input-field mb-4 w-full md:w-1/2">{ professorData.education?.doctorate?.to || '-'}</p>
+        <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.master?.from || '-' }</div>
+        <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.master?.to || '-'}</div>
       </div>
 
-      <p className="block">Reference:</p>
+			<p class="label-primary">Doktorske studije</p>
+      <p className="input-primary mb-4">{professorData.education?.doctorate?.institution || '-'}</p>
+      <div className="flex justify-center gap-3 w-full">
+        <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.doctorate?.from || '-' }</div>
+        <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.doctorate?.to || '-'}</div>
+      </div>
+
+			<div className="mb-4">
+				<CollapseContainer 
+					label="Reference"
+					isOpen={false}
+					data={
+						professorData.references.map((elem, i) => {
+							return (
+								<div className="flex flex-row justify-start gap-2 mt-2">
+									<div>{i + 1}</div>
+									<p>{ elem }</p>
+								</div>
+							);
+						})
+					}
+				/>
+			</div>
       
-      { professorData?.references.length ? 
-        professorData.references.map((elem, i) => {
-          return (
-            <div className="flex flex-row justify-start gap-2 mt-2">
-              <div>{i + 1}</div>
-              <p>{ elem }</p>
-            </div>
-          );
-        })
-        : <p className="block">-</p>
-      }
-
-      Profesor:
-      { subjectsData?.professor.length ?
-        subjectsData.professor.map(elem => {
-          return <p>{elem.name}</p>
-        })
-      : null}
-
-      { subjectsData?.assistent.length ? 
-        <>
-        Asistent:
-        {  subjectsData.assistent.map(elem => {
-          return <p>{elem.name}</p>
-        }) }
-        </>
-       
-      : null}
+			{
+				subjectsData?.professor.length ?
+				<>
+					<h2 className="label-primary">Profesor na predmetima</h2>
+					<DataTable 
+						data={subjectsData.professor}
+						url={`/institutions/${institution}/subjects`}
+						isSuccess={isGetRoleSuccess}
+						role={getRole.role}
+						emptyMessage='-'
+					/>
+				</>
+				: null
+			}
+      
+      {
+				subjectsData?.assistent.length ?
+				<>
+					<h2 className="label-primary">Asistent na predmetima</h2>
+					<DataTable 
+						data={subjectsData.assistent}
+						url={`/institutions/${institution}/subjects`}
+						isSuccess={isGetRoleSuccess}
+						role={getRole.role}
+						emptyMessage='-'
+					/>
+				</>
+				: null
+			}
   
-    </>
-  }
+    </>  
+	}
 
   useEffect(() => {
     document.title = professorData ? `Profesor ${professorData.name} | Rasporedar` : `Profesor | Rasporedar`;
@@ -110,8 +133,13 @@ const Professor = () => {
   
   return (
     <>      
+			<MutationState 
+				isLoading={isSubjectsLoading || isGetRoleLoading || isProfessorLoading}
+				isError={isProfessorError || isGetRoleError}
+				timeout={500}
+			/>
       <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
+        <div className="w-full md:w-1/2 lg:w-1/3">
           { content }
         </div>
       </div>

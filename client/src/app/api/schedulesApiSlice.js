@@ -4,7 +4,7 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     addSchedule: builder.mutation({
       query: ({ institution, body }) => ({
-        url: `/schedule/${institution}`,
+        url: `/institutions/${institution}/schedules`,
         method: 'POST',
         body
       }),
@@ -13,7 +13,7 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
     }),
     editSchedule: builder.mutation({
       query: ({ institution, schedule, body }) => ({
-        url: `/schedule/${institution}/${schedule}`,
+        url: `/institutions/${institution}/schedules/${schedule}`,
         method: 'PATCH',
         body
       }),
@@ -22,20 +22,20 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
     }),
     deleteSchedule: builder.mutation({
       query: ({ institution, schedule }) => ({
-        url: `/schedule/${institution}/${schedule}`,
+        url: `/institutions/${institution}/schedules/${schedule}`,
         method: 'DELETE'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Schedule', 'Schedules']
     }),
     getSchedules: builder.query({
       query: ({ institution, fullInfo }) => ({
-        url: `/schedule/${institution}${fullInfo ? '?fullInfo=1' : ''}`
+        url: `/institutions/${institution}/schedules${fullInfo ? '?fullInfo=1' : ''}`
       }),
       providesTags: (result, error) => error ? [] : ['Schedules']
     }),
     getScheduleById: builder.query({
       query: ({ institution, schedule }) => ({
-        url: `/schedule/${institution}/${schedule}`
+        url: `/institutions/${institution}/schedules/${schedule}`
       }),
       providesTags: (result, error) => error ? [] : ['Schedule']
     })

@@ -3,13 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLoginMutation } from '../../app/api/sessionApiSlice';
 import { Link } from 'react-router-dom';
+import Input from './../../components/Input/Input';
+import MutationState from '../../components/MutationState/MutationState';
+import CardContainer from '../../components/CardContainer/CardContainer';
 
 const Login = () => {
   const { location } = useParams();
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   
-  const userRef = useRef();
+  // const userRef = useRef();
   
   const session = useSelector(state => state.session)
   const navigate = useNavigate();
@@ -18,8 +21,9 @@ const Login = () => {
     fetchLogin,
     {
       isLoading: isFetchLoginLoading,
-      isSuccess: isFetchLoginSucces,
+      isSuccess: isFetchLoginSuccess,
       isError: isFetchLoginError,
+			error: fetchLoginError,
       reset: resetFetchLogin
     }
   ] = useLoginMutation();
@@ -34,7 +38,7 @@ const Login = () => {
     try {
       const result = await fetchLogin(body).unwrap();
     } catch (err) {
-      console.log(err);
+
       setTimeout(() => {
         resetRef.current();
       }, 3000)
@@ -43,33 +47,38 @@ const Login = () => {
   
   useEffect(() => {
     document.title = 'Prijavljivanje | Rasporedar';
-    userRef.current.focus();
+    // userRef.current.focus();
 
-    if(session.accessToken) {
+    if(session.refreshToken) {
       location ? navigate(`/${location}`) : navigate('/institutions');
     }
 
-  }, [ session.accessToken ]);
+  }, [ session.refreshToken ]);
 
   return (
     <>
-      <div className="w-full flex justify-center">
-        <form className="w-full md:w-1/2 lg:w-1/4 mt-10" onSubmit={handleLogin}>
-          <label className="block text-gray-700 text-sm font-bold mb-2" for="username">Korisnicko ime</label>
-          <input className="w-full py-2 px-3" id="username" name="username" type="text" ref={userRef} placeholder="Korisnicko ime" onChange={(elem) => setUsername(elem.target.value)} required/>
-          <label className="block text-gray-700 text-sm font-bold mb-2 mt-4" for="password">Lozinka</label>
-          <input className="w-full py-2 px-3" id="password" type="password" placeholder="Lozinka" onChange={(elem) => setPassword(elem.target.value)} required/>
+			<MutationState 
+				isLoading={isFetchLoginLoading}
+				isSuccess={isFetchLoginSuccess}
+				isError={isFetchLoginError}
+				error={fetchLoginError}
+				successMessage="Uspešno prijavljivanje!"
+			/>
+      <CardContainer containerBgClass='bg-main-pattern'>
+				<h1 class="text-xl font-bold py-5 text-center">Prijava</h1>
+        <form onSubmit={handleLogin}>
+					<div class="mb-2">
+						<Input id="username" type="text" name="Korisničko ime ili e-adresa" placeholder="marko.markovic" setVal={(elem) => setUsername(elem.target.value)} inputVal={username} />
+					</div>
+					<div class="mb-2">
+						<Input id="password" type="password" name="Lozinka" placeholder="•••••••" setVal={(elem) => setPassword(elem.target.value)} inputVal={password} />
+					</div>
           <div className='w-full flex justify-center my-3'>
-            <button className="btn-red w-full lg:w-3/4">Uloguj se!</button>
+            <button className="w-full btn-primary btn-green">Uloguj se!</button>
           </div>
-          <p className="block text-sm">Nemate nalog? <Link to="/register">Registrujte se!</Link></p>
-          <div className="w-full flex justify-center mt-2">
-            { isFetchLoginLoading ? <>Loading</> : null }
-            { isFetchLoginSucces ? <p className="bg-green-200 text-center p-2">Uspesno prijavljivanje!</p> : null }
-            { isFetchLoginError ? <p className="bg-red-200 text-center p-2">Greška prilikom prijavljivanja: Uneti su netačni podaci!</p> : null}
-          </div>
+          <p className="block text-sm">Nemaš nalog? <Link class="underline hover:no-underline cursor-pointer" to="/register">Registruj se!</Link></p>
         </form>
-      </div>
+      </CardContainer>
     </>
   )
 }

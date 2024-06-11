@@ -12,9 +12,14 @@ import ScheduleTimeAdd from '../../components/ScheduleTimeAdd/ScheduleTimeAdd';
 import deepClone from 'deep-clone'
 import ScheduleScreenOne from '../../components/ScheduleScreenOne/ScheduleScreenOne';
 import ScheduleScreenTwo from '../../components/ScheduleScreenTwo/ScheduleScreenTwo';
+import CardContainer from '../../components/CardContainer/CardContainer';
+import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
 
+
+/* TODO: change schedule add logic, also schedule edit label -> value */
 const SchedulesAdd = ({ edit = false, ...props }) => {
-  const session = useSelector(state => state.session);
+  console.log(props);
+	const session = useSelector(state => state.session);
   const navigate = useNavigate();
   const { institution } = useParams();
 
@@ -40,11 +45,12 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
   /* These could go in a separate component ? */
   const [ title, setTitle ] = useState(props.title || ''); 
-  const [ style, setStyle ] = useState(props.style || 'default');
+  const [ style, setStyle ] = useState(props.style || scheduleStyles[0]);
   const [ validUntil, setValidUntil ] = useState(props.validUntil || '');
-  const [ systemType, setSystemType ] = useState(props.systemType || 'school');
+  const [ systemType, setSystemType ] = useState(props.systemType || scheduleTypes[0]);
   const [ subtitle, setSubtitle ] = useState(props.subtitle || '');
   const [ comment, setComment ] = useState(props.comment || '');
+
 
   const [ step, setStep ] = useState(0);
   const [ isSubjectOpen, setIsSubjectOpen ] = useState(false);
@@ -53,7 +59,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   const [ department, setDepartment ] = useState(props.department || '0');
   const [ added, setAdded ] = useState(false);
   const [ groups, setGroups ] = useState(props.groups || ['Grupa 1']);
-  const [ days, setDays ] = useState(props.days || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']);
+  const [ days, setDays ] = useState(props.days || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak',]);
   let toAssign;
 
   if(!props?.rows) {
@@ -78,7 +84,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     isLoading: isGetRoleLoading,
     isSuccess: isGetRoleSuccess, 
   } = useGetRoleQuery(institution, { 
-    skip: !institution || !session.accessToken
+    skip: !institution || !session.refreshToken
   });
 
   const {
@@ -86,7 +92,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     isLoading: isInstitutionLoading,
     isSuccess: isInstitutionSuccess
   } = useGetByIdQuery({ id: institution }, { 
-    skip: !institution || !session.accessToken
+    skip: !institution || !session.refreshToken
   });
 
   const {
@@ -95,7 +101,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     isSuccess: isSubjectsSuccess,
     isError: isSubjectsError,
     error: subjectsError
-  } = useGetSubjectsQuery(({ institution: institution, fullInfo: true }), {
+  } = useGetSubjectsQuery({ institution, fullInfo: true }, {
     skip: !getRole
   });
 
@@ -117,7 +123,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     const { groupIndex, i, j } = indexes;
     if(j < days.length && j >= 0) {
       setRows(prev => {
-        prev[groupIndex].data[j][i] = (systemType !== 'school') ?
+        prev[groupIndex].data[j][i] = (systemType.value !== 'school') ?
         { ...prev[groupIndex].data[j][i], subject, lecturer, from: time.startTime, to: time.endTime, location } 
           : { ...prev[groupIndex].data[j][i], subject, lecturer, location };
         
@@ -155,9 +161,31 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     }
   }
 
+	const handleDeleteItem = (group, index = -1) => {
+		const rowsObj = rows[group].data;
+
+		if(rowsObj.length && index < rowsObj[0].length && rowsObj[0].length !== 1) {
+			if(index === -1) {
+				days.forEach((_, ind) => {
+					rowsObj[ind].pop();
+				});
+			}
+			else  {
+				days.forEach((_, ind) => {
+					rowsObj[ind].splice(index, 1);
+				});
+			}
+
+			let tempRows = [ ...rows ];
+				tempRows[group].data = rowsObj;
+				setAdded(prev => !prev);
+				setRows(tempRows);
+		}
+	}
+
   // this function adds time to the whole row (used in school system types)
   const handleAddTime = (startTime, endTime) => {
-    if(systemType === 'school') {
+    if(systemType.value === 'school') {
       setRows(prev => {
         prev[indexes.groupIndex].defaultTimes[indexes.i].from = startTime;
         prev[indexes.groupIndex].defaultTimes[indexes.i].to = endTime;
@@ -196,9 +224,9 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       }
       
       const body = {
-        title, days, style, validUntil, 
-        systemType, subtitle, comment,
-        department, groups, data: tempRows,
+        title, days, style: style.value, validUntil, 
+        systemType: systemType.value, subtitle, comment,
+        department: department.value, groups, data: tempRows,
         published
       }
 
@@ -228,13 +256,13 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   }
 
   // FIXME:
-  const handleDeleteSchedule = () => {
+  const handleDeleteSchedule = async () => {
     if(!edit) {
       // change this...
       window.location.reload();
     } else {
       try {
-        const result = fetchDeleteSchedule({ institution, schedule: props._id }).unwrap();
+        await fetchDeleteSchedule({ institution, schedule: props._id }).unwrap();
       } catch (err) {
         console.log(err);
       }
@@ -295,25 +323,21 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       setGroups,
       groups,
       handleDeleteGroup,
-      edit
+      edit,
     }
 
     content = 
     <>
       { step === 0 ? 
         <>
-          <div className="w-full flex justify-center">
-            <div className="w-full md:w-1/2 lg:w-1/3">
-              <ScheduleScreenOne 
-                {...firstProps}
-              />
-            </div>
-          </div>
-          <div className="w-full flex justify-end">
-            <div className="w-full md:w-1/3 lg:w-1/4 gap-7">
-              <button className="btn-green w-full md:w-1/2 lg:w-1/3" onClick={() => setStep(prev => prev + 1)}>Dalje</button>
-            </div>
-          </div>
+          <CardContainer large={true}>
+						<ScheduleScreenOne 
+							{...firstProps}
+						/>
+						<div className="w-full flex justify-end">
+							<button className="btn-primary  btn-green w-full md:w-1/2 lg:w-1/3" onClick={() => setStep(prev => prev + 1)}>Dalje</button>
+						</div>
+          </CardContainer>
         </>
       : <>
           <div className="w-full flex justify-center">
@@ -321,8 +345,9 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
               <ScheduleScreenTwo 
                 days={days} rows={rows} groups={groups}
                 handleSetTimeOpen={handleSetTimeOpen} handleSetOpen={handleSetOpen}
-                systemType={systemType} handleAddItem={handleAddItem} edit={true}
-              />
+                systemType={systemType} handleAddItem={handleAddItem} edit={true} handleDeleteItem={handleDeleteItem}
+								style={style}
+						 />
             </div>
           </div>
           
@@ -336,13 +361,10 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
           </div>
         </>
       }
-      
 
     </>
-  } else if (isGetRoleLoading || isSubjectsLoading) {
-    content = <>Loading...</>
   }
-
+	 
   return (
     <>
       { isSubjectOpen ? 

@@ -3,20 +3,23 @@ import { useEditScheduleMutation, useGetScheduleByIdQuery } from '../../app/api/
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
-import ScheduleComponent from '../../components/ScheduleComponent/ScheduleComponent';
 import SchedulesAdd from '../SchedulesAdd/SchedulesAdd';
+import { Helmet } from 'react-helmet';
+import MutationState from '../../components/MutationState/MutationState';
+import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
 
 const SchedulesEdit = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
 
   const [
-    fetchEditSchedule,
+    editSchedule,
     {
-      data: fetchEditScheduleData,
-      isLoading: isFetchEditScheduleLoading,
-      isSuccess: isFetchEditScheduleSuccess,
-      isError: isFetchEditScheduleError
+      data: editScheduleData,
+      isLoading: isEditScheduleScheduleLoading,
+      isSuccess: isEditScheduleScheduleSuccess,
+      isError: isEditScheduleScheduleError,
+			error: editScheduleError
     }
   ] = useEditScheduleMutation();
 
@@ -25,7 +28,7 @@ const SchedulesEdit = () => {
     isLoading: isRoleLoading,
     isSuccess: isRoleSuccess
   } = useGetRoleQuery(institution, {
-    skip: !session.accessToken || !institution
+    skip: !session.refreshToken || !institution
   });
 
   const {
@@ -40,37 +43,47 @@ const SchedulesEdit = () => {
 
   let content;
 
-  if(isScheduleLoading) {
-    content = <>Loading...</>
-  } else if (isScheduleSuccess) {
+
+  if (isScheduleSuccess) {
     const props = {
       _id: scheduleData._id,
       title: scheduleData.title,
-      style: scheduleData.style,
+      style: scheduleStyles.find(s => s.value === scheduleData.style),
       validUntil: scheduleData.validUntil,
-      systemType: scheduleData.systemType,
+      systemType: scheduleTypes.find(t => t.value === scheduleData.systemType),
       subtitle: scheduleData.subtitle,
       comment: scheduleData.comment,
       department: scheduleData.department,
       groups: scheduleData.groups,
       days:  scheduleData.days,
       rows: scheduleData.instances,
-      fetchEditSchedule,
-      isFetchEditScheduleLoading,
-      isFetchEditScheduleSuccess,
-      isFetchEditScheduleError
+      editSchedule,
+      isEditScheduleScheduleLoading,
+      isEditScheduleScheduleSuccess,
+      isEditScheduleScheduleError
     }
 
     content = <SchedulesAdd { ...props } edit={true}/>
   }
 
-  useEffect(() => {
-    document.title = 'Uredi raspored | Rasporedar';
-  }, []);
-
   return (
     <>
-      <div>SchedulesEdit</div>
+			<Helmet>
+				<title>Uredi raspored | Rasporedar</title>
+			</Helmet>
+			<MutationState 
+				isLoading={isRoleLoading || isScheduleLoading || isEditScheduleScheduleLoading}
+				isError={isScheduleError}
+				error={scheduleError}
+				
+			/>
+			<MutationState 
+				isError={isEditScheduleScheduleError}
+				error={editScheduleError}
+				isSuccess={isEditScheduleScheduleSuccess}
+				successMessage='Raspored uspešno izmenjen!'
+			/>
+			
       { content }
     </>
   )

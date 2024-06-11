@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import ScheduleComponent from '../../components/ScheduleComponent/ScheduleComponent';
-import { Pen } from 'lucide-react';
+import { Pen, Pencil } from 'lucide-react';
+import MutationState from '../../components/MutationState/MutationState';
+import { scheduleStyles } from '../../models/SelectModels';
 const Schedule = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
@@ -14,7 +16,7 @@ const Schedule = () => {
     isLoading: isRoleLoading,
     isSuccess: isRoleSuccess
   } = useGetRoleQuery(institution, {
-    skip: !session.accessToken || !institution
+    skip: !session.refreshToken || !institution
   });
 
   const {
@@ -29,33 +31,35 @@ const Schedule = () => {
 
   let content;
 
-  if(isScheduleLoading) {
-    content = <>Loading...</>
-  } else if(isScheduleSuccess && isRoleSuccess) {
-
+	if(isScheduleSuccess && isRoleSuccess) {
+		const style = scheduleStyles.find(s => s.value === scheduleData.style)
     const props = {
-      groups: scheduleData.instances.map(elem => elem.group),
+      groups: scheduleData.groups,
       editable: false,
       rows: scheduleData.instances,
       days: scheduleData.days,
-      systemType: scheduleData.systemType
-    }
+      systemType: scheduleData.systemType,
+			style
+    };
     
     content = 
     <>
-      <div className="">
-        <p className="flex">
-          { scheduleData.title || 'Raspored' }
-          { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${id}/edit`}>Edit</Link> : null}
+      <div className="w-full flex flex-col items-center justify-center">
+        <p className="flex gap-2 py-5">
+          <h1 className="text-xl font-bold">{ scheduleData.title || 'Raspored' }</h1>
+          { getRole.role !== 'User' ? <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer" to={`/institutions/${institution}/schedules/${id}/edit`}><Pencil size={16} /></Link> : null}
         </p>  
-        <p>{ scheduleData.subitle }</p>
-      </div>
+        <p className="text-lg font-semibold">{ scheduleData.subtitle }</p>
+				{ scheduleData.department }
+			</div>
       
-      
-      
-      { scheduleData.department }
-      <ScheduleComponent {...props} /> 
-      <p>{ scheduleData.comment }</p>
+    
+			<div className="relative overflow-x-auto">
+				<div className="w-full mt-5 p-2 rounded min-w-[1000px]">
+					<ScheduleComponent {...props} /> 
+					<p className="p-2">{ scheduleData.comment }</p>
+				</div>
+			</div>
       
     </>
   }
@@ -66,7 +70,11 @@ const Schedule = () => {
 
   return (
     <>
-      <div>Schedule</div>
+			<MutationState 
+				isLoading={isRoleLoading || isScheduleLoading}
+				isError={isScheduleError}
+				error={scheduleError}
+			/>
       { content }
     </>
   )

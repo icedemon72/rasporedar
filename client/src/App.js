@@ -32,6 +32,10 @@ import Schedules from './pages/Schedules/Schedules';
 import Schedule from './pages/Schedule/Schedule';
 import SchedulesAdd from './pages/SchedulesAdd/SchedulesAdd';
 import SchedulesEdit from './pages/SchedulesEdit/SchedulesEdit';
+
+import { ToastContainer } from 'react-toastify';
+import { Tooltip } from 'react-tooltip';
+import 'react-toastify/dist/ReactToastify.css';
 // add InInstitution authentication
 // add RoleInInstitution authorization
 
@@ -39,7 +43,13 @@ function App() {
   return (
     <StrictMode>
       <BrowserRouter>
-        <Navbar />
+        <div class="block mb-[76px]">
+					<Navbar />
+				</div>
+
+				<Tooltip opacity={1} id="my-tooltip" className="z-[999]" delayShow={400} />
+				<ToastContainer />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -51,7 +61,9 @@ function App() {
           <Route path="/institutions" element={<Institutions />} />
           
           <Route path="/institutions/create" element={<CreateInstitution />} />
-          <Route path="/institutions/join" element={<JoinInstitution />} />
+          <Route path="/institutions/join/:type/:jCode" element={<JoinInstitution />} />
+          <Route path="/institutions/join/:type/" element={<JoinInstitution />} />
+          <Route path="/institutions/join/" element={<JoinInstitution />} />
 
           {/* Everyone in the institution can access these */}
           <Route  element={<RouteInInstitution requiredRoles={['User', 'Moderator', 'Owner']}/>}>

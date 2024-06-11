@@ -5,30 +5,53 @@ import { useState, useEffect, useRef } from 'react';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import { addItemToArrayOnKey, deleteItemFromArray } from '../../utils/updateArray';
 import { RefreshCcw, Copy, Trash, Save, PlusCircle } from 'lucide-react';
+import Input from '../../components/Input/Input';
+import SelectComponent from '../../components/Input/SelectComponent';
+import getLabel from '../../utils/getLabel';
+import Loader from '../../components/Loader/Loader';
+import MutationState from '../../components/MutationState/MutationState';
+import CopyField from '../../components/CopyField/CopyField';
+import CardContainer from '../../components/CardContainer/CardContainer';
+
+const typeObj = [
+	{ value: 'primary', label: 'Osnovna škola' },
+	{ value: 'high', label: 'Srednja škola' },
+	{ value: 'faculty', label: 'Visokoobrazovna institucija' },
+	{ value: 'other', label: 'Drugo/ne želim da navedem'}
+]
+
 const InstitutionEdit = () => {
   const { institution } = useParams();
   const session = useSelector(state => state.session);
   const inputRef = useRef(null);
-  const [ 
-    fetchEdit, 
+  
+	const [ 
+    edit, 
     {
-      isLoading: isFetchEditLoading,
-      isSuccess: isFetchEditSuccess
+      isLoading: isEditLoading,
+      isSuccess: isEditSuccess,
+			isError: isEditError,
+			error: editError
     }
   ] = useEditInstitutionMutation();
   
   const [ 
-    fetchDelete, 
+    deleteInstitution, 
     {
-      isLoading: isFetchDeleteLoading,
-      isSuccess: isFetchDeleteSuccess
+      isLoading: isDeleteInstitutionLoading,
+      isSuccess: isDeleteInstitutionSuccess,
+			isError: isDeleteInstitutionError,
+			error: deleteInstitutionError
     }
   ] = useDeleteInstitutionMutation();
 
   const [ 
-    fetchEditCode, 
+    editCode, 
     {
-      isLoading: isFetchEditCodeLoading
+      isLoading: isEditCodeLoading,
+			isSuccess: isEditCodeSuccess,
+			isError: isEditCodeError,
+			error: editCodeError
     } 
   ] = useInstitutionChangeCodeMutation();
 
@@ -37,7 +60,7 @@ const InstitutionEdit = () => {
 
   const [ departments, setDepartments ] = useState([]);
   const [ name, setName ] = useState('');
-  const [ typeOf, setTypeOf ] = useState('');
+  const [ typeOf, setTypeOf ] = useState({});
   const [ dpt, setDpt ] = useState('');
 
   const navigate = useNavigate();
@@ -49,7 +72,7 @@ const InstitutionEdit = () => {
     isError: isGetRoleError,
     error: getRoleError 
   } = useGetRoleQuery(institution, {
-    skip: !session.accessToken
+    skip: !session.refreshToken
   });
 
   const { 
@@ -67,7 +90,7 @@ const InstitutionEdit = () => {
       const body = (toChange === 'mod') ? { moderatorCode: 1 } 
         : (toChange === 'user') ? { code: 1 }
           : { moderatorCode: 1, code: 1 };
-      const result = fetchEditCode({ institution, body }).unwrap();
+      const result = editCode({ institution, body }).unwrap();
     } catch (err) {
       console.log(err);
     } finally {
@@ -75,11 +98,12 @@ const InstitutionEdit = () => {
     }
   }
 
+	// MAIN FUNCTION
   const handleEditInstitution = async () => {
     try {
       setIsSubmitting(true);
-      const body = { name, typeOf, departments };
-      const result = await fetchEdit({ id: institution, body }).unwrap();
+      const body = { name, typeOf: typeOf.value, departments };
+      const result = await edit({ id: institution, body }).unwrap();
     } catch (err) {
       console.log(err);
     } finally {
@@ -90,7 +114,7 @@ const InstitutionEdit = () => {
   const handleDeleteInstitution = async () => {
     try {
       setIsSubmitting(true);
-      const result = await fetchDelete(institution).unwrap();
+      const result = await deleteInstitution(institution).unwrap();
       setOpen(false);
       setTimeout(() => {
         navigate('/institutions');
@@ -122,76 +146,88 @@ const InstitutionEdit = () => {
 
   let content;
 
-  if(isGetRoleError && getRoleError.status === 405) {
-    content = '405 method not allowed!';
-  } 
-  
   if(isInstitutionSuccess && isGetRoleSuccess) {
     content = 
     <>
-      <label className="block text-gray-700 text-sm font-bold mb-2">Naziv grupe</label>
-      <input className="input-field mb-4" type="text" value={name} disabled={getRole.role !== 'Owner'} onChange={(elem) => setName(elem.target.value)}/>
-      <label className="block text-gray-700 text-sm font-bold mb-2">Tip grupe</label>
-      <input className="input-field mb-4" type="text" value={typeOf} disabled={getRole.role !== 'Owner'} onChange={(elem) => setTypeOf(elem.target.value)}/>
-      <label className="block text-gray-700 text-sm font-bold mb-2">Odseci, odeljenja itd.</label>
-      <div className="w-full flex">
-        <input className="input-field rounded w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5 py-2 px-3" type="text" placeholder="Naziv odseka/odeljenja" ref={inputRef} onKeyUp={(elem) => handleAddDepartment(elem)} onChange={(elem) => setDpt(elem.target.value)} value={dpt}></input>
-        <button className="border rounded w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline flex justify-center"  type="text" onClick={() => handleAddDepartment(inputRef.current, null)}><PlusCircle /></button>
-      </div>
-      { departments.map((elem, i) => {
-        return (
-          <div class="flex flex-row justify-between mt-2">
-            <div>{ i + 1 }</div>
-            <p>{ elem }</p>
-            <div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
-          </div>
-      )})}
-      <div className="flex items-center  mt-4">
-        <label className="block text-gray-700 text-sm font-bold">Kodovi</label>
-        <button disabled={isSubmitting} className="p-2 cursor-pointer hover:bg-slate-300 flex rounded-md"  onClick={handleCodeChange}>
-          {<RefreshCcw className="hover:animate-spin hover:direction-reverse" size={16} />}
-        </button>
+			<h1 className="text-xl font-bold text-center py-5 truncate">{ institutionData.name }</h1>
+      <div className="mb-4">
+				<Input id="name" type="text" name="Naziv institucije ili grupe" inputVal={name} placeholder="Prirodno-matematički fakultet" setVal={(elem) => setName(elem.target.value)}/>
+			</div>
+			
+			<div className="mb-4">
+				<label className="label-primary">Tip institucije ili grupe</label>
+					<SelectComponent 
+						data={typeObj} 
+						placeholder="Izaberite instituciju"
+						isClearable={false}
+						isSearchable={false}
+						setVal={(elem) => setTypeOf(elem)}
+						value={typeOf}
+						required={true} 
+					/>
+			</div>
+
+     
+		 <div className="mb-4">
+				<label className="label-primary">Odseci, odeljenja itd.</label>
+				<div className="w-full flex gap-1">
+					<input className="input-primary" type="text" placeholder="Naziv odseka/odeljenja" ref={inputRef} onKeyUp={(elem) => handleAddDepartment(elem)} onChange={(elem) => setDpt(elem.target.value)} value={dpt}></input>
+					<button className="btn-plus w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5"  type="text" onClick={() => handleAddDepartment(inputRef.current, null)}><PlusCircle /></button>
+				</div>
+				{ departments.map((elem, i) => {
+					return (
+						<div class="flex flex-row justify-between mt-2">
+							<div>{ i + 1 }</div>
+							<p>{ elem }</p>
+							<div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
+						</div>
+				)})}
+
+		 </div>
+
+		 <div className="border-2 border-black p-2">
+      <div className="flex justify-between items-center gap-2">
+        <label className="block text-gray-700 font-bold">Kodovi</label>
+        <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={handleCodeChange}>
+              {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
+            </button>
       </div>
 
       <div className="mt-4 flex justify-between">
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Kod za korisnike</label>
-          <div className="flex items-center">
-            <div className="cursor-pointer hover:bg-slate-300 rounded-md p-2 flex" onClick={() => navigator.clipboard.writeText(institutionData.code.toUpperCase())}>
-              {institutionData.code.toUpperCase()}
-              <Copy size={16} />
-            </div> 
-            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer rounded-md" onClick={() => handleCodeChange('user')}>
-              {<RefreshCcw className="hover:animate-spin hover:direction-reverse" size={16}/>}
+          <div className="flex items-center gap-2">
+						<CopyField text={institutionData.code.toUpperCase()}/>
+
+            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={() => handleCodeChange('user')}>
+              {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
             </button>
           </div>
         </div>
 
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">Kod za moderatore</label>
-          <div className="flex items-center">
-            <div className="cursor-pointer hover:bg-slate-300 rounded-md p-2 flex" onClick={() => navigator.clipboard.writeText(institutionData.moderatorCode.toUpperCase())}>
-              {institutionData.moderatorCode.toUpperCase()}
-              <Copy size={16} />
-            </div>
-            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer rounded-md" onClick={() => handleCodeChange('mod')}>
-              {<RefreshCcw className="hover:animate-spin hover:direction-reverse" size={16}/>}
+          <div className="flex items-center gap-2">
+						<CopyField text={institutionData.moderatorCode.toUpperCase()}/>
+
+            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={() => handleCodeChange('mod')}>
+              {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
             </button>
           </div>
         </div>
 
       </div>
-      <div className="w-full  flex justify-center mt-3">
-        <button className="flex w-full md:w-1/2 lg:w-1/3 btn-green rounded justify-center" onClick={handleEditInstitution} disabled={isSubmitting}><Save /> Sačuvaj promene!</button>
-      </div>
-      <div className="w-full  flex justify-center mt-3">
-        <button className="flex w-full md:w-1/2 lg:w-1/3 btn-red rounded justify-center" onClick={() => setOpen(true)} disabled={isSubmitting}><Trash /> Obrisi grupu</button>
-      </div>
-      { isFetchEditCodeLoading ? <>Loading...</> : null }
-      { isFetchDeleteLoading ? <>Loading...</> : null }
-      { isFetchEditLoading ? <>Loading... </> : null }
-      { isFetchEditSuccess ? <>Grupa je uspesno izmenjena! </> : null }
-      { isFetchDeleteSuccess ? <>Uspešno brisanje grupe!</> : null }
+		 </div>
+
+
+			<div className="flex justify-between gap-4 mt-2">
+				<div className="w-full  flex justify-center items-center">
+					<button className="flex gap-2 w-full justify-center btn-primary btn-red" onClick={() => setOpen(true)} disabled={isSubmitting}><Trash /> Obriši grupu</button>
+				</div>
+				<div className="w-full flex justify-center items-center">
+					<button className="flex gap-2 w-full justify-center btn-primary btn-green" onClick={handleEditInstitution} disabled={isSubmitting}><Save /> Sačuvaj promene!</button>
+				</div>
+			</div>
 
       <Link className="block" to={`/institutions/${institution}/professors`}>Profesori</Link>
       <Link className="block" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
@@ -207,7 +243,8 @@ const InstitutionEdit = () => {
     if(isInstitutionSuccess) {
       setDepartments(institutionData.departments);
       setName(institutionData.name);
-      setTypeOf(institutionData.typeOf);
+			setTypeOf(typeObj[typeObj.map(i => i.value).indexOf(institutionData.typeOf)]);
+			
       document.title = `Uredi ${institutionData.name} | Rasporedar`;
     } else {
       document.title = 'Uredi grupu | Rasporedar';
@@ -216,18 +253,36 @@ const InstitutionEdit = () => {
 
   return (
     <>
+			<MutationState 
+				isLoading={isEditLoading || isDeleteInstitutionLoading || isEditCodeLoading || isInstitutionLoading}
+				isSuccess={isEditSuccess}
+				isError={isEditError}
+				error={editError}
+				successMessage='Grupa je uspešno izmenjena!'
+			/>
+			<MutationState 
+				isSuccess={isDeleteInstitutionLoading}
+				isError={isDeleteInstitutionError}
+				error={deleteInstitutionError}
+				successMessage='Grupa je uspešno obrisana!'
+			/>
+			<MutationState 
+				isSuccess={isEditCodeSuccess}
+				isError={isEditCodeError}
+				error={editCodeError}
+				successMessage='Uspešna izmena!'
+			/>
       { open ? 
         <ModalDelete title={'Brisanje grupe'} text={`Obrisacete grupu '${institutionData.name}'. Da li ste sigurni?`}>
-          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setOpen(false)}>Odustani</button>
-          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteInstitution}>Potvrdi</button>
+          <button className="btn-primary bg-gray-300 hover:bg-gray-500 p-2 transition-all" onClick={() => setOpen(false)}>Odustani</button>
+          <button className="btn-primary bg-red-300 hover:bg-red-500 p-2 transition-all" onClick={handleDeleteInstitution}>Potvrdi</button>
         </ModalDelete> 
         : null 
       }
-      <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 lg:w-1/3">
-          { content }
-        </div>
-      </div>
+      <CardContainer loaded={isInstitutionSuccess && isGetRoleSuccess}>
+				{ content }		
+			</CardContainer>
+    
     </>
   )
 }

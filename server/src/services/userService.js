@@ -4,135 +4,117 @@ import InInstitution from '../models/inInstitutionModel.js';
 import bcrypt from "bcrypt";
 
 export const registerUser = async (user) => {
-  try {
-    user.role = "User";
-    if (!validateEmail(user.email)) {
-      throw {
-        status: 401,
-        message: 'Unet je nevalidan e-mail!'
-      };
-    }
+	user.role = "User";
+	if (!validateEmail(user.email)) {
+		throw {
+			status: 401,
+			message: 'Unet je nevalidan e-mail!'
+		};
+	}
 
-    if (user.password.length <= 3) {
-      throw {
-        status: 401,
-        message: 'Lozinka mora sadržati bar 3 karaktera!',
-      };
-    }
+	if (user.password.length <= 3) {
+		throw {
+			status: 401,
+			message: 'Lozinka mora sadržati bar 3 karaktera!',
+		};
+	}
 
-    const userExists = await User.findOne({ $or: [{ email: user.email }, { username: user.username }] });
+	const userExists = await User.findOne({ $or: [{ email: user.email }, { username: user.username }] });
 
-    if (userExists) {
-      throw {
-        status: 401,
-        message: 'Korisničko ime već postoji!'
-      };
-    }
+	if (userExists) {
+		throw {
+			status: 401,
+			message: 'Korisničko ime već postoji!'
+		};
+	}
 
-    user.password = await bcrypt.hash(user.password, 10);
-    
-    await User.create(user);
-    return { message: 'Uspešna registracija!', success: true };
-  } catch (err) {
-    throw err;
-  }
+	user.password = await bcrypt.hash(user.password, 10);
+
+	await User.create(user);
+	return { message: 'Uspešna registracija!', success: true };
 }
 
 export const editUser = async (sender, data) => {
-  try {
-    // data.oldPassword, data.password
-    const oldPassword = await bcrypt.hash(data.oldPassword, 10);
-    const userObj = await User.findOne({ _id: sender, deleted: false, password: oldPassword });
+	// data.oldPassword, data.password
+	const oldPassword = await bcrypt.hash(data.oldPassword, 10);
+	const userObj = await User.findOne({ _id: sender, deleted: false, password: oldPassword });
 
-    if(!userObj) {
-      throw {
-        status: 400,
-        message: 'Pogrešne informacije!'
-      };
-    }
+	if (!userObj) {
+		throw {
+			status: 400,
+			message: 'Pogrešne informacije!'
+		};
+	}
 
-    data.password = await bcrypt.hash(data.password, 10);
-    /* just in case */
-    data.email = userObj.email;
-    data.username = userObj.username;
+	data.password = await bcrypt.hash(data.password, 10);
+	/* just in case */
+	data.email = userObj.email;
+	data.username = userObj.username;
 
-    await User.updateOne(userObj, data);
+	await User.updateOne(userObj, data);
 
-    return { message: 'Uspešna izmena informacija!', success: true }
+	return { message: 'Uspešna izmena informacija!', success: true }
 
-  } catch (err) {
-    throw err;
-  }
 }
 
 // FIXME: add role based check
 export const getUserById = async (user) => {
-  try {
-    const userObj = await User.findOne({ _id: user }, {
-      password: 0
-    });
+	const userObj = await User.findOne({ _id: user }, {
+		password: 0
+	});
 
-    if(!userObj) {
-      throw {
-        status: 400,
-        message: `Korisnik sa ID-em '${user}' ne postoji!`
-      }
-    }
+	if (!userObj) {
+		throw {
+			status: 400,
+			message: `Korisnik sa ID-em '${user}' ne postoji!`
+		}
+	}
 
-    return userObj;
-
-  } catch (err) {
-    throw err;
-  }
+	return userObj;
 }
 
 // GET
 // FIXME: add fullInfo (if needed I guess)
 export const getUserInstitution = async (user, role = 'all') => {
-  try {
-    if(role === 'Owner') {
-      const institutionObj = await Institution.find({createdBy: user, deleted: false}, {
-        code: 0, moderatorCode: 0, deleted: 0, createdBy: 0
-      });
-      
-      if(!institutionObj.length) {
-        throw {
-          status: 200,
-          message: 'Nije pronadjena nijedna grupa'
-        }
-      }
+	if (role === 'Owner') {
+		const institutionObj = await Institution.find({ createdBy: user, deleted: false }, {
+			code: 0, moderatorCode: 0, deleted: 0, createdBy: 0
+		});
 
-      return institutionObj;
-    } 
-    
-    const query = (role === 'all') ? { user, left: false } : { user, role, left: false };
+		if (!institutionObj.length) {
+			throw {
+				status: 200,
+				message: 'Nije pronadjena nijedna grupa'
+			}
+		}
 
-    const institutionObj = await InInstitution.find(query, { left: 0 });
-   
-    if(!institutionObj.length) {
-      throw {
-        status: 200,
-        message: 'Nije pronadjena nijedna grupa'
-      }
-    }
+		return institutionObj;
+	}
 
-    let result = [];
+	const query = (role === 'all') ? { user, left: false } : { user, role, left: false };
 
-    for(let i = 0; i < institutionObj.length; i++) {
-      const obj = await Institution.findOne({ _id: institutionObj[i].institution, deleted: false }, { deleted: 0, code: 0, moderatorCode: 0, __v: 0 }).lean();
-      obj.role = institutionObj[i].role;
-      result.push(obj);
-    }
+	const institutionObj = await InInstitution.find(query, { left: 0 });
 
-    return result;
+	if (!institutionObj.length) {
+		throw {
+			status: 200,
+			message: 'Nije pronadjena nijedna grupa'
+		}
+	}
 
-  } catch (err) {
-    throw err;
-  }
+	let result = [];
+
+	for (let i = 0; i < institutionObj.length; i++) {
+		const obj = await Institution.findOne({ _id: institutionObj[i].institution, deleted: false }, { deleted: 0, code: 0, moderatorCode: 0, __v: 0 }).lean();
+		obj.role = institutionObj[i].role;
+		result.push(obj);
+	}
+
+	return result;
 }
 
 const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+	return String(email)
+		.toLowerCase()
+		.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 }

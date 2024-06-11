@@ -3,6 +3,7 @@ import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiS
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { Pencil } from 'lucide-react';
+import MutationState from '../../components/MutationState/MutationState';
 
 const Institution = () => {
   const { institution } = useParams();
@@ -17,7 +18,7 @@ const Institution = () => {
     isError: isInstitutionError,
     error: institutionError 
   } = useGetByIdQuery({ id: institution }, {
-    skip: !session.accessToken
+    skip: !session.refreshToken
   });
 
   const { 
@@ -41,8 +42,11 @@ const Institution = () => {
     
     InstitutionContent = 
     <>
-      <div className="flex">
-        { institutionData.name } { role === 'Owner' ? <Link to={`/institutions/edit/${institution}`}><Pencil size={16} /></Link> : null }
+      <div className="w-full flex justify-center py-2 gap-2">
+				<h1 class="text-xl font-black max-w-[500px] truncate"> { institutionData.name }</h1>
+				{ role === 'Owner' ? <span class="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer"><Link to={`/institutions/edit/${institution}`}><Pencil size={16} /></Link> </span> : null }
+				
+
         {/* { institutionData.departments.length ? 
           institutionData.departments.map(dpt => {
             return (
@@ -56,9 +60,12 @@ const Institution = () => {
            
         } */}
       </div>
-          <Link className="block" to={`/institutions/${institution}/schedules`}>Rasporedi</Link>
-          <Link className="block" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
-          <Link className="block" to={`/institutions/${institution}/professors`}>Profesori</Link>
+			<div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+				<Link className="flex justify-center min-h-[300px] bg-red-500 col-span-1" to={`/institutions/${institution}/schedules`}>Rasporedi</Link>
+				<Link className="flex justify-center min-h-[300px] bg-red-500 col-span-1" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
+				<Link className="flex justify-center min-h-[300px] bg-red-500 col-span-1" to={`/institutions/${institution}/professors`}>Profesori</Link>   
+			</div>
+          
     </>
   } else if (isInstitutionError) {
     if(institutionError.status === 404) {
@@ -71,9 +78,12 @@ const Institution = () => {
   }, [ isInstitutionSuccess ]); 
 
   return (
-    <div>
+    <>
+			<MutationState
+				isLoading={isInstitutionLoading || isRoleLoading}
+			/>
       { InstitutionContent }
-    </div>
+    </>
   )
 }
 

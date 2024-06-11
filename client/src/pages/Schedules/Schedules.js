@@ -3,6 +3,8 @@ import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiS
 import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetSchedulesQuery } from '../../app/api/schedulesApiSlice';
+import { Helmet } from 'react-helmet';
+import { PlusCircle } from 'lucide-react';
 
 const Schedules = () => {
   const session = useSelector(state => state.session);
@@ -15,7 +17,7 @@ const Schedules = () => {
   //   isError: isInstitutionError,
   //   error: institutionError
   // }  = useGetByIdQuery({ id: institution }, {
-  //   skip: !session.accessToken
+  //   skip: !session.refreshToken
   // });
 
   const { 
@@ -23,7 +25,7 @@ const Schedules = () => {
     isLoading: isRoleLoading,
     isSuccess: isRoleSuccess
   } = useGetRoleQuery(institution, {
-    skip: !session.accessToken
+    skip: !session.refreshToken
   });
 
   const {
@@ -42,41 +44,56 @@ const Schedules = () => {
   if(isSchedulesLoading && isRoleLoading) {
     content = <>Loading...</>
   } else if (isSchedulesSuccess) {
-    content = schedulesData.map(schedule => {
-      let fullDate = '';
-      if(schedule.validUntil) {
-        const date = new Date(schedule.validUntil);
+    // content = schedulesData.map(schedule => {
+    //   let fullDate = '';
+    //   if(schedule.validUntil) {
+    //     const date = new Date(schedule.validUntil);
 
-        const yyyy = date.getFullYear();
-        const mm = ((date.getMonth() + 1) < 10) ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-        const dd = (date.getDate() < 10) ? `0${date.getDate()}` : date.getDate();
+    //     const yyyy = date.getFullYear();
+    //     const mm = ((date.getMonth() + 1) < 10) ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+    //     const dd = (date.getDate() < 10) ? `0${date.getDate()}` : date.getDate();
 
-        fullDate = `${dd}.${mm}.${yyyy}.`;
+    //     fullDate = `${dd}.${mm}.${yyyy}.`;
 
-      }
+    //   }
       
-      return (
-        <>
-          <div className="bg-red-200">
-            { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${schedule._id}/edit`}>Edit</Link> : null }
-            <Link className="hover:bg-slate-200 rounded-sm" to={`/institutions/${institution}/schedules/${schedule._id}`}>
-              { schedule.title || 'Raspored bez naziva' } 
-            </Link>
-            { schedule.department }
-            { schedule.validUntil ? <>Vazi do { fullDate }</> : null}
-          </div>
-        </>
-      )
-    })
+    //   return (
+    //     <>
+    //       <div className="bg-red-200">
+    //         { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${schedule._id}/edit`}>Edit</Link> : null }
+    //         <Link className="hover:bg-slate-200 rounded-sm" to={`/institutions/${institution}/schedules/${schedule._id}`}>
+    //           { schedule.title || 'Raspored bez naziva' } 
+    //         </Link>
+    //         { schedule.department }
+    //         { schedule.validUntil ? <>Vazi do { fullDate }</> : null}
+    //       </div>
+    //     </>
+    //   )
+    // })
+
+		content = 
+		<>
+			<div className="w-full flex justify-center">
+				<div className="w-full md:w-1/2 lg:w-1/3">
+					{ isRoleSuccess && getRole.role !== 'User' &&
+						<Link to={`/institutions/${institution}/schedules/add`}>
+							<div className="w-full flex gap-2 items-center justify-center btn-primary btn-green mb-5">
+								<PlusCircle size={16} /> 
+								<p>Dodaj raspored</p>
+							</div>
+						</Link>
+					}
+				</div>
+			</div>
+		</>
   }
 
-
-  useEffect(() => {
-    document.title = 'Rasporedi | Rasporedar';
-  }, []);
   return (
     <>
-      <div>Schedules</div>
+			<Helmet>
+				<title>Rasporedi | Rasporedar</title>
+			</Helmet>
+      <h1 class="text-xl font-bold text-center py-5">Rasporedi</h1>
       { content }
     </>
   )

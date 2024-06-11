@@ -1,17 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
 import { useAddSubjectMutation } from '../../app/api/subjectsApiSlice';
-import { PlusCircle, Trash } from 'lucide-react';
-import { indexOfKeyInArray, excludeSameIDsFromArray } from '../../utils/objectArrays';
+import { Helmet } from 'react-helmet';
+import Input from '../../components/Input/Input';
+import Textarea from '../../components/Input/Textarea';
+import SelectComponent from '../../components/Input/SelectComponent';
+import MutationState from '../../components/MutationState/MutationState';
+import CardContainer from '../../components/CardContainer/CardContainer';
 
 /* ADD ASS functionality!!!! */
 const SubjectsAdd = () => {
+	const navigate = useNavigate();
   const session = useSelector(state => state.session);
   const { institution } = useParams();
-  const inputPrRef = useRef(null);
-  const inputAsRef = useRef(null);
+
 
   const {
     data,
@@ -20,10 +24,18 @@ const SubjectsAdd = () => {
     isError,
     error
   } = useGetProfessorsQuery(institution, {
-    skip: !session.accessToken || !institution
+    skip: !session.refreshToken || !institution
   });
 
-  const [ fetchAddSubject ] = useAddSubjectMutation();
+  const [ 
+		addSubject,
+		{
+			isLoading: isAddSubjectLoading,
+			isSuccess: isAddSubjectSuccess,
+			isError: isAddSubjectError,
+			error: addSubjectError
+		}
+	 ] = useAddSubjectMutation();
 
   const [ professors, setProfessors ] = useState([]);
   const [ assistents, setAssistents ] = useState([]);
@@ -33,42 +45,17 @@ const SubjectsAdd = () => {
   const [ subjResult, setResult ] = useState('');
   const [ references, setReferences] = useState([]);
   
-  const handleAddProfessor = () => {
-    if(inputPrRef.current.value !== '0') {
-      let index = indexOfKeyInArray(data, '_id', inputPrRef.current.value);
-      if(index !== -1) {
-        const tempArray = [ ...professors, data[index] ];
-        setProfessors(tempArray);
-      }
-    }
-  } 
-
-  const handleDeleteProfessor = (professor) => {
-    const tempProfessors = excludeSameIDsFromArray(professors, [{ _id: professor }]);
-    setProfessors(tempProfessors);
-  }
-  
-  const handleAddAssistent = () => {
-    if(inputAsRef.current.value !== '0') {
-      let index = indexOfKeyInArray(data, '_id', inputAsRef.current.value);
-      if(index !== -1) {
-        const tempArray = [ ...assistents, data[index] ];
-        setAssistents(tempArray);
-      }
-    }
-  }
-  
-  const handleDeleteAssistent = (professor) => {
-    const tempAssistents = excludeSameIDsFromArray(assistents, [{ _id: professor }]);
-    setAssistents(tempAssistents);
-  }
-
-  const handleAddSubject = async () => {
-    // add input check here!!!
+  const handleAddSubject = async (event) => {
+		event.preventDefault();
+    event.stopPropagation();
+		
+		// add input check here!!!
     try {
+			const prof = professors.map((prof) => prof.value);
+			const ass = assistents.map((prof) => prof.value);
       const body = {
-        professors,
-        assistents,
+        professors: prof,
+        assistents: ass,
         name,
         description,
         goal,
@@ -76,79 +63,87 @@ const SubjectsAdd = () => {
         result: subjResult
       }
 
-      const result = await fetchAddSubject({institution, body});
+      const result = await addSubject({institution, body}).unwrap();
+
+			setTimeout(() => {
+				navigate(`/institutions/${institution}/subjects/${result._id}`);
+			}, 1000);
+
     } catch (err) {
       console.log(err);
     }
   }
-  
-  let content;
-  
-  if(isLoading) {
-    content = <option disabled>Loading...</option>
-  } else if (isSuccess) {
-    if(data.message) {
-      content = null;
-    } else {
-      content = excludeSameIDsFromArray(data, [ ...professors, ...assistents ]).map(elem => {
-        return <option value={elem._id}>{ elem.name }</option>
-      })
-    }
-  }
-  
-  useEffect(() => {
-    document.title = 'Dodaj predmet | Rasporedar';
-  }, []);
 
   return (
     <>
-      { isSuccess ? 
-      <>
-        <div className="w-full flex justify-center">
-          <div className="w-full md:w-1/2 lg:w-1/3 mt-5">
-            <input type="text" className="input-field mb-4" placeholder="Naziv predmeta" onChange={(elem) => setName(elem.target.value)} />
-            <textarea className="input-field mb-4" onChange={(elem) => setDescription(elem.target.value)} placeholder="Opis predmeta"></textarea>
-            <textarea className="input-field mb-4" onChange={(elem) => setGoal(elem.target.value)} placeholder="Cilj predmeta"></textarea>
-            <textarea className="input-field mb-4" onChange={(elem) => setResult(elem.target.value)} placeholder="Rezultat predmeta"></textarea>
-            {/* References should work on enter! */}
-            {/* <input type="text" onChange={(elem) => setGoal(elem.target.value)} placeholder="Refe"></input> */}
-            { professors.map(elem => {
-              return <>
-                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                <button onClick={() => handleDeleteProfessor(elem._id)}>Obrisi</button>
-              </>
-            }) }
-            <div className="flex gap-3 items-center justify-center mb-4">
-              <select className="input-field w-4/5" ref={inputPrRef}>
-                {!professors.length ? <option value="0">Dodaj profesora kasnije</option> : null}
-                { content }
-              </select>
-              <button className="w-1/5 p-2 flex justify-center" disabled={!data.length} onClick={data.length ? handleAddProfessor : null}><PlusCircle /></button>
+			<Helmet>
+				<title>Dodaj predmet | Rasporedar</title>
+			</Helmet>
 
-            </div>
-            
+			<MutationState 
+				isLoading={isLoading || isAddSubjectLoading}
+				isError={isError}
+				error={error}
+			/>
 
-            { assistents.map(elem => {
-              return <>
-                <p>{elem.title || ''} {elem.name || 'Bezimeni profesor'}</p>
-                <button onClick={() => handleDeleteAssistent(elem._id)}>Obrisi</button>
-              </>
-              })}
-            <div className="flex gap-3 items-center justify-center mb-4">
-              <select className="input-field w-4/5" ref={inputAsRef}>
-                <option value="0">Dodaj asistenta kasnije</option>
-                {content}
-              </select>
-              <button className="w-1/5 p-2 flex justify-center" disabled={!data.length} onClick={data.length ? handleAddAssistent : null}><PlusCircle /></button>
-            </div>
-            
-            <div className="flex justify-center">
-              <button onClick={handleAddSubject}>Dodaj predmet</button>
-            </div>
-          </div>
-        </div>
-      </>
-      : null } 
+			<MutationState 
+				isSuccess={isAddSubjectSuccess}
+				isError={isAddSubjectError}
+				error={addSubjectError}
+				successMessage='Predmet uspešno dodat!'
+			/>
+
+      {
+				isSuccess &&
+				<>
+					<CardContainer large={true}>
+						<h1 class="text-xl font-bold text-center py-5">Dodaj predmet</h1>
+						<form onSubmit={handleAddSubject}>
+							<div class="mb-4">
+								<Input id="name" name="Naziv predmeta" placeholder="Web Programiranje" type="text" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
+							</div>
+							<div class="mb-4">
+								<Textarea id="description" name="Opis predmeta" placeholder="Unesite opis predmeta..." inputVal={description} setVal={(elem) => setDescription(elem.target.value)} />
+							</div>
+							<div class="mb-4">
+								<Textarea id="goal" name="Cilj predmeta" placeholder="Unesite cilj predmeta" inputVal={goal} setVal={(elem) => setGoal(elem.target.value)} />
+							</div>
+							<div class="mb-4">
+								<Textarea id="result" name="Rezultat predmeta" placeholder="Unesite rezultat predmeta" inputVal={subjResult} setVal={(elem) => setResult(elem.target.value)} />
+							</div>
+
+							<div class="w-full mb-4">
+								<label class="label-primary">Profesori</label>
+								<SelectComponent data={data.map((item) => ({
+									value: item._id, label: item.name
+									}))} 
+									isMulti={true} 
+									placeholder="Izaberite profesore"
+									setVal={(e) => setProfessors(e)}
+									value={professors}
+									required={true} 
+								/>
+							</div>
+
+							<div className="w-full mb-6">
+								<label class="label-primary">Asistenti</label>
+								<SelectComponent data={data.map((item) => ({
+									value: item._id, label: item.name
+									}))} 
+									isMulti={true} 
+									placeholder="Izaberite asistente"
+									value={assistents}
+									setVal={(e) => setAssistents(e)} 
+								/>
+							</div>      
+								
+							<div className="flex justify-center">
+							<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green">Dodaj predmet!</button>
+							</div>
+						</form>
+					</CardContainer>
+				</>
+			} 
         
     </>
   )

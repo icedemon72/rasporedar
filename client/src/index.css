@@ -17,23 +17,57 @@ body {
 @tailwind utilities;
 
 @layer components {
+	.text-muted {
+		@apply text-gray-600;
+	}
+
   .btn-red {
-    @apply p-2 bg-red-200;
-  }
-  .btn-red:hover {
-    @apply bg-red-500 animate-in fade-in-50; 
+    @apply p-2 bg-red-200 hover:bg-red-500 transition-all;
   }
 
   .btn-green {
-    @apply p-2 bg-green-200;
-  }
-
-  .btn-green:hover {
-    @apply bg-green-500 animate-in fade-in-50;
+    @apply bg-green-200 hover:bg-green-500 transition-all;
   }
 
   .input-field {
     @apply border rounded w-full py-2 px-3 text-gray-700 leading-tight;
   }
 
+	.bg-primary {
+		@apply bg-yellow-200;
+	}
+
+	.box-shadow {
+		box-shadow: 3px 3px black;
+	}
+
+	.input-primary {
+		@apply w-full p-2 border-black border-2 rounded-md focus:outline-none focus:ring-0 focus:bg-yellow-50
+	}
+
+	.label-primary {
+		@apply block w-full font-semibold;
+	}
+
+	.btn-primary {
+		@apply p-2 border-2 border-black hover:box-shadow active:scale-95;
+	}
+	
+	.btn-plus {
+		@apply flex justify-center border-2 border-black w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 py-2 px-3 leading-tight focus:outline-none hover:box-shadow;
+	}
+}
+
+@font-face {
+	font-family: "Darker Grotesque";
+	src: url("./assets/fonts/DarkerGrotesque.ttf");
+}
+
+body {
+	font-family: "Dark Grotesque", monospace;
+	background-color: rgb(160, 160, 160);
+}
+
+.collapse-container {
+  transition: height 400ms;
 }

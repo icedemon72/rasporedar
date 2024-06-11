@@ -8,7 +8,7 @@ const initialState = {
   comment: '',
   days: ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak'],
   style: 'default',
-  systemType: 'school',
+  systemType: { value: 'school', label: 'Školski' },
   validUntil: '',
   instances: [
     {

@@ -4,7 +4,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     add: builder.mutation({
       query: credentials => ({
-        url: '/institution',
+        url: '/institutions',
         method: 'POST',
         body: credentials
       }),
@@ -12,7 +12,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     editInstitution: builder.mutation({
       query: ({id, body}) => ({
-        url: `/institution/${id}`,
+        url: `/institutions/${id}`,
         method: 'PATCH',
         body
       }),
@@ -20,14 +20,14 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     deleteInstitution: builder.mutation({
       query: id => ({
-        url: `/institution/${id}`,
+        url: `/institutions/${id}`,
         method: 'DELETE'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions'],
     }),
     institutionChangeCode: builder.mutation({
       query: ({ institution, body }) => ({
-        url: `/change_codes/${institution}`,
+        url: `/institutions/${institution}/change_code`,
         method: 'PATCH',
         body
       }),
@@ -35,7 +35,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     getById: builder.query({
       query: ({id, code}) => ({
-        url: `/institution/${id}${code ? '?code=1' : ''}`
+        url: `/institutions/${id}${code ? '?code=1' : ''}`
       }),
       providesTags: (result, error) => error ? [] : ['Institution']
     }),
@@ -47,7 +47,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     join: builder.mutation({ 
       query: credentials => ({
-        url: '/join',
+        url: '/institutions/join',
         method: 'POST',
         body: credentials
       }),
@@ -55,7 +55,7 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     joinModerator: builder.mutation({
       query: credentials => ({
-        url: '/join_moderator',
+        url: '/institutions/join_moderator',
         method: 'POST',
         body: credentials
       }),
@@ -63,26 +63,26 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
     }),
     leave: builder.mutation({ 
       query: (id) => ({
-        url: `/leave/${id}`,
+        url: `/institutions/${id}/leave`,
         method: 'POST'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Institutions']
     }),
     getRole: builder.query({
       query: (id) => ({
-        url: `/institution_role/${id}`
+        url: `/institutions/${id}/role`
       }),
       providesTags: (result, error) => error ? [] : ['Role']
     }),
     getAuthRole: builder.query({
       query: (id) => ({
-        url: `/institution_auth/${id}`
+        url: `/institutions/${id}/auth`
       }),
       providesTags: (result, error) => error ? [] : ['Role']
     }),
     changeRole: builder.mutation({
       query: (institution, user) => ({
-        url: `/change_role/${institution}/${user}`,
+        url: `/institutions/${institution}/role/users/${user}`,
         method: 'patch'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Role']

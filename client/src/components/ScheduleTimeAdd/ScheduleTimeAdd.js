@@ -21,17 +21,17 @@ const ScheduleTimeAdd = ({
     <>
       <div className="fixed left-0 top-0 z-[1054] h-full w-full overflow-y-auto overflow-x-outline-none bg-black bg-opacity-80 flex justify-center items-center" >
         <div className="fixed left-0 top-0 h-full w-full z-[1055]" onClick={closeFunc} ></div>
-        <div className="w-[400px] h-[500px] z-[1056] bg-white rounded-md py-8 px-16 flex flex-col justify-around">
-          { indexes.i + 1}. čas
+        <div className="min-w-[400px] min-h-[500px] z-[1056] bg-white rounded-md py-8 px-16 flex flex-col justify-around">
+          <h1 className="label-primary">{ indexes.i + 1}. čas</h1>
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">Termin</label>
+            <label className="label-primary  mb-2">Termin</label>
             <div className="flex items-center w-full gap-3 mt-3">
               <div className="flex-col basis-1/2">
-                <label className="block text-gray-700 text-xs font-bold uppercase">Od</label>
+                <label className="label-primary text-xs uppercase">Od</label>
                 <input type="time" className="input-field" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]" onChange={(elem) => setStartTime(elem.target.value)}/>
               </div>
               <div className="flex-col basis-1/2">
-                <label className="block text-gray-700 text-xs font-bold uppercase">Do</label>
+                <label className="label-primary text-xs uppercase">Do</label>
                 <input type="time" className="input-field basis-1/2" step="3600" min="00:00" max="23:59" pattern="[0-2][0-9]:[0-5][0-9]" onChange={(elem) => setEndTime(elem.target.value)}/>
               </div>
             </div>

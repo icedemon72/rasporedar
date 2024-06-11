@@ -17,7 +17,7 @@ export const RouteInInstitution = ({
     isSuccess: isGetRoleSuccess, 
     isError: isGetRoleError,
     error: getRoleError 
-  } = useGetRoleQuery(institution, { skip: !session.accessToken  });
+  } = useGetRoleQuery(institution, { skip: !session.refreshToken  });
   
   if(!isGetRoleLoading && isGetRoleSuccess) {
     // TODO: add accessToken support here!

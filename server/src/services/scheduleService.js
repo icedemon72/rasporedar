@@ -4,120 +4,98 @@ import Subject from "../models/subjectModel.js";
 import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
 export const addSchedule = async (sender, institution, data) => {
-  try {
-    const body = {
-      ...data,
-      instances: data.data,
-      institution,
-      deleted: false,
-      createdBy: sender
-    }
-
-    const scheduleObj = await Schedule.create(body);
-    return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
-  } catch (err) {
-    throw err;
+  const body = {
+    ...data,
+    instances: data.data,
+    institution,
+    deleted: false,
+    createdBy: sender
   }
+
+  const scheduleObj = await Schedule.create(body);
+  
+  return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
 }
 
 export const editSchedule = async (sender, institution, schedule, data) => {
-  try {
-    await authSenderInInstitutionObject(sender, institution);
+  await authSenderInInstitutionObject(sender, institution);
 
-    const scheduleObj = await Schedule.findOne({ _id: schedule, institution: institution, deleted: false });
+  const scheduleObj = await Schedule.findOne({ _id: schedule, institution: institution, deleted: false });
 
-    if(!scheduleObj) {
-      throw {
-        status: 404,
-        message: 'Ne postoji raspored'
-      }
+  if (!scheduleObj) {
+    throw {
+      status: 404,
+      message: 'Ne postoji raspored'
     }
-
-    // FIXME: change this
-    await Schedule.updateOne({ _id: scheduleObj._id }, {
-      $set: {
-        department: data.department || scheduleObj.department,
-        title: data.title || scheduleObj.title,
-        subtitle: data.subtitle || scheduleObj.subtitle,
-        comment: data.comment || scheduleObj.comment,
-        days: data.days || scheduleObj.days,
-        groups: data.groups || scheduleObj.groups,
-        style: data.style || scheduleObj.style,
-        systemType: data.systemType || scheduleObj.systemType,
-        validUntil: data.validUntil || scheduleObj.validUntil,
-        instances: data.data || scheduleObj.instances
-      }
-    });
-
-    return { message: 'Uspešno izmenjen raspored!', _id: scheduleObj._id };
-
-  } catch (err) {
-    throw err;
   }
+
+  // FIXME: change this
+  await Schedule.updateOne({ _id: scheduleObj._id }, {
+    $set: {
+      department: data.department || scheduleObj.department,
+      title: data.title || scheduleObj.title,
+      subtitle: data.subtitle || scheduleObj.subtitle,
+      comment: data.comment || scheduleObj.comment,
+      days: data.days || scheduleObj.days,
+      groups: data.groups || scheduleObj.groups,
+      style: data.style || scheduleObj.style,
+      systemType: data.systemType || scheduleObj.systemType,
+      validUntil: data.validUntil || scheduleObj.validUntil,
+      instances: data.data || scheduleObj.instances
+    }
+  });
+
+  return { message: 'Uspešno izmenjen raspored!', _id: scheduleObj._id };
 }
 
 export const deleteSchedule = async (sender, institution, schedule) => {
-  try {
-    await authSenderInInstitutionObject(sender, institution);
+  await authSenderInInstitutionObject(sender, institution);
 
-    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
+  const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
 
-    if(!scheduleObj) {
-      throw {
-        status: 400,
-        message: 'Ne postoji raspored ili je već obrisan!'
-      }
+  if (!scheduleObj) {
+    throw {
+      status: 400,
+      message: 'Ne postoji raspored ili je već obrisan!'
     }
-
-    scheduleObj.deleted = true;
-    await scheduleObj.save();
-
-    return { message: `Raspored sa ID-em ${schedule} je uspešno obrisan!` }; 
-
-  } catch (err) {
-    throw err;
   }
+
+  scheduleObj.deleted = true;
+  await scheduleObj.save();
+
+  return { message: `Raspored sa ID-em ${schedule} je uspešno obrisan!` };
 }
 
 export const getAllSchedulesInInstitution = async (sender, institution, published = true) => {
-  try {
-
-    (!published) ? 
-      await authSenderInInstitutionObject(sender, institution) :
-      await senderInInstitutionObject(sender, institution);
-
-    const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
-    const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude);
-    
-    return schedulesObj;
-  } catch (err) {
-    throw err;
-  }
-}
-
-export const getSchedule = async (sender, institution, schedule) =>{
-  try {
+  (!published) ?
+    await authSenderInInstitutionObject(sender, institution) :
     await senderInInstitutionObject(sender, institution);
 
-    const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false })
-      .populate({
-        path: 'instances.data.subject instances.data.lecturer',
-        select: '_id name'
-      });
-    
-    if(!scheduleObj) {
-      throw {
-        status: 404,
-        message: 'Raspored ne postoji!'
-      }
-    }
+  const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
+  const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude);
 
-    if(!scheduleObj.published) {
-      await authSenderInInstitutionObject(sender, institution);
-    }
+  return schedulesObj;
+}
 
-    return scheduleObj;
-  } catch (err) {
-    throw err;
+export const getSchedule = async (sender, institution, schedule) => {
+  await senderInInstitutionObject(sender, institution);
+
+  const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false })
+    .populate({
+      path: 'instances.data.subject instances.data.lecturer',
+      select: '_id name'
+    });
+
+  if (!scheduleObj) {
+    throw {
+      status: 404,
+      message: 'Raspored ne postoji!'
+    }
   }
+
+  if (!scheduleObj.published) {
+    await authSenderInInstitutionObject(sender, institution);
+  }
+
+  return scheduleObj;
 }
