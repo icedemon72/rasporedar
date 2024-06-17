@@ -117,8 +117,8 @@ const ScheduleSubjectAdd = ({
           <SelectComponent 
 						data={
 							selectedProfessorType?.value === 'professor' 
-							? subjects[indexOfKeyInArray(subjects, '_id', selectedSubject.value)].professors.map(professor => ({ value: professor._id, label: `${professor.title} ${professor.name}` }))
-							: subjects[indexOfKeyInArray(subjects, '_id', selectedSubject.value)].assistents.map(assistent => ({ value: assistent._id, label: `${assistent.title} ${assistent.name}` }))
+							? subjects[indexOfKeyInArray(subjects, '_id', selectedSubject.value)].professors.map(professor => ({ value: professor._id, label: `${professor.title || ''} ${professor.name}` }))
+							: subjects[indexOfKeyInArray(subjects, '_id', selectedSubject.value)].assistents.map(assistent => ({ value: assistent._id, label: `${assistent.title || ''} ${assistent.name}` }))
 						}
 						setVal={(e) => setSelectedProfessor(e)}
 						value={selectedProfessor}
@@ -164,7 +164,7 @@ const ScheduleSubjectAdd = ({
     <>
     <div className="fixed left-0 top-0 z-[1054] h-full w-full overflow-y-auto overflow-x-outline-none bg-black bg-opacity-80 flex justify-center items-center" tabIndex={-1} ref={closingElem} onKeyDown={handleIsEscape}>
       <div className="fixed left-0 top-0 h-full w-full z-[1055]" onClick={closeFunc} ></div>
-      <div className="z-[1056] bg-white rounded-md py-8 px-16 flex flex-col justify-between">
+      <div className="z-[1056] bg-secondary rounded-md py-8 px-16 flex flex-col justify-between">
         { content }
       </div>
     </div>

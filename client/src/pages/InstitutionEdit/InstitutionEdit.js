@@ -12,6 +12,7 @@ import Loader from '../../components/Loader/Loader';
 import MutationState from '../../components/MutationState/MutationState';
 import CopyField from '../../components/CopyField/CopyField';
 import CardContainer from '../../components/CardContainer/CardContainer';
+import ListItem from '../../components/ListItem/ListItem';
 
 const typeObj = [
 	{ value: 'primary', label: 'Osnovna škola' },
@@ -103,7 +104,7 @@ const InstitutionEdit = () => {
     try {
       setIsSubmitting(true);
       const body = { name, typeOf: typeOf.value, departments };
-      const result = await edit({ id: institution, body }).unwrap();
+      await edit({ id: institution, body }).unwrap();
     } catch (err) {
       console.log(err);
     } finally {
@@ -114,7 +115,7 @@ const InstitutionEdit = () => {
   const handleDeleteInstitution = async () => {
     try {
       setIsSubmitting(true);
-      const result = await deleteInstitution(institution).unwrap();
+      await deleteInstitution(institution).unwrap();
       setOpen(false);
       setTimeout(() => {
         navigate('/institutions');
@@ -176,41 +177,37 @@ const InstitutionEdit = () => {
 				</div>
 				{ departments.map((elem, i) => {
 					return (
-						<div class="flex flex-row justify-between mt-2">
-							<div>{ i + 1 }</div>
-							<p>{ elem }</p>
-							<div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
-						</div>
+						<ListItem text={elem} index={i} deleteFunc={() => handleDeleteDepartment(i)} />
 				)})}
 
 		 </div>
 
-		 <div className="border-2 border-black p-2">
+		 <div className="border-2 border-black p-2 rounded-md">
       <div className="flex justify-between items-center gap-2">
-        <label className="block text-gray-700 font-bold">Kodovi</label>
-        <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={handleCodeChange}>
+        <label className="label-primary">Kodovi</label>
+        <button disabled={isSubmitting} className="btn-primary cursor-pointer group bg-primary active:bg-secondary" onClick={handleCodeChange}>
               {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
             </button>
       </div>
 
       <div className="mt-4 flex justify-between">
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Kod za korisnike</label>
+          <label className="label-primary">Kod za korisnike</label>
           <div className="flex items-center gap-2">
 						<CopyField text={institutionData.code.toUpperCase()}/>
 
-            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={() => handleCodeChange('user')}>
+            <button disabled={isSubmitting} className="bg-primary active:bg-secondary cursor-pointer group btn-primary" onClick={() => handleCodeChange('user')}>
               {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
             </button>
           </div>
         </div>
 
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">Kod za moderatore</label>
+          <label className="label-primary">Kod za moderatore</label>
           <div className="flex items-center gap-2">
 						<CopyField text={institutionData.moderatorCode.toUpperCase()}/>
 
-            <button disabled={isSubmitting} className="p-2 hover:bg-slate-300 cursor-pointer group btn-primary" onClick={() => handleCodeChange('mod')}>
+            <button disabled={isSubmitting} className="bg-primary active:bg-secondary cursor-pointer group btn-primary" onClick={() => handleCodeChange('mod')}>
               {<RefreshCcw className="group-hover:animate-spin hover:direction-reverse" size={16}/>}
             </button>
           </div>
@@ -227,15 +224,7 @@ const InstitutionEdit = () => {
 				<div className="w-full flex justify-center items-center">
 					<button className="flex gap-2 w-full justify-center btn-primary btn-green" onClick={handleEditInstitution} disabled={isSubmitting}><Save /> Sačuvaj promene!</button>
 				</div>
-			</div>
-
-      <Link className="block" to={`/institutions/${institution}/professors`}>Profesori</Link>
-      <Link className="block" to={`/institutions/${institution}/subjects`}>Predmeti</Link>
-      <Link className="block" to={`/institutions/${institution}/schedules`}>Rasporedi</Link>
-      
-      {/* Schedule link */}
-      {/* <Link to={}></Link> */}
-      
+			</div>  
     </>
   }
 
@@ -274,8 +263,8 @@ const InstitutionEdit = () => {
 			/>
       { open ? 
         <ModalDelete title={'Brisanje grupe'} text={`Obrisacete grupu '${institutionData.name}'. Da li ste sigurni?`}>
-          <button className="btn-primary bg-gray-300 hover:bg-gray-500 p-2 transition-all" onClick={() => setOpen(false)}>Odustani</button>
-          <button className="btn-primary bg-red-300 hover:bg-red-500 p-2 transition-all" onClick={handleDeleteInstitution}>Potvrdi</button>
+          <button className="btn-primary bg-primary" onClick={() => setOpen(false)}>Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleDeleteInstitution}>Potvrdi</button>
         </ModalDelete> 
         : null 
       }

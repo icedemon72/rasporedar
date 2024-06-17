@@ -6,6 +6,8 @@ import { PlusCircle, Search } from 'lucide-react';
 import DataTable from '../../components/DataTable/DataTable';
 import { Helmet } from 'react-helmet';
 import MutationState from '../../components/MutationState/MutationState';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import CardContainer from '../../components/CardContainer/CardContainer';
 
 const Subjects = () => {
   const { institution } = useParams();
@@ -32,18 +34,19 @@ const Subjects = () => {
   if (isSuccess) {
     content = 
     <>
-      <div className="w-full flex justify-center px-2 md:px-0">
-        <div className="w-full md:w-1/2 lg:w-1/3">
+      <CardContainer large={true} onTop={true}>
+					<Breadcrumbs />
+					<h1 className="text-xl font-bold text-center py-5">Predmeti</h1>
           { isGetRoleSuccess && getRole.role !== 'User' &&
-            <Link to={`/institutions/${institution}/subjects/add`}>
-              <div className="w-full flex gap-2 items-center justify-center btn-primary btn-green mb-5">
+            <Link className="w-full flex justify-center" to={`/institutions/${institution}/subjects/add`}>
+              <div className="w-full max-w-[500px] flex gap-2 items-center justify-center btn-primary btn-green mb-5">
                 <PlusCircle size={16} /> 
                 <p>Dodaj predmet</p>
               </div>
             </Link>
 					}
-					<div class="w-full flex justify-end my-2">
-						<div class="w-full md:w-2/3 lg:w-1/2 flex gap-2">
+					<div className="w-full flex justify-end my-2">
+						<div className="w-full md:w-2/3 lg:w-1/2 flex gap-2">
 							<input className="input-primary" placeholder="Web programiranje"/>
 							<button className="btn-primary"><Search /></button>
 						</div>
@@ -56,8 +59,7 @@ const Subjects = () => {
 						role={getRole.role}
 						isSuccess={isGetRoleSuccess}
 					/>
-        </div>
-      </div>
+        </CardContainer>
     </>
   }
 
@@ -73,8 +75,8 @@ const Subjects = () => {
 				error={error}
 			/>
 
-			<h1 className="text-xl font-bold text-center py-5">Predmeti</h1>
-      {content}
+			{content}
+
     </>
   )
 }

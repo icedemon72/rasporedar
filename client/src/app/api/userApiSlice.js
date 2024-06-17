@@ -11,14 +11,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     getUser: builder.query({
       query: id => ({
-        url: `/user/${id || ''}`
+        url: `/users/${id || ''}`
       }),
       providesTags: ['User']
-    })
+    }),
+		editUser: builder.mutation({
+			query: (body) => ({
+				url: `/users/edit`,
+				method: 'PATCH',
+				body
+			}),
+			invalidatesTags: (result, error) => error ? [] : ['User'],
+		})
   })
 });
 
 export const {
   useRegisterMutation,
-  useGetUserQuery
+  useGetUserQuery,
+	useEditUserMutation
 } = userApiSlice;

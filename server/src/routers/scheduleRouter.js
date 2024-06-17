@@ -1,16 +1,52 @@
 import express from 'express';
 import { handleAddSchedule, handleDeleteSchedule, handleEditSchedule, handleGetAllSchedulesInInstitution, handleGetSchedule } from '../controllers/scheduleController.js';
+import { isAuthInInstitution, isInInstitution } from '../middleware/guards/institutionGuard.js';
+import RouteGuard from '../middleware/routeGuard.js';
+import { validateSchedule } from '../validators/scheduleValidator.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/', handleAddSchedule);
+router.route('/')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		handleGetAllSchedulesInInstitution
+	)
+	
+	.post(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		handleAddSchedule
+	)
 
-router.get('/', handleGetAllSchedulesInInstitution);
+router.route('/:schedule')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		handleGetSchedule
+	)
 
-router.get('/:schedule', handleGetSchedule);
+	.patch(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		validateSchedule,
+		handleEditSchedule
+	)
 
-router.patch('/:schedule', handleEditSchedule);
-
-router.delete('/:schedule', handleDeleteSchedule);
+	.delete(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		handleDeleteSchedule
+	);
 
 export { router as scheduleRouter };

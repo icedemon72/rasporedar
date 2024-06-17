@@ -141,8 +141,8 @@ export const promoteToRole = async (sender, institution, user, role) => {
 // GET
 // FIXME: add fullInfo
 export const getAllUsersInInstitution = async (sender, institution, limit = 10) => {
-	const userObj = await InInstitution.findOne({ user: sender, institution, left: { $in: [null, false] } });
-
+	const userObj = await InInstitution.findOne({ user: sender, institution, left: false });
+	
 	if (!userObj) {
 		throw {
 			status: 404,
@@ -153,7 +153,7 @@ export const getAllUsersInInstitution = async (sender, institution, limit = 10) 
 	if (userObj.role === 'User') {
 		const inInstObj = await InInstitution.find({
 			institution,
-			left: { $in: [null, false] }
+			left: { $in: false }
 		},
 		{
 			role: 0,
@@ -161,12 +161,20 @@ export const getAllUsersInInstitution = async (sender, institution, limit = 10) 
 			createdAt: 0,
 			updatedAt: 0,
 			__v: 0
+		}).populate({
+			path: 'user',
+			match: { left: false }, 
+			select: 'name username'
 		}); // <- maybe change this later on, depending on front-end
 
 		return inInstObj;
 	}
 
-	const inInstObj = await InInstitution.find({ institution, left: { $in: [null, false] } }, { left: 0 });
+	const inInstObj = await InInstitution.find({ institution, left: false }, { left: 0 }).populate({
+		path: 'user',
+		match: { left: false }, 
+		select: 'name email username'
+	});
 	return inInstObj;
 
 }

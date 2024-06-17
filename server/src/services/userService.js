@@ -5,28 +5,25 @@ import bcrypt from "bcrypt";
 
 export const registerUser = async (user) => {
 	user.role = "User";
-	if (!validateEmail(user.email)) {
-		throw {
-			status: 401,
-			message: 'Unet je nevalidan e-mail!'
-		};
-	}
-
-	if (user.password.length <= 3) {
-		throw {
-			status: 401,
-			message: 'Lozinka mora sadržati bar 3 karaktera!',
-		};
-	}
 
 	const userExists = await User.findOne({ $or: [{ email: user.email }, { username: user.username }] });
 
-	if (userExists) {
-		throw {
-			status: 401,
-			message: 'Korisničko ime već postoji!'
-		};
+	if(userExists) {
+		if (userExists.username === user.username) {
+			throw {
+				status: 401,
+				message: 'Korisničko ime već postoji!'
+			};
+		}
+
+		if(userExists.email === user.email) {
+			throw {
+				status: 401,
+				message: 'E-adresa već postoji!'
+			};
+		}
 	}
+
 
 	user.password = await bcrypt.hash(user.password, 10);
 
@@ -34,19 +31,26 @@ export const registerUser = async (user) => {
 	return { message: 'Uspešna registracija!', success: true };
 }
 
-export const editUser = async (sender, data) => {
-	// data.oldPassword, data.password
-	const oldPassword = await bcrypt.hash(data.oldPassword, 10);
-	const userObj = await User.findOne({ _id: sender, deleted: false, password: oldPassword });
+export const editUser = async (sender, data, changePassword = false) => {
+	let userObj;
 
-	if (!userObj) {
-		throw {
-			status: 400,
-			message: 'Pogrešne informacije!'
-		};
+	if(changePassword) {
+		const oldPassword = await bcrypt.hash(data.oldPassword, 10);
+		userObj = await User.findOne({ _id: sender, deleted: false, password: oldPassword });
+	
+		if (!userObj) {
+			throw {
+				status: 400,
+				message: 'Neka od lozinki nije ispravna!'
+			};
+		}
+
+		data.password = await bcrypt.hash(data.newPassword, 10);
+	} else {
+		userObj = await User.findOne({ _id: sender, deleted: false });
 	}
-
-	data.password = await bcrypt.hash(data.password, 10);
+	
+	
 	/* just in case */
 	data.email = userObj.email;
 	data.username = userObj.username;
@@ -81,26 +85,12 @@ export const getUserInstitution = async (user, role = 'all') => {
 			code: 0, moderatorCode: 0, deleted: 0, createdBy: 0
 		});
 
-		if (!institutionObj.length) {
-			throw {
-				status: 200,
-				message: 'Nije pronadjena nijedna grupa'
-			}
-		}
-
 		return institutionObj;
 	}
 
 	const query = (role === 'all') ? { user, left: false } : { user, role, left: false };
 
 	const institutionObj = await InInstitution.find(query, { left: 0 });
-
-	if (!institutionObj.length) {
-		throw {
-			status: 200,
-			message: 'Nije pronadjena nijedna grupa'
-		}
-	}
 
 	let result = [];
 

@@ -21,14 +21,12 @@ export const handleUserRegister = async (req, res) => {
 
 export const handleEditUser = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(req.userTokenData) { 
-    //   return res.status(401).send({message: 'Već ste ulogovani!'});
-    // }
+		let password = false;
+		if(req.body.oldPassword && req.body.newPassword) {
+			password = true;
+		}
 
-    // add data null etc check here <---
-
-    const done = await editUser(req.userTokenData._id, req.body);
+    const done = await editUser(req.userTokenData._id, req.body, password);
     return res.status(200).send(done);
 
   } catch (err) {
@@ -54,16 +52,13 @@ export const handleGetUserInstitutions = async (req, res) => {
       req.params.id = req.userTokenData._id;
     }
 
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
-    }
-
     if(req.userTokenData.role === 'User' && req.params.id !== req.userTokenData._id) {
       return res.status(405).send({ message: 'Nemate pristup!' });
     }
     
     const done = await getUserInstitution(req.params.id, req.query.role);
-    return res.status(200).send(done);
+    
+		return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
   }
@@ -80,15 +75,12 @@ export const handleGetUserById = async (req, res) => {
       req.params.id = req.userTokenData._id;
     }
 
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
-    }
-
     if(req.userTokenData.role === 'User' && req.params.id !== req.userTokenData._id) {
       return res.status(405).send({ message: 'Nemate pristup!' });
     }
 
     const done = await getUserById(req.params.id);
+		
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

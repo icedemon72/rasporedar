@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useJoinModeratorMutation, useJoinMutation } from '../../app/api/institutionsApiSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import CodeInput from './../../components/CodeInput/CodeInput';
 import MutationState from '../../components/MutationState/MutationState';
@@ -79,12 +79,14 @@ const JoinInstitution = () => {
 				<title>Pridruži se grupi | Rasporedar</title>
 			</Helmet>
 			<CardContainer>
-				<h1 className="text-xl font-black text-center py-5">Pridruži se grupi {mod ? 'kao moderator' : 'kao korisnik' }</h1>
+				<h1 className="text-xl font-black text-center py-5">Pridruži se grupi kao <span className="underline">{mod ? 'moderator' : 'korisnik' }</span></h1>
 				<CodeInput className="pb-4 mb-2" codeFunc={(code) => setCode(code)} />
-				<div class="flex justify-center gap-2">
-					<button class="p-2 border-2 border-black hover:box-shadow" onClick={() => setMod(prev => !prev)}>{mod ? 'Kao korisnik?' : 'Kao moderator?'}</button>
-					<button class="p-2 border-2 border-black bg-green-400 hover:box-shadow" onClick={submit}>Pridruži se!</button>
+				<div className="flex justify-center gap-2">
+					<button className="btn-primary bg-primary" onClick={() => setMod(prev => !prev)}>{mod ? 'Kao korisnik?' : 'Kao moderator?'}</button>
+					<button className="btn-primary btn-green" onClick={submit}>Pridruži se!</button>
 				</div>
+
+				<p className="text-sm text-center my-4">Želiš svoju grupu? <Link className="underline hover:no-underline" to='/institutions/create'>Napravi je</Link></p>
 			</CardContainer>
       {/* <input type="text" maxLength={8} onChange={(elem) => setCode(elem.target.value)} placeholder="Unesi kod" value={code} /> */}
       

@@ -18,7 +18,6 @@ export const addSchedule = async (sender, institution, data) => {
 }
 
 export const editSchedule = async (sender, institution, schedule, data) => {
-  await authSenderInInstitutionObject(sender, institution);
 
   const scheduleObj = await Schedule.findOne({ _id: schedule, institution: institution, deleted: false });
 
@@ -49,8 +48,6 @@ export const editSchedule = async (sender, institution, schedule, data) => {
 }
 
 export const deleteSchedule = async (sender, institution, schedule) => {
-  await authSenderInInstitutionObject(sender, institution);
-
   const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
 
   if (!scheduleObj) {
@@ -72,14 +69,15 @@ export const getAllSchedulesInInstitution = async (sender, institution, publishe
     await senderInInstitutionObject(sender, institution);
 
   const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
-  const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude);
+  const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude).populate({
+		path: 'instances.data.subject instances.data.lecturer',
+		select: '_id name'
+	});
 
   return schedulesObj;
 }
 
 export const getSchedule = async (sender, institution, schedule) => {
-  await senderInInstitutionObject(sender, institution);
-
   const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false })
     .populate({
       path: 'instances.data.subject instances.data.lecturer',

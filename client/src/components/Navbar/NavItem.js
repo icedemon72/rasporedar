@@ -15,7 +15,7 @@ const NavItem = ({ url, text, activeLinks = [] }) => {
 	}
 
 	return (
-		<Link className={clsx('block py-2 px-3 hover:bg-red-600 hover:text-white active:scale-95 font-semibold border-2 border-black', isActive ? 'bg-red-600 text-white box-shadow' : '')} to={ url }>{ text }</Link>	
+		<Link className={clsx('block py-2 px-3  hover:bg-red-600 hover:text-white active:scale-95 font-semibold border-2 border-black bg-secondary rounded', isActive ? 'bg-red-600 text-white box-shadow' : '')} to={ url }>{ text }</Link>	
 	);
 }
 

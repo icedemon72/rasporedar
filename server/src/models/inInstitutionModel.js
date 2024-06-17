@@ -5,12 +5,14 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const inInstitutionSchema = mongoose.Schema(
   {
     user: { 
-      type: ObjectId
+      type: ObjectId,
+			index: true,
+			ref: 'User',
     },
     institution: {
       type: ObjectId,
       index: true,
-      ref: 'institution'
+      ref: 'Institution'
     },
     left: { // whether the user left institution for some reason
       type: Boolean,

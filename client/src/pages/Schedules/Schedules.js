@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { useGetSchedulesQuery } from '../../app/api/schedulesApiSlice';
 import { Helmet } from 'react-helmet';
 import { PlusCircle } from 'lucide-react';
+import CardContainer from '../../components/CardContainer/CardContainer';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 const Schedules = () => {
   const session = useSelector(state => state.session);
@@ -73,18 +75,18 @@ const Schedules = () => {
 
 		content = 
 		<>
-			<div className="w-full flex justify-center">
-				<div className="w-full md:w-1/2 lg:w-1/3">
+			<CardContainer large={true} onTop={true}>
+				<Breadcrumbs />
+				<h1 className="text-xl font-bold text-center py-5">Rasporedi</h1>
 					{ isRoleSuccess && getRole.role !== 'User' &&
-						<Link to={`/institutions/${institution}/schedules/add`}>
-							<div className="w-full flex gap-2 items-center justify-center btn-primary btn-green mb-5">
+						<Link className="w-full flex justify-center"  to={`/institutions/${institution}/schedules/add`}>
+							<div className="w-full max-w-[500px] flex gap-2 items-center justify-center btn-primary btn-green mb-5">
 								<PlusCircle size={16} /> 
 								<p>Dodaj raspored</p>
 							</div>
 						</Link>
 					}
-				</div>
-			</div>
+				</CardContainer>
 		</>
   }
 
@@ -93,7 +95,6 @@ const Schedules = () => {
 			<Helmet>
 				<title>Rasporedi | Rasporedar</title>
 			</Helmet>
-      <h1 class="text-xl font-bold text-center py-5">Rasporedi</h1>
       { content }
     </>
   )

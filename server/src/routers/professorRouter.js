@@ -1,20 +1,63 @@
 import express from 'express';
 import { handleAddProfessor, handleDeleteProfessor, handleEditProfessor, handleGetAllProfessorsInInstitution, handleGetProfessor } from '../controllers/professorController.js';
-import { validateProfessorAdd } from '../validators/professorValidator.js';
+import { validateProfessor } from '../validators/professorValidator.js';
 import { handleGetAllSubjectsOfProfessor } from '../controllers/subjectController.js';
+import { isAuthInInstitution, isInInstitution } from '../middleware/guards/institutionGuard.js';
+import RouteGuard from '../middleware/routeGuard.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/', validateProfessorAdd, handleAddProfessor);
+router.route('/')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),	
+		handleGetAllProfessorsInInstitution
+	)
+	
+	.post(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		validateProfessor, 
+		handleAddProfessor
+	)
 
-router.get('/', handleGetAllProfessorsInInstitution);
+router.route('/:professor')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		handleGetProfessor
+	)
 
-router.get('/:professor', handleGetProfessor);
+	.delete(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		handleDeleteProfessor
+	)
 
-router.delete('/:professor', handleDeleteProfessor);
+	.patch(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		validateProfessor, 
+		handleEditProfessor
+	);
 
-router.patch('/:professor', handleEditProfessor);
-
-router.get('/:professor/subjects', handleGetAllSubjectsOfProfessor);
+router.get(
+	'/:professor/subjects',
+	RouteGuard([{
+		role: '*',
+		when: isInInstitution
+	}]),
+	handleGetAllSubjectsOfProfessor
+);
 
 export { router as professorRouter };

@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { useAddMutation } from '../../app/api/institutionsApiSlice';
-import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Trash } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react';
 import { addItemToArrayOnKey, deleteItemFromArray } from '../../utils/updateArray';
 import Input from '../../components/Input/Input';
 import { Helmet } from 'react-helmet';
 import SelectComponent from '../../components/Input/SelectComponent';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
+import ListItem from '../../components/ListItem/ListItem';
 
 /* TODO ADD ON CLICK SUPPORT */
 
@@ -107,17 +107,14 @@ const CreateInstitution = () => {
 				{
 					departments.map((elem, i) => {
 						return (
-							<div className="flex flex-row justify-between mt-2">
-								<div>{i + 1}</div>
-								<p>{elem}</p>
-								<div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteDepartment(i)}><Trash /></div> 
-							</div>
+							<ListItem text={elem} index={i} deleteFunc={() => handleDeleteDepartment(i)} />
 						);
 					})
 				}
-				<div className="flex justify-center w-full mt-3">
-				<button className="w-full md:w-1/2 lg:w-1/3 btn-primary" onClick={handleCreate} disabled={isSubmitting}>Napravi grupu!</button>
+				<div className="flex justify-end w-full mt-3">
+					<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green" onClick={handleCreate} disabled={isSubmitting}>Napravi grupu!</button>
 				</div>
+				<p className="text-sm text-center my-4">Trebaš biti u grupi? <Link className="underline hover:no-underline" to='/institutions/join'>Pridruži se</Link></p>
 			</CardContainer>
     </>
   )

@@ -8,7 +8,7 @@ export const validator = (req, res, next) => {
 
 	req.body = matchedData(req, {
 		locations: ['body'],
-		includeOptionals: false,
+		includeOptionals: true,
 	});
 
 	next();

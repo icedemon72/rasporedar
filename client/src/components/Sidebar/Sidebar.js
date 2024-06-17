@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { useGetAllQuery } from '../../app/api/institutionsApiSlice';
 import SidebarItem from './SidebarItem';
 import { useSelector } from 'react-redux';
-const Sidebar = ({ open, btn }) => {
+const Sidebar = forwardRef(({ open, btn }, ref) => {
 	const session = useSelector(state => state.session);
 
   const {
@@ -30,7 +30,7 @@ const Sidebar = ({ open, btn }) => {
     <>
     { 
 			open &&
-				<nav className="min-h-screen h-full w-full lg:w-[500px] fixed left-0 top-[74px] bg-white z-[99999] animate-in slide-in-from-left duration-300 lg:border-r-2 border-t-2 border-black overflow-y-auto">
+				<nav ref={ref} className="min-h-screen h-full w-full lg:w-[500px] fixed left-0 top-[74px] bg-secondary z-[99999] animate-in slide-in-from-left duration-300 lg:border-r-2 border-t-2 border-black overflow-y-auto">
 					<div className='min-h-[calc(100vh+76px)] flex flex-col'>
 						<SidebarItem url="/" text="Početna"/>
 						<SidebarItem url="/about" text="O nama" />
@@ -60,6 +60,5 @@ const Sidebar = ({ open, btn }) => {
 		}
     </>
   )
-}
-
+})
 export default Sidebar;

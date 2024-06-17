@@ -6,7 +6,7 @@ import url from '../utils/url';
 const mutex = new Mutex();
 
 export const tags = [
-  'User', 'Institution', 'Institutions', 
+  'User', 'Users', 'Institution', 'Institutions', 
   'Professors', 'Subjects', 'Subject'
 ];
 

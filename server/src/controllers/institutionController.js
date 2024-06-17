@@ -40,13 +40,9 @@ export const handleAddInstitution = async (req, res) => {
 
 export const handleDeleteInstitution = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
     const done = await deleteInstitution(req.userTokenData._id, req.params.institution);
-    return res.status(200).send(done);
-
+    
+		return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
   }
@@ -54,12 +50,9 @@ export const handleDeleteInstitution = async (req, res) => {
 
 export const handleEditInstitution = async (req, res) => {
   try {    
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
     const done = await editInstitution(req.userTokenData._id, req.params.institution, req.body);
-    return res.status(200).send(done);
+    
+		return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
   }
@@ -67,11 +60,7 @@ export const handleEditInstitution = async (req, res) => {
 
 export const handleChangeCodes = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
-    const { code, moderatorCode } = req.body;
+		const { code, moderatorCode } = req.body;
 
     if(!code && !moderatorCode) {
       return res.status(400).send({ message: 'Nije naveden kod za promenu!' })
@@ -86,14 +75,6 @@ export const handleChangeCodes = async (req, res) => {
 
 export const handleGetInstitutonById = async (req, res) => {
   try {
-    if(!req.userTokenData) { 
-      return res.status(401).send({message: 'No access token'});
-    }
-
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
     if(!req.query.code) {
       req.query.code = null;
     }

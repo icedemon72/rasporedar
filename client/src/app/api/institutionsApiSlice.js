@@ -81,12 +81,18 @@ export const institutionsApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error) => error ? [] : ['Role']
     }),
     changeRole: builder.mutation({
-      query: (institution, user) => ({
+      query: ({ institution, user }) => ({
         url: `/institutions/${institution}/role/users/${user}`,
         method: 'patch'
       }),
       invalidatesTags: (result, error) => error ? [] : ['Role']
     }),
+		getUsersInInsitution: builder.query({
+			query: ({ institution }) => ({
+				url: `/institutions/${institution}/users`
+			}),
+			providesTags: (result, error) => error ? [] : ['Users']
+		}),
     
   })
 });
@@ -103,5 +109,6 @@ export const {
   useInstitutionChangeCodeMutation,
   useGetRoleQuery,
   useGetAuthRoleQuery,
-  useChangeRoleMutation
+  useChangeRoleMutation,
+	useGetUsersInInsitutionQuery
 } = institutionsApiSlice;

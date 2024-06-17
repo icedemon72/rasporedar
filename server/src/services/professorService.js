@@ -3,8 +3,6 @@ import Subject from '../models/subjectModel.js';
 import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
 export const addProfessor = async (sender, data) => {
-	await authSenderInInstitutionObject(sender, data.institution);
-
 	data.deleted = false;
 
 	const professor = await Professor.create(data);
@@ -20,8 +18,6 @@ export const deleteProfessor = async (sender, professor) => {
 			message: 'Ne postoji profesor!'
 		}
 	}
-
-	await authSenderInInstitutionObject(sender, professorObj.institution);
 
 	const subjectObj = await Subject.find({ institution: professorObj.institution });
 
@@ -59,7 +55,6 @@ export const editProfessor = async (sender, professor, data) => {
 		}
 	}
 
-	await authSenderInInstitutionObject(sender, professorObj.institution);
 
 	await Professor.updateOne({ _id: professor }, {
 		$set: {
@@ -76,9 +71,6 @@ export const editProfessor = async (sender, professor, data) => {
 
 // FIXME: add fullInfo (perhaps)
 export const getAllProfessorsInInstitution = async (sender, institution) => {
-
-	await senderInInstitutionObject(sender, institution);
-
 	const professorObj = await Professor.find({ institution, deleted: false }, { deleted: 0 });
 
 	if (!professorObj.length) {
@@ -98,8 +90,6 @@ export const getAllProfessorsInSubject = async (sender, subject) => {
 			message: 'Ne postoji predmet!'
 		}
 	}
-
-	await senderInInstitutionObject(sender, subjectObj.institution);
 
 	const professors = subjectObj.professors;
 	const assistents = subjectObj.assistents;
@@ -123,7 +113,6 @@ export const getProfessorById = async (sender, professor) => {
 		}
 	}
 
-	await senderInInstitutionObject(sender, professorObj.institution);
 	return professorObj;
 }
 

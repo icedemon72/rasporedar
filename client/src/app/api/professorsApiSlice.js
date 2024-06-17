@@ -32,7 +32,7 @@ export const professorsApiSlice = apiSlice.injectEndpoints({
     }),
     deleteProfessor: builder.mutation({
       query: ({ institution, id }) => ({
-        url: `/institutions/${institution}professors/${id}`,
+        url: `/institutions/${institution}/professors/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error) => error ? [] : ['Professors']

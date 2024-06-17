@@ -1,19 +1,63 @@
 import express from 'express';
 import { handleAddSubject, handleDeleteSubject, handleEditSubjectInfo, handleGetAllSubjectsInInstitution, handleGetSubject } from '../controllers/subjectController.js';
 import { handleGetAllProfessorsBySubject } from '../controllers/professorController.js';
+import RouteGuard from '../middleware/routeGuard.js';
+import { isAuthInInstitution, isInInstitution } from '../middleware/guards/institutionGuard.js';
+import { validateSubject } from '../validators/subjectValidator.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.post('/', handleAddSubject);
+router.route('/')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		handleGetAllSubjectsInInstitution
+	)
 
-router.get('/', handleGetAllSubjectsInInstitution);
+	.post(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		validateSubject,
+		handleAddSubject
+	);
 
-router.get('/:subject', handleGetSubject);
+router.route('/:subject')
+	.get(
+		RouteGuard([{
+			role: '*',
+			when: isInInstitution
+		}]),
+		handleGetSubject
+	)
 
-router.delete('/:subject', handleDeleteSubject);
+	.patch(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		validateSubject,
+		handleEditSubjectInfo
+	)
+	.delete(
+		RouteGuard([{
+			role: '*',
+			when: isAuthInInstitution
+		}]),
+		handleDeleteSubject
+	);
 
-router.patch('/:subject', handleEditSubjectInfo);
 
-router.get('/:subject/professors', handleGetAllProfessorsBySubject);
+router.get(
+	'/:subject/professors',
+	RouteGuard([{
+		role: '*',
+		when: isInInstitution
+	}]), 
+	handleGetAllProfessorsBySubject
+);
 
 export { router as subjectRouter };

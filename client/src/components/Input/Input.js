@@ -16,7 +16,7 @@ const Input = ({ id, inputVal, setVal, name, placeholder, type, disabled = false
 						:
 						<input
 							type={type} id={id} placeholder={name} value={inputVal} onChange={setVal} disabled={disabled} autoComplete='off' required min={min} max={max}
-							className="peer pr-5 h-8 w-full border-none p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+							className="input-primary"
 						/>
 				}
 				{/* {

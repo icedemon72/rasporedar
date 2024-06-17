@@ -14,11 +14,11 @@ const CopyField = ({ text, size = 16, timeout = 2000 }) => {
 	}
 
 	return (
-		<div className="cursor-pointer border-2 border-black hover:bg-blue-200 p-2 flex items-center gap-1 transition-all" onClick={handleClick}>
+		<div className="btn-primary bg-primary active:bg-secondary cursor-pointer  flex items-center gap-1 transition-all" onClick={handleClick}>
 			<p>{ text }</p>
 			{
 				copied ?
-					<CheckSquare color='green' size={size} /> :
+					<CheckSquare className="text-green-600 dark:text-green-800 animate-pulse" size={size} /> :
 					<Copy size={size} /> 
 				}
 			

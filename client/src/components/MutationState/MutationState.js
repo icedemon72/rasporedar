@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Loader from '../Loader/Loader';
 import { Slide, toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const MutationState = ({
   isLoading, isSuccess, successMessage = 'Uspešna izmena!', 
@@ -8,7 +9,8 @@ const MutationState = ({
 }) => {
   let content = null;
   const [ showLoader, setShowLoader ] = useState(false);
-
+	const theme = useSelector(state => state.settings.theme);
+	
   useEffect(() => {
 		if (isLoading) {
       const timer = setTimeout(() => {
@@ -32,6 +34,10 @@ const MutationState = ({
 				draggable: true,
 				progress: undefined,
 				theme: "light",
+				style: { 
+					backgroundColor: theme === 'dark' ? 'rgb(55, 65, 81)' : 'white',
+					color: theme === 'dark' ? 'white' : 'black'
+				 },
 				transition: Slide,
 			});
 		}
@@ -39,14 +45,24 @@ const MutationState = ({
 	
 	useEffect(() => {
 		if(isError) {
+			let autoClose = 2500;
 			if(error?.data?.message) {
 				errorMessage = error.data.message;
+			} else if (error?.data?.errors) {
+				errorMessage = 
+					<>
+						<p>Došlo je do greške</p>
+						<ul className="list-disc ml-2">
+							{error.data.errors.map((err) => <li>{ err.msg }</li>)}
+						</ul>
+					</>
+				autoClose = error.data.errors.length * 2500;
 			}
 			
 			toast.error(errorMessage, {
 				className: "border-2 border-black rounded-none",
 				position: "bottom-right",
-				autoClose: 2500,
+				autoClose,
 				hideProgressBar: false,
 				closeOnClick: true,
 				pauseOnHover: false,

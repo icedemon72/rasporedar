@@ -23,6 +23,7 @@
     "react-tooltip": "^5.26.4",
     "redux-persist": "^6.0.0",
     "tailwindcss-animate": "^1.0.7",
+    "use-react-router-breadcrumbs": "^4.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

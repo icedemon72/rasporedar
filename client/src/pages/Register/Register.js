@@ -62,27 +62,28 @@ const Register = () => {
 				successMessage='Uspešna registracija!'
 			/>
 
-      <CardContainer>
-				<h1 class="text-xl font-bold text-center py-5">Registracija</h1>
+      <CardContainer containerBgClass='bg-day dark:bg-night bg-cover'>
+				<h1 className="text-xl font-bold text-center py-5">Registracija</h1>
         <form onSubmit={handleRegister}>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="username" type="text" name="Korisničko ime" placeholder="marko.markovic" setVal={(elem) => setUsername(elem.target.value)} inputVal={username} />
 					</div>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="email" type="email" name="E-adresa" placeholder="marko.markovic@primer.com" setVal={(elem) => setEmail(elem.target.value)} inputVal={email} />
 					</div>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="password" type="password" name="Lozinka" placeholder="•••••••" setVal={(elem) => setPassword(elem.target.value)} inputVal={password} />
+						<span className="text-xs text-muted">* Lozinka mora sadržati bar 3 karaktera</span>
 					</div>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="name" type="text" name="Ime i prezime" placeholder="Marko Marković" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
 					</div>
         
           <div className="w-full flex justify-center my-3">
-            <button className="w-full btn-primary" type="submit">Registruj se!</button>
+            <button className="w-full btn-primary btn-green" type="submit">Registruj se!</button>
           </div>
 
-					<p className="block text-sm">Imaš nalog? <Link class="underline hover:no-underline cursor-pointer" to="/login">Prijavi se!</Link></p>
+					<p className="block text-sm">Imaš nalog? <Link className="underline hover:no-underline cursor-pointer" to="/login">Prijavi se!</Link></p>
           
         </form>
       </CardContainer>

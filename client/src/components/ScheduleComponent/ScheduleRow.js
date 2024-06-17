@@ -11,8 +11,8 @@ const ScheduleRow = ({ editable, groupIndex, item, index, ...props }) => {
       <div className={clsx("relative flex w-full justify-center items-center", scheduleCustomStyles[props.style.value].clockCol)}>
 				{ 
 					editable && 
-						<div className="hidden md:flex items-center justify-center absolute right-2 top-2 w-8 h-8 group" onClick={() => props.handleDeleteItem(groupIndex, index)}>
-							<Trash className="cursor-pointer group-hover:scale-125 group-active:scale-90 transition-all"  data-tooltip-id="my-tooltip" data-tooltip-content={`Obriši ${index + 1}. vrstu`} data-tooltip-delay-show={400}/>
+						<div className="hidden md:flex items-center justify-center absolute right-2 top-2 btn-primary btn-red cursor-pointer group" onClick={() => props.handleDeleteItem(groupIndex, index)}>
+							<Trash size={16} className="group-hover:scale-125 group-active:scale-90 transition-all"  data-tooltip-id="my-tooltip" data-tooltip-content={`Obriši ${index + 1}. vrstu`} data-tooltip-delay-show={400}/>
 						</div>
 				}
 				<div className={clsx(props.systemType.value === 'school' ? 'w-1/4' : 'w-full', "text-center")}>

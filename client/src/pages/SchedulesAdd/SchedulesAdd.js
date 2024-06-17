@@ -352,11 +352,11 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
           </div>
           
           <div className="w-full flex justify-center my-5">
-            <div className="w-full md:w-1/3 lg:w-1/2 flex justify-between gap-7">
-              <button className="btn-red w-full md:w-1/2 lg:w-2/5" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
-              <button className="btn-red w-full md:w-1/2 lg:w-2/5" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
-              <button className="btn-green w-full md:w-1/2 lg:w-2/5" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit)}>Sačuvaj raspored!</button>
-              <button className="btn-green w-full md:w-1/2 lg:w-2/5" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, true)}>Sačuvaj i objavi raspored!</button>
+            <div className="w-full md:w-4/5 lg:w-3/4 grid grid-cols-4 gap-2 p-2 rounded-md box-shadow border-2 border-black bg-secondary">
+              <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
+              <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
+              <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit)}>Sačuvaj raspored!</button>
+              <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, true)}>Sačuvaj i objavi raspored!</button>
             </div>
           </div>
         </>
@@ -390,8 +390,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
       { isDeleteOpen ? 
         <ModalDelete title={'Brisanje rasporeda'} text={`Obrisacete raspored i sve informacije u njemu. Da li ste sigurni?`} closeFunc={() => setIsDeleteOpen(false)}>
-          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setIsDeleteOpen(false)}>Odustani</button>
-          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteSchedule}>Potvrdi</button>
+          <button className="btn-primary bg-primary" onClick={() => setIsDeleteOpen(false)}>Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleDeleteSchedule}>Potvrdi</button>
         </ModalDelete> 
         : null 
       }

@@ -6,7 +6,7 @@ import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import ScheduleComponent from '../../components/ScheduleComponent/ScheduleComponent';
 import { Pen, Pencil } from 'lucide-react';
 import MutationState from '../../components/MutationState/MutationState';
-import { scheduleStyles } from '../../models/SelectModels';
+import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
 const Schedule = () => {
   const session = useSelector(state => state.session);
   const { institution, id } = useParams();
@@ -38,7 +38,7 @@ const Schedule = () => {
       editable: false,
       rows: scheduleData.instances,
       days: scheduleData.days,
-      systemType: scheduleData.systemType,
+      systemType: scheduleTypes.find(t => t.value === scheduleData.systemType),
 			style
     };
     

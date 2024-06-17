@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLoginMutation } from '../../app/api/sessionApiSlice';
 import { Link } from 'react-router-dom';
 import Input from './../../components/Input/Input';
@@ -8,12 +8,12 @@ import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
 
 const Login = () => {
-  const { location } = useParams();
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   
   // const userRef = useRef();
   
+	const location = useLocation();
   const session = useSelector(state => state.session)
   const navigate = useNavigate();
   
@@ -50,7 +50,7 @@ const Login = () => {
     // userRef.current.focus();
 
     if(session.refreshToken) {
-      location ? navigate(`/${location}`) : navigate('/institutions');
+			location?.state?.from ? navigate(location?.state?.from) : navigate('/institutions');
     }
 
   }, [ session.refreshToken ]);
@@ -64,19 +64,19 @@ const Login = () => {
 				error={fetchLoginError}
 				successMessage="Uspešno prijavljivanje!"
 			/>
-      <CardContainer containerBgClass='bg-main-pattern'>
-				<h1 class="text-xl font-bold py-5 text-center">Prijava</h1>
+      <CardContainer containerBgClass='bg-day dark:bg-night bg-cover'>
+				<h1 className="text-xl font-bold py-5 text-center">Prijava</h1>
         <form onSubmit={handleLogin}>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="username" type="text" name="Korisničko ime ili e-adresa" placeholder="marko.markovic" setVal={(elem) => setUsername(elem.target.value)} inputVal={username} />
 					</div>
-					<div class="mb-2">
+					<div className="mb-2">
 						<Input id="password" type="password" name="Lozinka" placeholder="•••••••" setVal={(elem) => setPassword(elem.target.value)} inputVal={password} />
 					</div>
           <div className='w-full flex justify-center my-3'>
-            <button className="w-full btn-primary btn-green">Uloguj se!</button>
+            <button className="w-full btn-primary btn-green">Prijavi se!</button>
           </div>
-          <p className="block text-sm">Nemaš nalog? <Link class="underline hover:no-underline cursor-pointer" to="/register">Registruj se!</Link></p>
+          <p className="block text-sm">Nemaš nalog? <Link className="underline hover:no-underline cursor-pointer" to="/register">Registruj se!</Link></p>
         </form>
       </CardContainer>
     </>

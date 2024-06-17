@@ -9,6 +9,8 @@ import Input from '../../components/Input/Input';
 import Textarea from '../../components/Input/Textarea';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
+import ListItem from '../../components/ListItem/ListItem';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 const ProfessorsEdit = () => {
 	const navigate = useNavigate();
@@ -139,6 +141,7 @@ const ProfessorsEdit = () => {
   if(isSubjectsSuccess && !isProfessorLoading) {
     content = 
     <>
+			<Breadcrumbs />
 			<h1 className="text-xl font-bold py-5 text-center">{professorData.name}</h1>
       <div className="mb-4">
 				<Input id="name" type="text" name="Ime i prezime" placeholder="Marko Marković" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
@@ -155,24 +158,24 @@ const ProfessorsEdit = () => {
 			<div className="mb-4">
 				<Input id="bachelor" type="text" name="Osnovne studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => setBachelor(handleChangeEducation(bachelor, 'institution', elem.target.value))} inputVal={bachelor?.institution}/>
 				<div className="flex justify-center gap-3 w-full mt-2">
-					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'from', elem.target.value))} />
-					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'to', elem.target.value))} />
+					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'from', elem.target.value))} value={bachelor?.from} />
+					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(bachelor, 'to', elem.target.value))} value={bachelor?.to} />
 				</div>
 			</div>
             
 			<div className="mb-4">
 				<Input id="master" type="text" name="Master studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => setMaster(handleChangeEducation(master, 'institution', elem.target.value))} inputVal={master?.institution}/>
 				<div className="flex justify-center gap-3 w-full mt-2">
-					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(master, 'from', elem.target.value))} />
-					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(master, 'to', elem.target.value))} />
+					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(master, 'from', elem.target.value))} value={master?.from} />
+					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(master, 'to', elem.target.value))}  value={master?.to}/>
 				</div>
 			</div>
 
 			<div className="mb-4">
 				<Input id="doctorate" type="text" name="Master studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => setDoctorate(handleChangeEducation(doctorate, 'institution', elem.target.value))} inputVal={doctorate?.institution}/>
 				<div className="flex justify-center gap-3 w-full mt-2">
-					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'from', elem.target.value))} />
-					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'to', elem.target.value))} />
+					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'from', elem.target.value))} value={doctorate?.from} />
+					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setDoctorate(handleChangeEducation(doctorate, 'to', elem.target.value))} value={doctorate?.to} />
 				</div>
 			</div>
       
@@ -185,11 +188,7 @@ const ProfessorsEdit = () => {
       {
 				references.map((elem, i) => {
 					return (
-						<div class="flex flex-row justify-between mt-2">
-							<div>{i + 1}</div>
-							<p>{elem}</p>
-							<div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteReference(i)}><Trash /></div> 
-						</div>
+						<ListItem text={elem} index={i} deleteFunc={() => handleDeleteReference(i)}/>
 					);
 				})
       }

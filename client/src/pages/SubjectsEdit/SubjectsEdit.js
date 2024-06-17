@@ -10,6 +10,7 @@ import Textarea from '../../components/Input/Textarea';
 import SelectComponent from '../../components/Input/SelectComponent';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 const SubjectsEdit = () => {
   const session = useSelector(state => state.session);
@@ -55,7 +56,7 @@ const SubjectsEdit = () => {
     isLoading: isSubjectLoading,
     isError: isSubjectError,
     error: subjectError
-  } = useGetSubjectQuery({ institution, id, fullInfo: true }, {
+  } = useGetSubjectQuery({ institution, id, fullInfo: 1 }, {
     skip: !session.refreshToken || !id,
   });
 
@@ -118,55 +119,56 @@ const SubjectsEdit = () => {
 
   let content;
 
-  if(isSubjectSuccess && isProfessorsSuccess) {
+  if(isSubjectSuccess && isProfessorsSuccess && isProfessorsSubjectSuccess) {
     content = 
     <>
-				<h1 class="text-xl font-bold text-center py-5">{ subjectData.name }</h1>
-        <form onSubmit={handleEditSubject}>
-					<div class="mb-4">
-						<Input id="name" name="Naziv predmeta" placeholder="Web Programiranje" type="text" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
-					</div>
-					<div class="mb-4">
-						<Textarea id="description" name="Opis predmeta" placeholder="Unesite opis predmeta..." inputVal={description} setVal={(elem) => setDescription(elem.target.value)} />
-					</div>
-					<div class="mb-4">
-						<Textarea id="goal" name="Cilj predmeta" placeholder="Unesite cilj predmeta" inputVal={goal} setVal={(elem) => setGoal(elem.target.value)} />
-					</div>
-					<div class="mb-4">
-						<Textarea id="result" name="Rezultat predmeta" placeholder="Unesite rezultat predmeta" inputVal={result} setVal={(elem) => setResult(elem.target.value)} />
-					</div>
-                  
-					<div className="w-full mb-4">
-						<label class="label-primary">Profesori</label>
-						<SelectComponent data={professorsData.map((item) => ({
-							value: item._id, label: item.name
-							}))} 
-							isMulti={true} 
-							value={professors} 
-							placeholder="Izaberite profesora"
-							setVal={(e) => setProfessors(e)}
-							required={true} 
-						/>
-					</div>
+			<Breadcrumbs />
+			<h1 className="text-xl font-bold text-center py-5">{ subjectData.name }</h1>
+			<form onSubmit={handleEditSubject}>
+				<div className="mb-4">
+					<Input id="name" name="Naziv predmeta" placeholder="Web Programiranje" type="text" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
+				</div>
+				<div className="mb-4">
+					<Textarea id="description" name="Opis predmeta" placeholder="Unesite opis predmeta..." inputVal={description} setVal={(elem) => setDescription(elem.target.value)} />
+				</div>
+				<div className="mb-4">
+					<Textarea id="goal" name="Cilj predmeta" placeholder="Unesite cilj predmeta" inputVal={goal} setVal={(elem) => setGoal(elem.target.value)} />
+				</div>
+				<div className="mb-4">
+					<Textarea id="result" name="Rezultat predmeta" placeholder="Unesite rezultat predmeta" inputVal={result} setVal={(elem) => setResult(elem.target.value)} />
+				</div>
+								
+				<div className="w-full mb-4">
+					<label className="label-primary">Profesori</label>
+					<SelectComponent data={professorsData.map((item) => ({
+						value: item._id, label: item.name
+						}))} 
+						isMulti={true} 
+						value={professors} 
+						placeholder="Izaberite profesora"
+						setVal={(e) => setProfessors(e)}
+						required={true} 
+					/>
+				</div>
 
-					<div className="w-full mb-4">
-						<label class="label-primary">Asistenti</label>
-						<SelectComponent data={professorsData.map((item) => ({
-							value: item._id, label: item.name
-							}))} 
-							isMulti={true} 
-							value={assistents} 
-							placeholder="Izaberite asistenta"
-							setVal={(e) => setAssistents(e)} 
-						/>
-					</div>
-					
-          
-          <div className="w-full flex justify-between gap-4 mt-2">
-						<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash /> Obriši</button>
-						<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-green " onClick={handleEditSubject}><Save /> Sačuvaj izmene!</button>
-					</div>
-        </form>
+				<div className="w-full mb-4">
+					<label className="label-primary">Asistenti</label>
+					<SelectComponent data={professorsData.map((item) => ({
+						value: item._id, label: item.name
+						}))} 
+						isMulti={true} 
+						value={assistents} 
+						placeholder="Izaberite asistenta"
+						setVal={(e) => setAssistents(e)} 
+					/>
+				</div>
+				
+				
+				<div className="w-full flex justify-between gap-4 mt-2">
+					<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash /> Obriši</button>
+					<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-green " onClick={handleEditSubject}><Save /> Sačuvaj izmene!</button>
+				</div>
+			</form>
     </>
   } 
 
@@ -187,7 +189,7 @@ const SubjectsEdit = () => {
     if(professorsSubjectData) {
       setProfessors(professorsSubjectData.professors.map(prof => ({ value: prof._id, label: prof.name })));
       setAssistents(professorsSubjectData.assistents.map(prof => ({ value: prof._id, label: prof.name})));
-    }
+		}
   }, [ isProfessorsSubjectSuccess ]);
 
   return (
@@ -211,8 +213,8 @@ const SubjectsEdit = () => {
 			/>
       { open ? 
         <ModalDelete title={'Brisanje predmeta'} text={`Obrisacete predmet '${subjectData.name}'. Da li ste sigurni?`} closeFunc={() => setOpen(false)} >
-          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded"onClick={() => setOpen(false)}>Odustani</button>
-          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteSubject}>Potvrdi</button>
+          <button className="btn-primary bg-primary"onClick={() => setOpen(false)}>Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleDeleteSubject}>Potvrdi</button>
         </ModalDelete>
       : null }
       <CardContainer large={true} loaded={isSubjectSuccess && isProfessorsSuccess}>

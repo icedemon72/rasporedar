@@ -7,6 +7,8 @@ import { Pencil } from 'lucide-react';
 import MutationState from '../../components/MutationState/MutationState';
 import CollapseContainer from '../../components/CollapseContainer/CollapseContainer';
 import DataTable from '../../components/DataTable/DataTable';
+import CardContainer from '../../components/CardContainer/CardContainer';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 
 const Professor = () => {
@@ -44,9 +46,10 @@ const Professor = () => {
 
   if (isSubjectsSuccess && isProfessorSuccess && isGetRoleSuccess) {
     content = 
-    <>
+    <CardContainer large={true}>
+			<Breadcrumbs />
 			<h1 className="text-xl font-bold text-center py-5">{ professorData.name }</h1>
-      <p class="label-primary">Ime i prezime</p>
+      <p className="label-primary">Ime i prezime</p>
 			<div className="input-primary mb-4 flex items-center gap-2">{professorData.title} {professorData.name}  
         { getRole.role !== 'User' && <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer" to={`/institutions/${institution}/professors/${id}/edit`}><Pencil size={16} /></Link> }
       </div>
@@ -55,21 +58,21 @@ const Professor = () => {
 				<CollapseContainer label="Stručna biografija" data={professorData.bio} />
 			</div>
 
-			<p class="label-primary">Osnovne studije</p>
+			<p className="label-primary">Osnovne studije</p>
 			<div className="input-primary mb-4">{professorData.education?.bachelor?.institution || '-'}</div>
       <div className="flex justify-center gap-3 w-full">
         <p className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.from || '-' }</p>
         <p className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.bachelor?.to || '-' }</p>
       </div>
 
-			<p class="label-primary">Master studije</p>
+			<p className="label-primary">Master studije</p>
       <div className="input-primary mb-2">{professorData.education?.master?.institution || '-'}</div>
       <div className="flex justify-center gap-3 w-full">
         <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.master?.from || '-' }</div>
         <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.master?.to || '-'}</div>
       </div>
 
-			<p class="label-primary">Doktorske studije</p>
+			<p className="label-primary">Doktorske studije</p>
       <p className="input-primary mb-4">{professorData.education?.doctorate?.institution || '-'}</p>
       <div className="flex justify-center gap-3 w-full">
         <div className="input-primary mb-4 w-full md:w-1/2">{ professorData.education?.doctorate?.from || '-' }</div>
@@ -123,7 +126,7 @@ const Professor = () => {
 				: null
 			}
   
-    </>  
+    </CardContainer>  
 	}
 
   useEffect(() => {
@@ -138,11 +141,8 @@ const Professor = () => {
 				isError={isProfessorError || isGetRoleError}
 				timeout={500}
 			/>
-      <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 lg:w-1/3">
-          { content }
-        </div>
-      </div>
+
+			{ content }
     </>
   )
 }

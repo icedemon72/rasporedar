@@ -6,6 +6,8 @@ import { PlusCircle, Search } from 'lucide-react';
 import DataTable from '../../components/DataTable/DataTable';
 import MutationState from '../../components/MutationState/MutationState';
 import { Helmet } from 'react-helmet';
+import CardContainer from '../../components/CardContainer/CardContainer';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 const Professors = () => {
   const { institution } = useParams();
@@ -32,21 +34,22 @@ const Professors = () => {
 	if (isProfessorsSuccess) {
     professorsContent = 
     <>
-      <div className="w-full flex justify-center px-2 md:px-0">
-        <div className="w-full md:w-1/2 lg:w-1/3">
-          { isGetRoleSuccess && getRole.role !== 'User' &&
-             <Link to={`/institutions/${institution}/professors/add`}>
-						 <div className="w-full flex gap-2 items-center justify-center btn-primary btn-green mb-5">
+      <CardContainer large={true} onTop={true}>
+				<Breadcrumbs />
+				<h1 className="text-xl font-bold text-center py-5">Profesori</h1>
+					{ isGetRoleSuccess && getRole.role !== 'User' &&
+             <Link className="w-full flex justify-center" to={`/institutions/${institution}/professors/add`}>
+						 <div className="w-full max-w-[500px] flex gap-2 items-center justify-center btn-primary btn-green mb-5">
 							 <PlusCircle size={16} /> 
 							 <p>Dodaj profesora</p>
 						 </div>
 					 </Link> 
 					 }
 
-					<div class="w-full flex justify-end my-2">
-						<div class="w-full md:w-2/3 lg:w-1/2 flex gap-2">
+					<div className="w-full flex justify-end my-2">
+						<div className="w-full md:w-2/3 lg:w-1/2 flex gap-2">
 							<input className="input-primary" placeholder="Marko Markovic"/>
-							<button className="btn-primary"><Search /></button>
+							<button className="btn-primary bg-primary"><Search /></button>
 						</div>
 					</div>
 
@@ -58,8 +61,8 @@ const Professors = () => {
 						isSuccess={isGetRoleSuccess}
 						professors={true}
 					/>
-        </div>
-      </div>
+				</CardContainer>
+
     </>
   } 
 
@@ -72,7 +75,6 @@ const Professors = () => {
 			<Helmet>
 				<title>Profesori | Rasporedar</title>
 			</Helmet>
-			<h1 className="text-xl font-bold text-center py-5">Profesori</h1>
       { professorsContent }
     </>
   )

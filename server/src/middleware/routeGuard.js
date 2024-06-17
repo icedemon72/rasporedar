@@ -1,15 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import { newError } from "../utils";
-
-import { getAdminByUser } from "../services/user.service";
-
 const RouteGuard = (rolesWithCondition, dynamicArgs) => {
 	return async (req, res, next) => {
 		try {
-			if (!req.user) return res.status(401).send(newError(401, 'Unauthorized'));
-
-			if(req?.user.roles.includes('admin')) {
-				const admin = await getAdminByUser(req.user.id, false);
+			if (!req.userTokenData) return res.status(403).send({ status: 403, message: 'Unauthorized' });
+			if(req?.userTokenData.role === 'Admin') {
+				// const admin = await getAdminByUser(req.user.id, false);
+				const admin = true;
 
 				if(admin) {
 					return next();
@@ -26,16 +21,16 @@ const RouteGuard = (rolesWithCondition, dynamicArgs) => {
 					return await when(req, ...argsForWhen);
 				}
 
-				return req.user.roles.includes(role) && await when(req, ...argsForWhen);	
+				return req.userTokenData.role === role && await when(req, ...argsForWhen);	
 			}));
 
 			if (!hasPermission.some(permission => permission)) {
-				return res.status(404).send(newError(404, 'Stranica ne postoji'));
+				return res.status(404).send({ status: 404, message: 'Stranica ne postoji' });
 			}
 			
 			next();
 		} catch (error) {
-			return res.status(500).send(newError(500, 'Internal Server Error'));
+			return res.status(500).send({ status: 500, message: 'Internal Server Error' });
 		}
 	};
 }

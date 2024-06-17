@@ -9,6 +9,7 @@ import Textarea from '../../components/Input/Textarea';
 import SelectComponent from '../../components/Input/SelectComponent';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
+import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
 
 /* ADD ASS functionality!!!! */
 const SubjectsAdd = () => {
@@ -97,23 +98,24 @@ const SubjectsAdd = () => {
 				isSuccess &&
 				<>
 					<CardContainer large={true}>
-						<h1 class="text-xl font-bold text-center py-5">Dodaj predmet</h1>
+						<Breadcrumbs />
+						<h1 className="text-xl font-bold text-center py-5">Dodaj predmet</h1>
 						<form onSubmit={handleAddSubject}>
-							<div class="mb-4">
+							<div className="mb-4">
 								<Input id="name" name="Naziv predmeta" placeholder="Web Programiranje" type="text" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
 							</div>
-							<div class="mb-4">
+							<div className="mb-4">
 								<Textarea id="description" name="Opis predmeta" placeholder="Unesite opis predmeta..." inputVal={description} setVal={(elem) => setDescription(elem.target.value)} />
 							</div>
-							<div class="mb-4">
+							<div className="mb-4">
 								<Textarea id="goal" name="Cilj predmeta" placeholder="Unesite cilj predmeta" inputVal={goal} setVal={(elem) => setGoal(elem.target.value)} />
 							</div>
-							<div class="mb-4">
+							<div className="mb-4">
 								<Textarea id="result" name="Rezultat predmeta" placeholder="Unesite rezultat predmeta" inputVal={subjResult} setVal={(elem) => setResult(elem.target.value)} />
 							</div>
 
-							<div class="w-full mb-4">
-								<label class="label-primary">Profesori</label>
+							<div className="w-full mb-4">
+								<label className="label-primary">Profesori</label>
 								<SelectComponent data={data.map((item) => ({
 									value: item._id, label: item.name
 									}))} 
@@ -126,7 +128,7 @@ const SubjectsAdd = () => {
 							</div>
 
 							<div className="w-full mb-6">
-								<label class="label-primary">Asistenti</label>
+								<label className="label-primary">Asistenti</label>
 								<SelectComponent data={data.map((item) => ({
 									value: item._id, label: item.name
 									}))} 
@@ -137,8 +139,8 @@ const SubjectsAdd = () => {
 								/>
 							</div>      
 								
-							<div className="flex justify-center">
-							<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green">Dodaj predmet!</button>
+							<div className="flex justify-end">
+							<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green">Sačuvaj predmet</button>
 							</div>
 						</form>
 					</CardContainer>

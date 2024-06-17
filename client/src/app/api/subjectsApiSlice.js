@@ -17,7 +17,7 @@ const subjectsApiSlice = apiSlice.injectEndpoints({
     }),
     getSubjectProfessors: builder.query({
       query: ({ institution, id })=> ({
-        url: `/institutions/${institution}/subjects/professors/`
+        url: `/institutions/${institution}/subjects/${id}/professors/`
       }),
       keepUnusedDataFor: 20,
     }),

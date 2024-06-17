@@ -67,7 +67,14 @@ export const refreshAccessToken = async (refreshToken, userAgent) => {
 
 /* Login */
 export const loginUser = async (user, userAgent) => {
-	const userObj = await User.findOne({ username: user.username });
+	let userObj;
+	
+	// is e-mail
+	if(user.username.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+		userObj = await User.findOne({ email: user.username });
+	} else {
+		userObj = await User.findOne({ username: user.username });
+	}
 
 	if (!userObj) {
 		throw {

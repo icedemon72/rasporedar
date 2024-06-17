@@ -4,8 +4,6 @@ import { getFullInfoOnProfessors } from './professorService.js';
 import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
 export const addSubject = async (sender, data) => {
-	await authSenderInInstitutionObject(sender, data.institution);
-
 	// add professors check here!
 	const subject = await Subject.create(data);
 	return { message: 'Predmet uspešno kreiran!', _id: subject._id }
@@ -20,8 +18,6 @@ export const deleteSubject = async (sender, subject) => {
 			message: 'Predmet ne postoji!'
 		}
 	}
-
-	await authSenderInInstitutionObject(sender, subjectObj.institution);
 
 	subjectObj.deleted = true;
 	await subjectObj.save();
@@ -38,8 +34,6 @@ export const editSubjectInfo = async (sender, subject, data) => {
 			message: 'Predmet ne postoji!'
 		}
 	}
-
-	await authSenderInInstitutionObject(sender, subjectObj.institution);
 
 	await Subject.updateOne({ _id: subjectObj._id }, {
 		$set: {
@@ -65,8 +59,6 @@ export const editSubjectProfessor = async (sender, professor, subject, position,
 			message: 'Ne postoji profesor!'
 		}
 	}
-
-	await authSenderInInstitutionObject(sender, professorObj.institution);
 
 	const subjectObj = await Subject.findOne({ _id: subject, deleted: false });
 
@@ -109,8 +101,6 @@ export const editSubjectProfessor = async (sender, professor, subject, position,
 }
 
 export const getAllSubjectsInInstitution = async (sender, institution, fullInfo = false) => {
-	await senderInInstitutionObject(sender, institution);
-
 	const subjectObj = !fullInfo ?
 		await Subject.find({ institution, deleted: false }, { deleted: 0 })
 		: await Subject.find({ institution, deleted: false }, { deleted: 0 }).populate({ path: 'professors assistents', match: { deleted: false }, select: 'name title' });
@@ -128,8 +118,6 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
 			message: 'Ne postoji profesor!'
 		}
 	}
-
-	await senderInInstitutionObject(sender, professorObj.institution);
 
 	const professorSubjectObj = await Subject.find({
 		professors: professor,
@@ -161,8 +149,6 @@ export const getSubjectById = async (sender, subject, fullInfo = false) => {
 			message: 'Ne postoji predmet!'
 		}
 	}
-
-	await senderInInstitutionObject(sender, subjectObj.institution);
 
 	return subjectObj;
 }

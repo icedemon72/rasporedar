@@ -9,6 +9,8 @@ import Textarea from "../../components/Input/Textarea";
 import { Helmet } from "react-helmet";
 import MutationState from "../../components/MutationState/MutationState";
 import CardContainer from "../../components/CardContainer/CardContainer";
+import ListItem from "../../components/ListItem/ListItem";
+import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 const ProfessorsAdd = () => {
   const session = useSelector(state => state.session);
@@ -110,6 +112,7 @@ const ProfessorsAdd = () => {
 			</Helmet>
 
       <CardContainer large={true}>
+				<Breadcrumbs />
 				<h1 className="text-xl font-bold text-center py-5">Dodaj profesora</h1>
         <form>
 					<div className="mb-4">
@@ -159,17 +162,13 @@ const ProfessorsAdd = () => {
 
           { references.map((elem, i) => {
             return (
-              <div className="flex flex-row justify-between mt-2">
-                <div>{i + 1}</div>
-                <p>{elem}</p>
-                <div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleDeleteReference(i)}><Trash /></div> 
-              </div>
+							<ListItem text={elem} index={i} deleteFunc={() => handleDeleteReference(i)}/>
             );
           })
           }
 
-          <div className="w-full flex justify-center mt-6">
-            <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Unesi profesora!</button>
+          <div className="w-full flex justify-end mt-6">
+            <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Sačuvaj profesora</button>
           </div>
         </form>
       </CardContainer>

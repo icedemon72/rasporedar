@@ -16,3 +16,8 @@ export const professorTypes = [
 	{ value: 'professor', label: 'Profesor (predavanja)' },
 	{ value: 'assistant', label: 'Asistent (vežbe)' }
 ];
+
+export const roleTypes = [
+	{ value: 'User', label: 'Korisnik' },
+	{ value: 'Moderator', label: 'Moderator' }
+];

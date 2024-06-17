@@ -7,9 +7,9 @@ const CollapseContainer = ({ label, data, isOpen = true }) => {
 	
 	return (
 		<>
-			<p class="label-primary inline-flex items-center gap-2">
+			<p className="label-primary inline-flex items-center gap-2">
 				{ label }
-				<div className="inline-flex btn-primary p-0 cursor-pointer"  onClick={() => setOpen(prev => !prev)}>
+				<div className="inline-flex btn-primary p-0 cursor-pointer bg-secondary"  onClick={() => setOpen(prev => !prev)}>
 					{ 
 						open ?
 						<ChevronDown size={16} />
@@ -28,7 +28,7 @@ const CollapseContainer = ({ label, data, isOpen = true }) => {
 					open? 'h-full block' : 'h-0 hidden'
 				)}>
 					<div className="input-primary mb-4">
-						{ data || '-'}
+						{ data.length ? data : '-' }
 					</div>
 				</div>
 			</div>

@@ -134,7 +134,7 @@ const CodeInput = ({ reset = undefined, codeFunc, className = '', insertCode = '
 			<div className="flex items-center gap-2 relative">
 				{[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
 					<input
-						className="text-2xl w-10 flex p-2 text-center font-bold  border-2 border-black"
+						className="text-2xl w-10 flex p-2 text-center font-bold border-2 border-black bg-primary focus:ring-0 focus:ring-offset-0"
 						key={index}
 						type="text"
 						maxLength={1}

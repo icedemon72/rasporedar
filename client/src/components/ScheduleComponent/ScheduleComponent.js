@@ -10,7 +10,7 @@ const ScheduleComponent = ({
 	
   return (
     <>
-      <div className={clsx("w-full flex justify-between box-shadow border-2 border-black rounded mb-4 p-2", scheduleCustomStyles[props.style.value].background)}>
+      <div className={clsx("w-full flex justify-between box-shadow border-2 border-black rounded mb-4 p-2 text-black", scheduleCustomStyles[props.style.value].background)}>
         <div className="w-full flex justify-center items-center gap-2">
           <Clock size={16} /> Termin
         </div>
@@ -25,7 +25,7 @@ const ScheduleComponent = ({
         }
       </div>
                     
-      <div className="w-full">
+      <div className="w-full text-black">
 				
         {
           props.rows.map((item, groupIndex) => {
@@ -37,7 +37,7 @@ const ScheduleComponent = ({
 											item.data[0].map((_, index) => {
 												return (
 													<>
-														{ index === 0 && props.groups.length !== 1 ? <div className={clsx("w-full text-lg font-bold text-center py-2", scheduleCustomStyles[props.style.value].titleBackground)}>{ props.groups[groupIndex] }</div> : null }
+														{ index === 0 && props.groups.length !== 1 ? <div className={clsx("w-full text-xl font-bold text-center py-2", scheduleCustomStyles[props.style.value].titleBackground)}>{ props.groups[groupIndex] }</div> : null }
 														
 														<ScheduleRow 
 															{...props} 

@@ -33,14 +33,6 @@ export const handleLeaveInstitution = async (req, res) => {
       req.body.user = req.userTokenData._id;
     }
 
-    if (!isObjectIdValid(req.body.user).valid) {
-      return res.status(400).send(isObjectIdValid(req.body.user).message);
-    }
-
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.body.institution).message);
-    }
-
     if(req.userTokenData._id !== req.body.user && req.userTokenData.role === 'User') {
       return res.status(405).send({ message: 'Nemate permisiju za ovo!' });
     }
@@ -54,14 +46,6 @@ export const handleLeaveInstitution = async (req, res) => {
 
 export const handlePromoteToRole = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.user).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.user).message);
-    } 
-
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
     if(req.body.role !== 'User' || req.body.role !== 'Moderator') {
       return res.status(400).send({ message: 'Nepostojeća permisija!' });
     }
@@ -81,11 +65,7 @@ export const handlePromoteToRole = async (req, res) => {
 // GET
 export const handleGetAllUsersInInstitution = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.id).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.id).message);
-    }
-
-    const done = await getAllUsersInInstitution(req.userTokenData._id, req.params.id);
+    const done = await getAllUsersInInstitution(req.userTokenData._id, req.params.institution);
     return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
@@ -94,9 +74,6 @@ export const handleGetAllUsersInInstitution = async (req, res) => {
 
 export const handleGetUserRole = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
     const done = await getUserRole(req.userTokenData._id, req.params.institution);
     return res.status(200).send(done);
   } catch (err) {
@@ -106,12 +83,9 @@ export const handleGetUserRole = async (req, res) => {
 
 export const handleGetIsUserAuth = async (req, res) => {
   try {
-    if(!isObjectIdValid(req.params.institution).valid) {
-      return res.status(400).send(isObjectIdValid(req.params.institution).message);
-    }
-
     const done = await getIsUserAuth(req.userTokenData._id, req.params.institution);
-    return res.status(200).send(done);
+    
+		return res.status(200).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
   }

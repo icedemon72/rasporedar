@@ -47,8 +47,7 @@ const ScheduleScreenOne = ({
     setClickedIndex(null);
     setIsDeleteGroupOpen(false);
   }
-
-  return (
+	  return (
     <>
 			{ 
 				isInstitutionSuccess && 
@@ -106,28 +105,34 @@ const ScheduleScreenOne = ({
 					
 					{ added || groups.length > 1 ? 
 						groups.map((gr, i) => <>
-							<div class="flex flex-row justify-between mt-2">
+							<div className="flex flex-row justify-between mt-2">
 								<div>{i + 1}</div>
 								<p>{gr}</p>
-								<div class="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleOpenModal(i)}><Trash /></div> 
+								<div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleOpenModal(i)}><Trash /></div> 
 							</div>
 						</>)
 					: null }
-					<label className="block text-gray-700 text-sm font-bold mb-2">Grupe</label>
-					<div className="w-full flex mb-4 gap-1">
-						<input className="input-primary w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" onChange={(elem) => setGroup(elem.target.value)} ref={inputRef} value={group} onKeyUp={(elem) => handleAddGroup(elem)} placeholder="Unesite godine, razrede, odeljenja..."/>
-						<button className="input-primary w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 btn-plus" onClick={() => handleAddGroup(inputRef.current, null)}><PlusCircle /></button>
+
+					<div className="mb-4">
+						<label htmlFor="groups" className="label-primary">Grupe</label>
+						<div className="w-full flex mb-4 gap-1">
+							<input id="groups" className="input-primary w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" onChange={(elem) => setGroup(elem.target.value)} ref={inputRef} value={group} onKeyUp={(elem) => handleAddGroup(elem)} placeholder="Unesite godine, razrede, odeljenja..."/>
+							<button className="input-primary w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 btn-plus" onClick={() => handleAddGroup(inputRef.current, null)}><PlusCircle /></button>
+						</div>
 					</div>
-					<label className="block text-gray-700 text-sm font-bold mb-2">Vazi do: </label>
-					<input className="input-primary" type="date" onChange={(elem) => setValidUntil(elem.target.value)} value={props.validUntil} />
-					<label className="block text-xs font-bold mb-4 text-gray-500">*Ostavite prazno ukoliko ne zelite da naznacite</label>
+
+					<div className="mb-4">
+						<label htmlFor="date" className="label-primary">Važi do: </label>
+						<input id="date" className="input-primary" type="date" onChange={(elem) => setValidUntil(elem.target.value)} value={props.validUntil} />
+						<span className="block text-xs font-bold text-muted">*Ostavite prazno ukoliko ne želite da naznačite</span>
+					</div>
 				</>
 			}
 
       { isDeleteGroupOpen ? 
         <ModalDelete title={'Brisanje grupe'} text={`Obrisaćete grupu '${groups[clickedIndex]}' i sve informacije o njoj (predmete u rasporedu, termine itd.). Da li ste sigurni?`} closeFunc={() => setIsDeleteGroupOpen(false)}>
-          <button className="bg-gray-300 hover:bg-gray-500 p-2 rounded" onClick={() => setIsDeleteGroupOpen(false)}>Odustani</button>
-          <button className="bg-red-300 hover:bg-red-500 p-2 rounded" onClick={handleDeleteGroupFunc}>Potvrdi</button>
+          <button className="btn-primary bg-primary " onClick={() => setIsDeleteGroupOpen(false)}>Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleDeleteGroupFunc}>Potvrdi</button>
         </ModalDelete>
         : null
       }
