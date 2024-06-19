@@ -10,9 +10,9 @@ const ModalDelete = ({ closeFunc, title, text, children }) => {
         <div className="text-center font-bold text-xl flex justify-center">
             <p><AlertTriangle color="red" size={46} /></p>
           </div>
-          <div className="text-center ">
-            <p className="font-bold text-xl">{ title }</p>
-            <p className="text-lg">{ text }</p>
+          <div className="text-center mb-4">
+            <p className="font-bold text-xl mb-2">{ title }</p>
+            <p className="">{ text }</p>
           </div>
           <div className="flex flex-row justify-center gap-3">
             { children.map(child => {

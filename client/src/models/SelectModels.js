@@ -21,3 +21,11 @@ export const roleTypes = [
 	{ value: 'User', label: 'Korisnik' },
 	{ value: 'Moderator', label: 'Moderator' }
 ];
+
+export const frequencyTypes = [
+	{ value: '*', label: 'Uvek' },
+	{ value: 'w2', label: 'Svake druge nedelje' },
+	{ value: 'w3', label: 'Svake treće nedelje' },
+	{ value: 'm1', label: 'Svakog meseca (pete nedelje)' },
+	{ value: 'm2', label: 'Svaka dva meseca (desete nedelje)' },
+];

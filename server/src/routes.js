@@ -1,3 +1,4 @@
+import { handleCheckSchedule } from './controllers/scheduleController.js';
 import { checkValidAccess, handleLoginUser, handleLogout, handleRefresh } from './controllers/sessionController.js';
 import { handleEditUser, handleGetUserById, handleGetUserInstitutions, handleUserRegister } from './controllers/userController.js';
 
@@ -14,11 +15,13 @@ export default (app) => {
     return res.status(200).send({ message: 'Hvala Vam što koristite naše usluge! :)' });
   });
 
+	app.get('/institutions/:institution/schedules/check', handleCheckSchedule);
+
 	app.use('/', userRouter);
-	app.use('/institutions', authenticate, institutionRouter);
+	app.use('/institutions/:institution/schedules', authenticate, scheduleRouter)
 	app.use('/institutions/:institution/professors', authenticate, professorRouter)
 	app.use('/institutions/:institution/subjects', authenticate, subjectRouter);
-	app.use('/institutions/:institution/schedules', authenticate, scheduleRouter)
+	app.use('/institutions', authenticate, institutionRouter);
   
 
   app.post('/refresh', async (req, res) => {

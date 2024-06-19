@@ -95,6 +95,14 @@ const scheduleSchema = mongoose.Schema(
       type: String,
       default: 'school'
     },
+		frequency: {
+			type: String,
+			default: '*'
+		},
+		validFrom: {
+			type: Date,
+			default: Date.now(),
+		},
     validUntil: { // shows until when the schedule is valid
       type: Date
     },
@@ -106,6 +114,10 @@ const scheduleSchema = mongoose.Schema(
       type: Boolean,
       default: false
     },
+		archived: {
+			type: Boolean,
+			default: false
+		},
     deleted: {
       type: Boolean,
       default: false

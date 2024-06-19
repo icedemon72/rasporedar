@@ -1,4 +1,4 @@
-import { addSchedule, deleteSchedule, editSchedule, getAllSchedulesInInstitution, getSchedule } from '../services/scheduleService.js';
+import { addSchedule, checkSchedule, deleteSchedule, editSchedule, getAllSchedulesInInstitution, getSchedule } from '../services/scheduleService.js';
 import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleAddSchedule = async (req, res) => {
@@ -59,6 +59,43 @@ export const handleGetSchedule = async (req, res) => {
     
 		return res.status(200).send(done);
   } catch (err) {
+    return res.status(err.status || 500).send({ message: err.message });
+  }
+}
+
+export const handleCheckSchedule = async(req, res) => {
+	try {
+		const institution = req.params.institution;
+		// req.body -> isTime: boolean, isLocation: boolean,
+		//             time: { to: string, from: string, day: string, professor: objectId }
+		//             location: string 
+		// if time is checked -> take from - to
+		// if location is checked -> take location
+
+		let isTime = false, isLocation = false;
+
+		if(req.body.isTime) isTime = true;
+		if(req.body.isLocation) isLocation = true;
+
+		const validFrom = req.body?.validFrom || null;
+		const validTo = req.body?.validTo || null;
+
+		const { location, time, frequency } = req.body;
+
+		const done = await checkSchedule(
+			institution, 
+			isTime, 
+			isLocation, 
+			validFrom, 
+			validTo,
+			frequency, 
+			location, 
+			time,
+		);
+
+		return res.status(200).send(done);		
+		
+	} catch (err) {
     return res.status(err.status || 500).send({ message: err.message });
   }
 }

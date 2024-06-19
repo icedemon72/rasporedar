@@ -75,11 +75,11 @@ function App() {
 							
 							<Route path="/institutions/create" element={<CreateInstitution />} />
 							<Route path="/institutions/join/:type/:jCode" element={<JoinInstitution />} />
-							<Route path="/institutions/join/:type/" element={<JoinInstitution />} />
+							<Route  ath="/institutions/join/:type/" element={<JoinInstitution />} />
 							<Route path="/institutions/join/" element={<JoinInstitution />} />
 
 							{/* Everyone in the institution can access these */}
-							<Route  element={<RouteInInstitution requiredRoles={['User', 'Moderator', 'Owner']}/>}>
+							<Route element={<RouteInInstitution requiredRoles={['User', 'Moderator', 'Owner']}/>}>
 								<Route path="/institutions/:institution" element={<Institution institution=':institution' />} />
 								<Route path="/institutions/:institution/professors" element={<Professors institution=':institution'/>}/>
 								<Route path="/institutions/:institution/professors/:id" element={<Professor institution=':institution' id=':id' />}/>

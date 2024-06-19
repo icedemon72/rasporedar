@@ -36,7 +36,13 @@ const schedulesApiSlice = apiSlice.injectEndpoints({
         url: `/institutions/${institution}/schedules/${schedule}`
       }),
       providesTags: (result, error) => error ? [] : ['Schedule']
-    })
+    }),
+		checkSchedule: builder.mutation({
+			query: ({ institution, body }) => ({
+				url: `/institutions/${institution}/schedules/check`,
+				method: 'POST'
+			})
+		}),
   })
 });
 

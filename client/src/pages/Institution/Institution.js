@@ -56,7 +56,7 @@ const Institution = () => {
     <>
       <div className="w-full flex justify-center pt-5 gap-2 my-5">
 				<h1 className="text-xl font-black max-w-[500px] truncate"> { institutionData.name }</h1>
-				{ role === 'Owner' ? <span className="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer"><Link to={`/institutions/${institution}/edit`}><Pencil size={16} /></Link> </span> : null }
+				{ role === 'Owner' ? <Link to={`/institutions/${institution}/edit`}><span className="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer bg-secondary transition-all"><Pencil size={16} /></span></Link> : null }
       </div>
 
 			<div className="w-full flex justify-center">

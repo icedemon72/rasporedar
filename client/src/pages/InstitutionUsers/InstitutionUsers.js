@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import { Contact } from 'lucide-react';
 import SelectComponent from '../../components/Input/SelectComponent';
 import { roleTypes } from '../../models/SelectModels';
+import CardContainer from '../../components/CardContainer/CardContainer';
 
 const InstitutionUsers = () => {
 	const { institution } = useParams();
@@ -44,8 +45,7 @@ const InstitutionUsers = () => {
 			{
 				isUsersSuccess && isRoleSuccess &&
 				<>
-					<div className="w-full flex justify-center px-2 md:px-0">
-						<div className="w-full md:w-1/2 lg:w-1/3">
+					<CardContainer large={true} onTop={true} >
 							<h1 className="text-xl text-center font-bold my-5">Korisnici ({userData.length})</h1>
 							<ul>
 								{
@@ -58,8 +58,7 @@ const InstitutionUsers = () => {
 									</li>
 								)}
 							</ul>
-						</div>
-					</div>
+						</CardContainer>
 				</>
 			}	
 		</>

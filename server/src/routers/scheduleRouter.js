@@ -1,5 +1,5 @@
 import express from 'express';
-import { handleAddSchedule, handleDeleteSchedule, handleEditSchedule, handleGetAllSchedulesInInstitution, handleGetSchedule } from '../controllers/scheduleController.js';
+import { handleAddSchedule, handleCheckSchedule, handleDeleteSchedule, handleEditSchedule, handleGetAllSchedulesInInstitution, handleGetSchedule } from '../controllers/scheduleController.js';
 import { isAuthInInstitution, isInInstitution } from '../middleware/guards/institutionGuard.js';
 import RouteGuard from '../middleware/routeGuard.js';
 import { validateSchedule } from '../validators/scheduleValidator.js';
@@ -22,6 +22,16 @@ router.route('/')
 		}]),
 		handleAddSchedule
 	)
+
+// router.get(
+	// '/check/',
+	// // RouteGuard([{
+	// // 	role: '*',
+	// // 	when: isAuthInInstitution
+	// // }]),
+// 	handleCheckSchedule,
+	
+// );
 
 router.route('/:schedule')
 	.get(
@@ -48,5 +58,4 @@ router.route('/:schedule')
 		}]),
 		handleDeleteSchedule
 	);
-
 export { router as scheduleRouter };

@@ -4,13 +4,13 @@ import { Trash, PlusCircle } from 'lucide-react';
 import ModalDelete from '../ModalDelete/ModalDelete';
 import Input from '../Input/Input';
 import SelectComponent from '../Input/SelectComponent';
-import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import { frequencyTypes, scheduleStyles, scheduleTypes } from '../../models/SelectModels';
 
 const ScheduleScreenOne = ({
   setTitle, setSubtitle, setComment, setDepartment,
   isInstitutionLoading, isInstitutionSuccess, institutionData,
-  setStyle, systemType, setSystemType, setValidUntil, groups, setGroups,
-  handleDeleteGroup, ...props
+  setStyle, systemType, setSystemType, setValidFrom, setValidUntil, groups, setGroups,
+  handleDeleteGroup, setFrequency, ...props
 }) => {
 
   // const [ groupsArray, setGroupsArray ] = useState(groups || ['Grupa 1']);
@@ -79,30 +79,30 @@ const ScheduleScreenOne = ({
 						/>
 					</div>
 
-					<div className="mb-4">
-						<label className="label-primary">Stil rasporeda</label>
-						<SelectComponent 
-							data={scheduleStyles} 
-							value={props.style}
-							setVal={(e) => setStyle(e)}
-							required={true} 
-							isClearable={false}
-							placeholder="Izaberite stil rasporeda"
-						/>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+						<div className="col-span-1">
+							<label className="label-primary">Tip rasporeda</label>
+							<SelectComponent data={scheduleTypes}
+								placeholder={`Izaberite tip rasporeda`}
+								value={systemType}
+								setVal={(e) => setSystemType(e)}
+								required={true} 
+								isClearable={false}
+							/>
+						</div>
+						<div className="col-span-1">
+							<label className="label-primary">Stil rasporeda</label>
+							<SelectComponent 
+								data={scheduleStyles} 
+								value={props.style}
+								setVal={(e) => setStyle(e)}
+								required={true} 
+								isClearable={false}
+								placeholder="Izaberite stil rasporeda"
+							/>
+						</div>
 					</div>
 
-					<div className="mb-4">
-						<label className="label-primary">Tip rasporeda</label>
-						<SelectComponent data={scheduleTypes}
-							placeholder={`Izaberite tip rasporeda`}
-							value={systemType}
-							setVal={(e) => setSystemType(e)}
-							required={true} 
-							isClearable={false}
-						/>
-					</div>
-
-					
 					{ added || groups.length > 1 ? 
 						groups.map((gr, i) => <>
 							<div className="flex flex-row justify-between mt-2">
@@ -121,11 +121,31 @@ const ScheduleScreenOne = ({
 						</div>
 					</div>
 
-					<div className="mb-4">
-						<label htmlFor="date" className="label-primary">Važi do: </label>
-						<input id="date" className="input-primary" type="date" onChange={(elem) => setValidUntil(elem.target.value)} value={props.validUntil} />
-						<span className="block text-xs font-bold text-muted">*Ostavite prazno ukoliko ne želite da naznačite</span>
+					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 mb-4">
+						<div className="col-span-1">
+							<label htmlFor="date" className="label-primary">Važi od </label>
+							<input id="date" className="input-primary" type="date" onChange={(elem) => setValidFrom(elem.target.value)} value={props.validFrom} />
+							<span className="block text-xs font-bold text-muted">*Ukoliko ostavite prazno, važiće od trenutka čuvanja</span>
+						</div>
+						<div className="col-span-1">
+							<label htmlFor="date" className="label-primary">Važi do </label>
+							<input id="date" className="input-primary" type="date" onChange={(elem) => setValidUntil(elem.target.value)} value={props.validUntil} />
+							<span className="block text-xs font-bold text-muted">*Ostavite prazno ukoliko ne želite da naznačite</span>
+						</div>
+						<div className="col-span-full xl:col-span-1 ">
+							<label className="label-primary">Važi (na)</label>
+							<SelectComponent 
+								data={frequencyTypes} 
+								value={props.frequency}
+								setVal={(e) => setFrequency(e)}
+								required={true} 
+								isClearable={false}
+								placeholder="Izaberite na koliko će raspored važiti"
+							/>
 					</div>
+					</div>
+
+				
 				</>
 			}
 

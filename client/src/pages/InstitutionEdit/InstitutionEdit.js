@@ -173,7 +173,7 @@ const InstitutionEdit = () => {
 				<label className="label-primary">Odseci, odeljenja itd.</label>
 				<div className="w-full flex gap-1">
 					<input className="input-primary" type="text" placeholder="Naziv odseka/odeljenja" ref={inputRef} onKeyUp={(elem) => handleAddDepartment(elem)} onChange={(elem) => setDpt(elem.target.value)} value={dpt}></input>
-					<button className="btn-plus w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5"  type="text" onClick={() => handleAddDepartment(inputRef.current, null)}><PlusCircle /></button>
+					<button className="btn-plus w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-primary"  type="text" onClick={() => handleAddDepartment(inputRef.current, null)}><PlusCircle /></button>
 				</div>
 				{ departments.map((elem, i) => {
 					return (

@@ -31,7 +31,7 @@ export const scheduleCustomStyles = {
 		clockCol: 'bg-black'
 	},
 	anthea: {
-		background: 'bg-[#c336c3] font-bold uppercase text-[#fdf5fe]',
+		background: 'bg-[#c336c3] font-bold uppercase text-[#fdf5fe] text-white',
 		titleBackground: 'bg-[#e16ee4] uppercase',
 		colStyle: 'even:bg-[#fbeafd] odd:bg-[#f6d4fa]',
 		clockCol: 'bg-[#e16ee4]',

@@ -157,7 +157,7 @@ const ProfessorsAdd = () => {
 					<label className="label-primary">Reference</label>
           <div className="w-full flex gap-1 mb-4">
             <input className="input-primary" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} onKeyUp={(elem) => handleAddReference(elem)}/>
-            <button type="button" className="btn-plus" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
+            <button type="button" className="btn-plus bg-primary" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
           </div>
 
           { references.map((elem, i) => {

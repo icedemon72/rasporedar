@@ -13,12 +13,12 @@ import deepClone from 'deep-clone'
 import ScheduleScreenOne from '../../components/ScheduleScreenOne/ScheduleScreenOne';
 import ScheduleScreenTwo from '../../components/ScheduleScreenTwo/ScheduleScreenTwo';
 import CardContainer from '../../components/CardContainer/CardContainer';
-import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import { frequencyTypes, scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import MutationState from '../../components/MutationState/MutationState';
 
 
 /* TODO: change schedule add logic, also schedule edit label -> value */
 const SchedulesAdd = ({ edit = false, ...props }) => {
-  console.log(props);
 	const session = useSelector(state => state.session);
   const navigate = useNavigate();
   const { institution } = useParams();
@@ -46,11 +46,12 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   /* These could go in a separate component ? */
   const [ title, setTitle ] = useState(props.title || ''); 
   const [ style, setStyle ] = useState(props.style || scheduleStyles[0]);
+	const [ frequency, setFrequency ] = useState(props.frequency || frequencyTypes[0]);
+	const [ validFrom, setValidFrom ] = useState(props.validFrom || '');
   const [ validUntil, setValidUntil ] = useState(props.validUntil || '');
   const [ systemType, setSystemType ] = useState(props.systemType || scheduleTypes[0]);
   const [ subtitle, setSubtitle ] = useState(props.subtitle || '');
   const [ comment, setComment ] = useState(props.comment || '');
-
 
   const [ step, setStep ] = useState(0);
   const [ isSubjectOpen, setIsSubjectOpen ] = useState(false);
@@ -227,12 +228,12 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
         title, days, style: style.value, validUntil, 
         systemType: systemType.value, subtitle, comment,
         department: department.value, groups, data: tempRows,
-        published
+        published, validFrom, frequency: frequency.value
       }
 
       // TODO: add edit 
       const result = !edit ? 
-        await props.fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap() 
+        await props.fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap()
         : await fetchAddSchedule({ institution, body }).unwrap();
 
       setTimeout(() => {
@@ -318,6 +319,10 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       style,
       systemType,
       setSystemType,
+			setValidFrom,
+			frequency,
+			setFrequency,
+			validFrom,
       setValidUntil,
       validUntil,
       setGroups,
@@ -351,7 +356,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
             </div>
           </div>
           
-          <div className="w-full flex justify-center my-5">
+          <div className="w-full flex justify-center py-5">
             <div className="w-full md:w-4/5 lg:w-3/4 grid grid-cols-4 gap-2 p-2 rounded-md box-shadow border-2 border-black bg-secondary">
               <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
               <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
@@ -367,6 +372,16 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 	 
   return (
     <>
+			<MutationState 
+				isLoading={isGetRoleLoading || isInstitutionLoading || isSubjectsLoading || isFetchAddScheduleLoading || isFetchDeleteScheduleLoading}
+				isSuccess={isFetchAddScheduleSuccess}
+				successMessage='Uspešno kreiran raspored!'
+			/>
+			<MutationState 
+				isSuccess={isFetchDeleteScheduleSuccess}
+				successMessage='Uspešno obrisan raspored'
+			/>
+			
       { isSubjectOpen ? 
         <ScheduleSubjectAdd 
           subjects={subjects}
