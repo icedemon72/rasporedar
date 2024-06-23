@@ -8,7 +8,7 @@ const DataTable = ({ data, url, urlKey = "_id", elemKey = 'name', emptyMessage, 
 			{ data.map(elem => {
 				return (
 					<>
-						<div className="w-full flex items-center justify-between p-2 mb-2 hover:bg-primary transition-all">
+						<div className="w-full flex items-center justify-between p-2 mb-2 hover:bg-primary transition-all rounded-sm">
 							<Link to={`${url}/${elem[urlKey]}`}>
 								{ 
 									professors ? 

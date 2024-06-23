@@ -97,7 +97,7 @@ const SubjectsAdd = () => {
       {
 				isSuccess &&
 				<>
-					<CardContainer large={true}>
+					<CardContainer large={true} containerBgClass='bg-image-primary'>
 						<Breadcrumbs />
 						<h1 className="text-xl font-bold text-center py-5">Dodaj predmet</h1>
 						<form onSubmit={handleAddSubject}>

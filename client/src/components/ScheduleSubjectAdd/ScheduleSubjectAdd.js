@@ -8,15 +8,21 @@ const ScheduleSubjectAdd = ({
   subjects, systemType,
   closeFunc, className, 
   addSubject, days, indexes,
-  handleDeleteSubject, data
+  handleDeleteSubject,
+	isTime = false, isLocation = false,
+	setIsTime, setIsLocation,
+	data
 }) => {
   const [ selectedSubject, setSelectedSubject ] = useState(
 		data?.subject?._id ? { value: data.subject._id, label: data?.subject?.name } : null
 	);
+
   const [ selectedProfessorType, setSelectedProfessorType ] = useState(professorTypes[0]);
-  const [ selectedProfessor, setSelectedProfessor ] = useState(
+  
+	const [ selectedProfessor, setSelectedProfessor ] = useState(
 		data?.lecturer?._id ? { value: data.lecturer._id, label: data?.lecturer?.name } : null
 	);
+
   const [ startTime, setStartTime ] = useState(data?.from || '');
   const [ endTime, setEndTime ] = useState(data?.to || '');
   const [ location, setLocation ] = useState(data?.location || '');
@@ -37,7 +43,6 @@ const ScheduleSubjectAdd = ({
 
   const handleAddSubject = () => {
 		const subjValue =  selectedSubject?.value;
-    
 		if(!subjValue || selectedProfessor !== null) {
 			const subject = subjects[indexOfKeyInArray(subjects, '_id', subjValue)];
 			const professor = selectedProfessorType.value === 'professor' ?
@@ -68,7 +73,7 @@ const ScheduleSubjectAdd = ({
   <>
     <div className={className}>
       { data?.subject ? 
-        <button className="float-right" onClick={handleDeleteSubject}><Trash className="hover:scale-110 transition-all" data-tooltip-id="my-tooltip" data-tooltip-content={`Obriši predavanje`} /></button>
+        <button aria-label="Obriši predavanje/čas" className="float-right" onClick={handleDeleteSubject}><Trash className="hover:scale-110 transition-all" data-tooltip-id="my-tooltip" data-tooltip-content={`Obriši predavanje`} /></button>
       : null}
       <p className="text-lg font-bold pb-2	">{ days[indexes.j] }, { indexes.i + 1}. { systemType !== 'school' ? 'predavanje' : 'čas' }</p>
       <label className="label-primary">Predmet</label> 
@@ -80,21 +85,7 @@ const ScheduleSubjectAdd = ({
 				required={true}
 				isClearable={false}
 				placeholder={"Izaberite predmet"}
-			/>
-      {/* <select className="input-field mb-4" value={selectedSubject} onChange={(elem) => handleChangeSubject(elem.target.value)}>
-        <option value="0">Izaberite predmet</option>
-        {
-          subjects.map(subject => {
-            return (
-              <option value={ subject._id }>
-                { subject.name }
-              </option>
-            )
-          })
-        }
-      </select> */}
-
-      
+			/>      
       
       { selectedSubject !== null ? 
         <>
@@ -146,11 +137,24 @@ const ScheduleSubjectAdd = ({
 							</> 
 						// add inherited time here...
             }
-            <label htmlFor="location" className="label-primary">Kabinet/sala/učionica</label>
-            <input id="location" className="input-primary mb-4" type="text" value={location} onChange={(elem) => setLocation(elem.target.value)} placeholder="Kabinet 1, RC 2, Sala 3..." />
-          <button className="w-full btn-primary btn-green mt-5" disabled={selectedProfessor === null}  onClick={handleAddSubject}>
-            { data?.subject ? 'Izmeni' : 'Izaberi'}
-          </button>
+					<label htmlFor="location" className="label-primary">Kabinet/sala/učionica</label>
+					<input id="location" className="input-primary mb-4" type="text" value={location} onChange={(elem) => setLocation(elem.target.value)} placeholder="Kabinet 1, RC 2, Sala 3..." />
+          
+					<p className="label-primary mb-2">Provere</p>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+						<div className="col-span-1 flex justify-center gap-2"  data-tooltip-id="my-tooltip" data-tooltip-content="Da li izabrani predavač već ima predavanje u ovom terminu">
+							<input type="checkbox" id="isTime" checked={isTime} onChange={() => setIsTime(prev => !prev)} />
+							<label className="label-primary text-xs" htmlFor="isTime">Dostupnost profesora</label>
+						</div>
+						<div className="col-span-1 flex justify-center gap-2" data-tooltip-id="my-tooltip" data-tooltip-content="Da li postoji predavanje/čas u datom terminu u nekoj prostoriji/sali/učionici">
+							<input type="checkbox" id="isLocation" checked={isLocation} onChange={() => setIsLocation(prev => !prev)}/>
+							<label className="label-primary text-xs" htmlFor="isLocation">Dostupnost prostorije</label>
+						</div>
+					</div>
+
+					<button className="w-full btn-primary btn-green mt-5" disabled={selectedProfessor === null}  onClick={handleAddSubject}>
+						{ data?.subject ? 'Izmeni' : 'Izaberi'}
+					</button>
         </>
       : null }
     </div>

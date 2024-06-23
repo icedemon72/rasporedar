@@ -23,15 +23,14 @@ router.route('/')
 		handleAddSchedule
 	)
 
-// router.get(
-	// '/check/',
-	// // RouteGuard([{
-	// // 	role: '*',
-	// // 	when: isAuthInInstitution
-	// // }]),
-// 	handleCheckSchedule,
-	
-// );
+router.post(
+	'/check',
+	RouteGuard([{
+		role: '*',
+		when: isAuthInInstitution
+	}]),
+	handleCheckSchedule,
+);
 
 router.route('/:schedule')
 	.get(

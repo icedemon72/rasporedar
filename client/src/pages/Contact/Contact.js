@@ -15,7 +15,7 @@ const Contact = () => {
 			<Helmet>
 				<title>Kontakt | Rasporedar</title>
 			</Helmet>
-			<CardContainer>
+			<CardContainer containerBgClass="bg-image-primary">
 			<h1 className="text-xl font-bold text-center py-5">Kontakt informacije</h1>
 			
 			<h2 className="text-lg font-semibold">Pošaljite nam poruku!</h2>

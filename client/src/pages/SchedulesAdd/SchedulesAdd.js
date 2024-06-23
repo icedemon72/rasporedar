@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { useGetSubjectsQuery } from '../../app/api/subjectsApiSlice';
 import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
-import { useAddScheduleMutation, useDeleteScheduleMutation } from '../../app/api/schedulesApiSlice';
+import { useAddScheduleMutation, useCheckScheduleMutation, useDeleteScheduleMutation } from '../../app/api/schedulesApiSlice';
 
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import ScheduleSubjectAdd from '../../components/ScheduleSubjectAdd/ScheduleSubjectAdd';
@@ -43,6 +43,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     }
   ] = useDeleteScheduleMutation();
 
+	const [ check, checkState ] = useCheckScheduleMutation();
+
   /* These could go in a separate component ? */
   const [ title, setTitle ] = useState(props.title || ''); 
   const [ style, setStyle ] = useState(props.style || scheduleStyles[0]);
@@ -52,6 +54,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   const [ systemType, setSystemType ] = useState(props.systemType || scheduleTypes[0]);
   const [ subtitle, setSubtitle ] = useState(props.subtitle || '');
   const [ comment, setComment ] = useState(props.comment || '');
+	const [ isTime, setIsTime ] = useState(true);
+	const [ isLocation, setIsLocation ] = useState(true);
 
   const [ step, setStep ] = useState(0);
   const [ isSubjectOpen, setIsSubjectOpen ] = useState(false);
@@ -63,7 +67,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   const [ days, setDays ] = useState(props.days || ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak',]);
   let toAssign;
 
-  if(!props?.rows) {
+  if(!props?.rows ) {
     toAssign = groups.map(group => {
       return {
         data: Array(days.length).fill([]),
@@ -75,7 +79,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
         ]
       }
     });
-  }
+  } 
 
   const [ rows, setRows ] = useState(deepClone(props.rows) || toAssign);
   const [ indexes, setIndexes ] = useState({ groupIndex: null, i: null, j: null });
@@ -120,19 +124,43 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   } 
 
   // this function adds subject, professor etc. to row's data array
-  const handleAddSubject = (subject, lecturer, time, location = null) => {
-    const { groupIndex, i, j } = indexes;
-    if(j < days.length && j >= 0) {
-      setRows(prev => {
-        prev[groupIndex].data[j][i] = (systemType.value !== 'school') ?
-        { ...prev[groupIndex].data[j][i], subject, lecturer, from: time.startTime, to: time.endTime, location } 
-          : { ...prev[groupIndex].data[j][i], subject, lecturer, location };
-        
-        return prev;
-      });     
+  const handleAddSubject = async (subject, lecturer, time, location = null) => {
+		const { groupIndex, i, j } = indexes;
+		
+		let fromTo = (systemType.value !== 'school') 
+			? { from: time.startTime, to: time.endTime }
+			: { from: rows[groupIndex].defaultTimes[i]?.from || '', to: rows[groupIndex].defaultTimes[i]?.to || '' }
+		
+		try {
+			await check({
+				institution,
+				body: {
+					isTime,
+					isLocation,
+					location, 
+					frequency: frequency.value,
+					validFrom, 
+					time: { ...fromTo, day: j, lecturer: lecturer._id },
+				}
+			}).unwrap();
 
-      setIsSubjectOpen(false);
-    }
+			if(j < days.length && j >= 0) {
+				setRows(prev => {
+					prev = deepClone(prev);
+					prev[groupIndex].data[j][i] = (systemType.value !== 'school') ?
+					{ ...prev[groupIndex].data[j][i], subject, lecturer, from: time.startTime, to: time.endTime, location } 
+						: { ...prev[groupIndex].data[j][i], subject, lecturer, location };
+					
+					return prev;
+				});     
+	
+				setIsSubjectOpen(false);
+			}
+
+		} catch (err) { 
+			console.log(err)
+		} 
+
   }
 
   const handleDeleteSubject = () => {
@@ -154,7 +182,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       days.forEach((_, index) => {
         rowsObj[index] = [ ...rowsObj[index], {} ];
       });
-      let tempRows = [ ...rows ];
+      let tempRows = rows;
       tempRows[group].data = rowsObj;
       tempRows[group].defaultTimes = [ ...tempRows[group].defaultTimes, { from: '', to: '' } ];
       setAdded(prev => !prev);
@@ -233,7 +261,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
       // TODO: add edit 
       const result = !edit ? 
-        await props.fetchEditSchedule({ institution, body, schedule: props._id  }).unwrap()
+        await props.editSchedule({ institution, body, schedule: props._id  }).unwrap()
         : await fetchAddSchedule({ institution, body }).unwrap();
 
       setTimeout(() => {
@@ -247,7 +275,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 
   const handleDeleteGroup = (index) => {
     if(index < groups.length) {
-      let tempRows = rows, tempGroups = groups;
+      let tempRows = deepClone(rows), tempGroups = deepClone(groups);
       tempRows.splice(index, 1);
       tempGroups.splice(index, 1);
       setRows(tempRows);
@@ -256,7 +284,6 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     }
   }
 
-  // FIXME:
   const handleDeleteSchedule = async () => {
     if(!edit) {
       // change this...
@@ -264,6 +291,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
     } else {
       try {
         await fetchDeleteSchedule({ institution, schedule: props._id }).unwrap();
+				navigate(`/institutions/${institution}/schedules`)
       } catch (err) {
         console.log(err);
       }
@@ -293,7 +321,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
   }, [ groups ]);
   
   useEffect(() => {
-    rows.forEach((row, index) => {
+		rows.forEach((row, index) => {
       if(!row.data[0].length) {
         handleAddItem(index);
       }
@@ -329,6 +357,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
       groups,
       handleDeleteGroup,
       edit,
+			rows
     }
 
     content = 
@@ -337,7 +366,7 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
         <>
           <CardContainer large={true}>
 						<ScheduleScreenOne 
-							{...firstProps}
+							{...firstProps} edit={edit}
 						/>
 						<div className="w-full flex justify-end">
 							<button className="btn-primary  btn-green w-full md:w-1/2 lg:w-1/3" onClick={() => setStep(prev => prev + 1)}>Dalje</button>
@@ -361,7 +390,13 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
               <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setStep(prev => prev - 1)}>Nazad</button>
               <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-red w-full max-w-[350px] btn-primary" onClick={() => setIsDeleteOpen(true)}>Obriši raspored</button>
               <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit)}>Sačuvaj raspored!</button>
-              <button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, true)}>Sačuvaj i objavi raspored!</button>
+              {
+								!edit || !props.published
+								?
+								<button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, true)}>Sačuvaj i objavi raspored!</button>
+								:
+								<button className="col-span-4 md:col-span-2 lg:col-span-1 btn-green w-full max-w-[350px] btn-primary" disabled={ isFetchAddScheduleLoading || isFetchAddScheduleLoading } onClick={() => handleSaveSchedule(!edit, false)}>Označi kao neobjavljen</button>
+							}
             </div>
           </div>
         </>
@@ -379,6 +414,8 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
 			/>
 			<MutationState 
 				isSuccess={isFetchDeleteScheduleSuccess}
+				isError={checkState.isError}
+				error={checkState.error}
 				successMessage='Uspešno obrisan raspored'
 			/>
 			
@@ -392,6 +429,10 @@ const SchedulesAdd = ({ edit = false, ...props }) => {
           systemType={systemType}
           handleDeleteSubject={handleDeleteSubject}
           data={rows[indexes.groupIndex].data[indexes.j][indexes.i]}
+					isTime={isTime}
+					setIsTime={setIsTime}
+					isLocation={isLocation}
+					setIsLocation={setIsLocation}
         /> 
         : null }
       

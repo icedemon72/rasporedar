@@ -217,7 +217,7 @@ const SubjectsEdit = () => {
           <button className="btn-primary btn-red" onClick={handleDeleteSubject}>Potvrdi</button>
         </ModalDelete>
       : null }
-      <CardContainer large={true} loaded={isSubjectSuccess && isProfessorsSuccess}>
+      <CardContainer large={true} loaded={isSubjectSuccess && isProfessorsSuccess} containerBgClass='bg-image-primary'>
       	{ content }
       </CardContainer>
     </>

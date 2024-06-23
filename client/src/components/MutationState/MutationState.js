@@ -69,6 +69,10 @@ const MutationState = ({
 				draggable: true,
 				progress: undefined,
 				theme: "light",
+				style: { 
+					backgroundColor: theme === 'dark' ? 'rgb(55, 65, 81)' : 'white',
+					color: theme === 'dark' ? 'white' : 'black'
+				 },
 				transition: Slide,
 			});
 		}

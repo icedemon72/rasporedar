@@ -45,7 +45,7 @@ const InstitutionUsers = () => {
 			{
 				isUsersSuccess && isRoleSuccess &&
 				<>
-					<CardContainer large={true} onTop={true} >
+					<CardContainer large={true} onTop={true} containerBgClass='bg-image-primary'>
 							<h1 className="text-xl text-center font-bold my-5">Korisnici ({userData.length})</h1>
 							<ul>
 								{

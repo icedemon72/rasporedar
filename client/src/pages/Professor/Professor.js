@@ -46,7 +46,7 @@ const Professor = () => {
 
   if (isSubjectsSuccess && isProfessorSuccess && isGetRoleSuccess) {
     content = 
-    <CardContainer large={true}>
+    <CardContainer large={true} containerBgClass='bg-image-primary'>
 			<Breadcrumbs />
 			<h1 className="text-xl font-bold text-center py-5">{ professorData.name }</h1>
       <p className="label-primary">Ime i prezime</p>

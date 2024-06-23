@@ -121,6 +121,7 @@ const CodeInput = ({ reset = undefined, codeFunc, className = '', insertCode = '
 	const ClearButton = () => {
 		return (
 			<button
+				aria-label="Dugme za brisanje"
 				onClick={resetCode}
 				className="text-2xl absolute right-[-30px] top-3"
 			>

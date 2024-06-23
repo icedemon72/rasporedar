@@ -3,10 +3,6 @@ import { isObjectIdValid } from '../utils/utils.js';
 // POST
 export const handleUserRegister = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(req.userTokenData) { 
-    //   return res.status(401).send({message: 'Već ste ulogovani!'});
-    // }
     const user = {
       ...req.body
     };
@@ -37,11 +33,6 @@ export const handleEditUser = async (req, res) => {
 // GET
 export const handleGetUserInstitutions = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     const roles = ['Owner', 'Moderator', 'User'];
 
     if(!roles.includes(req.query.role) || !req.query.role) {
@@ -66,11 +57,6 @@ export const handleGetUserInstitutions = async (req, res) => {
 
 export const handleGetUserById = async (req, res) => {
   try {
-    // UNCOMMENT THIS HERE AFTER TESTING!
-    // if(!req.userTokenData) { 
-    //   return res.status(401).send({message: 'No access token'});
-    // }
-
     if(!req.params.id) {
       req.params.id = req.userTokenData._id;
     }

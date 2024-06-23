@@ -23,6 +23,11 @@ export const scheduleBody = {
 		body('days', 'Greška prilikom unošenja dana u rasporedu')
 			.isArray({ min: 1 }),
 
+	department:
+		body('department')
+			.optional()
+			.isString(),
+
 	groups:
 		body('groups', 'Greška prilikom unošenja grupa u rasporedu')
 			.isArray(),
@@ -35,8 +40,22 @@ export const scheduleBody = {
 		body('systemType', 'Greška prilikom unošenja tipa rasporeda')
 			.isIn(['school', 'college']),
 
+	published:
+		body('published', 'Greška prilikom unošenja statusa objave rasporeda')
+			.optional()
+			.isBoolean(),
+
+	archived:
+			body('archived', 'Greška prilikom unošenja statusa arhiviranja rasporeda')
+				.optional()
+				.isBoolean(),
+
 	validUntil:
 		body('validUntil', 'Greška prilikom unošenja datuma')
+			.optional(),
+	
+	data:
+		body('data')
 			.optional()
 }
 
@@ -44,11 +63,15 @@ export const validateSchedule = [
 	scheduleBody.title,
 	scheduleBody.subtitle,
 	scheduleBody.comment,
+	scheduleBody.department,
 	scheduleBody.days,
 	scheduleBody.groups,
 	scheduleBody.style,
 	scheduleBody.systemType,
 	scheduleBody.validUntil,
+	scheduleBody.published,
+	scheduleBody.archived,
+	scheduleBody.data,
 
 	validator
 ];

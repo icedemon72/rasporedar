@@ -19,14 +19,6 @@ const Input = ({ id, inputVal, setVal, name, placeholder, type, disabled = false
 							className="input-primary"
 						/>
 				}
-				{/* {
-					button &&
-					<>
-						<button type="button" className='absolute right-5' onClick={buttonAction}>
-							<CircleX />
-						</button>
-					</>
-				} */}
 		</div>
 	);
 };

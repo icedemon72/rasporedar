@@ -78,7 +78,7 @@ const JoinInstitution = () => {
 			<Helmet>
 				<title>Pridruži se grupi | Rasporedar</title>
 			</Helmet>
-			<CardContainer>
+			<CardContainer containerBgClass='bg-image-primary'>
 				<h1 className="text-xl font-black text-center py-5">Pridruži se grupi kao <span className="underline">{mod ? 'moderator' : 'korisnik' }</span></h1>
 				<CodeInput className="pb-4 mb-2" codeFunc={(code) => setCode(code)} />
 				<div className="flex justify-center gap-2">

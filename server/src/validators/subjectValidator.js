@@ -7,7 +7,7 @@ export const subjectBody = {
 			.isArray(),
 
 	assistents: 
-		body('professors', 'Greška prilikom unosa profesora')
+		body('assistents', 'Greška prilikom unosa profesora')
 			.optional()
 			.isArray(),
 

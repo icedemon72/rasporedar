@@ -2,9 +2,27 @@ import Professor from "../models/professorModel.js";
 import Schedule from "../models/scheduleModel.js";
 import Subject from "../models/subjectModel.js";
 import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
+import { isProfessorOnSubject } from "./subjectService.js";
 
 export const addSchedule = async (sender, institution, data) => {
-  const body = {
+	const scheduleData = data.data;
+
+	const isEveryProfessorOnSubject = scheduleData.every(dataObj => {
+		return dataObj.data.every(day => {
+			return day.every(async (term) => {
+				
+				if(term?.lecturer) {
+					return await isProfessorOnSubject(institution, term.subject, term.lecturer);
+				}
+			
+				return true;
+			});
+		});
+	});
+
+	if(!isEveryProfessorOnSubject) throw { status: 400, message: 'Greška prilikom dodavanja rasporeda, neki profesori nisu na predmetu!' }
+
+	const body = {
     ...data,
     instances: data.data,
     institution,
@@ -17,7 +35,7 @@ export const addSchedule = async (sender, institution, data) => {
   return { message: 'Uspešno kreiran raspored!', _id: scheduleObj._id }
 }
 
-export const editSchedule = async (sender, institution, schedule, data) => {
+export const editSchedule = async (institution, schedule, data) => {
 
   const scheduleObj = await Schedule.findOne({ _id: schedule, institution: institution, deleted: false });
 
@@ -31,6 +49,7 @@ export const editSchedule = async (sender, institution, schedule, data) => {
   // FIXME: change this
   await Schedule.updateOne({ _id: scheduleObj._id }, {
     $set: {
+			data: data.data,
       department: data.department || scheduleObj.department,
       title: data.title || scheduleObj.title,
       subtitle: data.subtitle || scheduleObj.subtitle,
@@ -40,15 +59,17 @@ export const editSchedule = async (sender, institution, schedule, data) => {
       style: data.style || scheduleObj.style,
       systemType: data.systemType || scheduleObj.systemType,
       validUntil: data.validUntil || scheduleObj.validUntil,
-      instances: data.data || scheduleObj.instances
+      instances: data.data || scheduleObj.instances,
+			published: data?.published,
+			archived: data?.archived
     }
   });
 
   return { message: 'Uspešno izmenjen raspored!', _id: scheduleObj._id };
 }
 
-export const deleteSchedule = async (sender, institution, schedule) => {
-  const scheduleObj = await Schedule.findOne({ _id: schedule, deleted: false });
+export const deleteSchedule = async (institution, schedule) => {
+  const scheduleObj = await Schedule.findOne({ _id: schedule, institution, deleted: false });
 
   if (!scheduleObj) {
     throw {
@@ -64,15 +85,22 @@ export const deleteSchedule = async (sender, institution, schedule) => {
 }
 
 export const getAllSchedulesInInstitution = async (sender, institution, published = true) => {
-  (!published) ?
-    await authSenderInInstitutionObject(sender, institution) :
-    await senderInInstitutionObject(sender, institution);
+	let schedulesObj;
+	
+	if(published === '0' || !published) {
+		await authSenderInInstitutionObject(sender, institution);
 
-  const toExclude = (published) ? { deleted: 0 } : { deleted: 0, published: 0 }
-  const schedulesObj = await Schedule.find({ institution, deleted: false, published }, toExclude).populate({
-		path: 'instances.data.subject instances.data.lecturer',
-		select: '_id name'
-	});
+		schedulesObj = await Schedule.find({ institution, deleted: false }, { deleted: 0, published: 0 }).populate({
+			path: 'instances.data.subject instances.data.lecturer',
+			select: '_id name'
+		}).sort({ created_at: 1, title: 1 });
+
+	} else {
+		schedulesObj = await Schedule.find({ institution, deleted: false, published: true }, { deleted: 0 }).populate({
+			path: 'instances.data.subject instances.data.lecturer',
+			select: '_id name'
+		}).sort({ created_at: 1, title: 1 });
+	}
 
   return schedulesObj;
 }
@@ -101,36 +129,18 @@ export const getSchedule = async (sender, institution, schedule) => {
 export const checkSchedule = async (institution, checkTime, checkLocation, validFrom, validTo, frequency, location = '', time = {}) => {
 	const currentDate = new Date();
 
-	if(validFrom < currentDate) {
+	if(!validFrom) {
 		validFrom = currentDate;
 	}
 
-	// const scheduleObj = await Schedule.find({ 
-	// 	institution, 
-	// 	instances: {
-	// 		data: {
-	// 			from: "10:00",
-	// 		},
-	// 	}
-	// })
-
 	const scheduleObj = await Schedule.find({
 		institution,
-		$or: [
-			{ validUntil: { $gte: currentDate }},
-			{ validUntil: null }
-		],
+		validFrom,
+		frequency,
 		archived: false,
 		deleted: false,
 	});
 
-	// index -> days index
-	// da ne bi bila ovolika kompleksnost, u prvoj for petlji
-	// treba proveriti da li se poklapaju nedelje
-	// pre nego sto se proverava vreme u poslednjoj, proveriti
-	// lokaciju jer nece biti potrebe za eksternom bibliotekom
-	// this will be simplified, only those with same frequencies (that are consecutive)
-	// will be considered valid
 	const startTime = convertTimeToSeconds(time.from);
 	const endTime = convertTimeToSeconds(time.to);
 
@@ -155,37 +165,6 @@ export const checkSchedule = async (institution, checkTime, checkLocation, valid
 	}
 
 	return { message: 'Termin je slobodan!' };
-}
-
-// ova funkcija vraca da li su rasporedi redjani kako treba,
-// postoji potreba za kontinuiranjem rasporeda casova ukoliko su dinamicni, tj. varijabilni,
-// greska je ukoliko se naznaci da su rasporedi na dvonedeljnom nivou, a jedan pocinje
-// u ponedeljak, a drugi u sredu...
-const checkPeriodOverlap = (fValidFrom, sValidFrom, fFrequency, sFrequency) => {
-	if(fFrequency !== sFrequency) {
-		return false;
-	}
-
-	if(sValidFrom > fValidFrom) {
-		let temp = fValidFrom;
-		fValidFrom = sValidFrom;
-		sValidFrom = temp;
-	}
-
-	const frequency = (fFrequency === 'w2') 
-		? (7 * 24 * 60 * 60) 
-		: (fFrequency === 'w3')
-			? (14 * 24 * 60 * 60)
-			: (fFrequency === 'm1')
-			? (28 * 24 * 60 * 60)
-			: (56 * 24 * 60 * 60);
-
-	
-	console.log(frequency);
-	fIntervalEnd = new Date(fValidFrom)
-
-
-
 }
 
 const convertTimeToSeconds = (string) => {

@@ -1,15 +1,13 @@
 import Subject from '../models/subjectModel.js';
 import Professor from '../models/professorModel.js';
-import { getFullInfoOnProfessors } from './professorService.js';
-import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
-export const addSubject = async (sender, data) => {
+export const addSubject = async (data) => {
 	// add professors check here!
 	const subject = await Subject.create(data);
 	return { message: 'Predmet uspešno kreiran!', _id: subject._id }
 }
 
-export const deleteSubject = async (sender, subject) => {
+export const deleteSubject = async (subject) => {
 	const subjectObj = await Subject.findOne({ _id: subject, deleted: false });
 
 	if (!subjectObj) {
@@ -25,7 +23,7 @@ export const deleteSubject = async (sender, subject) => {
 	return { message: 'Uspešno brisanje predmeta!' };
 }
 
-export const editSubjectInfo = async (sender, subject, data) => {
+export const editSubjectInfo = async (subject, data) => {
 	const subjectObj = await Subject.findOne({ _id: subject, deleted: false });
 
 	if (!subjectObj) {
@@ -50,7 +48,7 @@ export const editSubjectInfo = async (sender, subject, data) => {
 	return { message: 'Uspešno editovan predmet!' };
 }
 
-export const editSubjectProfessor = async (sender, professor, subject, position, action) => {
+export const editSubjectProfessor = async (professor, subject, position, action) => {
 	const professorObj = await Professor.findOne({ _id: professor, deleted: false });
 
 	if (!professorObj) {
@@ -100,16 +98,18 @@ export const editSubjectProfessor = async (sender, professor, subject, position,
 	return { message: `Uspešno ste ${(action === 'add') ? 'dodali' : 'obrisali'} profesora!` };
 }
 
-export const getAllSubjectsInInstitution = async (sender, institution, fullInfo = false) => {
+export const getAllSubjectsInInstitution = async (institution, fullInfo = false) => {
 	const subjectObj = !fullInfo ?
-		await Subject.find({ institution, deleted: false }, { deleted: 0 })
-		: await Subject.find({ institution, deleted: false }, { deleted: 0 }).populate({ path: 'professors assistents', match: { deleted: false }, select: 'name title' });
+		await Subject.find({ institution, deleted: false }, { deleted: 0 }).sort({ name: 1 })
+		: await Subject.find({ institution, deleted: false }, { deleted: 0 })
+			.sort({ name: 1 })
+			.populate({ path: 'professors assistents', match: { deleted: false }, select: 'name title' });
 
 	return subjectObj;
 }
 
 // FIXME: add fullInfo
-export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = false) => {
+export const getAllSubjectsOfProfessor = async (professor, fullInfo = false) => {
 	const professorObj = await Professor.findOne({ _id: professor, deleted: false });
 
 	if (!professorObj) {
@@ -122,13 +122,15 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
 	const professorSubjectObj = await Subject.find({
 		professors: professor,
 		deleted: false
-	}, { deleted: 0, professors: 0, assistents: 0 });
+	}, { deleted: 0, professors: 0, assistents: 0 })
+		.sort({ name: 1 });
 
 
 	const assistentSubjectObj = await Subject.find({
 		assistents: professor,
 		deleted: false
-	}, { deleted: 0, professors: 0, assistents: 0 });
+	}, { deleted: 0, professors: 0, assistents: 0 })
+		.sort({ name: 1 });
 
 	const subjectObj = {
 		professor: professorSubjectObj,
@@ -138,7 +140,7 @@ export const getAllSubjectsOfProfessor = async (sender, professor, fullInfo = fa
 	return subjectObj;
 }
 
-export const getSubjectById = async (sender, subject, fullInfo = false) => {
+export const getSubjectById = async (subject, fullInfo = false) => {
 	const subjectObj = !fullInfo ?
 		await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 })
 		: await Subject.findOne({ _id: subject, deleted: false }, { deleted: 0 }).populate({ path: 'professors assistents', select: 'name title', match: { deleted: false } });
@@ -151,4 +153,17 @@ export const getSubjectById = async (sender, subject, fullInfo = false) => {
 	}
 
 	return subjectObj;
+}
+
+export const isProfessorOnSubject = async (institution, subject, professor) => {
+	const subjectObj = await Subject.findOne({
+		_id: subject, 
+		institution,
+		$or: [
+			{	professors: professor },
+			{ assistents: professor }
+		]
+	});
+
+	return(!!subjectObj);
 }

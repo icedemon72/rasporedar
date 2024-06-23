@@ -35,7 +35,7 @@ const Subject = () => {
 
   if (isSuccess) {
     content = 
-    <CardContainer large={true}>
+    <CardContainer large={true} containerBgClass='bg-image-primary'>
 
 			<Breadcrumbs />
 			<div className="flex justify-center gap-2 py-5">

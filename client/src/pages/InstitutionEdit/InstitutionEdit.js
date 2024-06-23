@@ -268,7 +268,7 @@ const InstitutionEdit = () => {
         </ModalDelete> 
         : null 
       }
-      <CardContainer loaded={isInstitutionSuccess && isGetRoleSuccess}>
+      <CardContainer loaded={isInstitutionSuccess && isGetRoleSuccess} containerBgClass='bg-image-primary'>
 				{ content }		
 			</CardContainer>
     

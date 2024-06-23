@@ -88,20 +88,20 @@ const CreateInstitution = () => {
 			<Helmet>
 				<title>Napravi grupu | Rasporedar</title>
 			</Helmet>
-      <CardContainer>
+      <CardContainer containerBgClass='bg-image-primary'>
 				<h1 className="text-xl font-bold py-5 text-center">Napravi grupu</h1>
 				<div className="mb-4">
 					<Input id="name" type="text" name="Naziv institucije ili grupe" inputVal={name} placeholder="Prirodno-matematički fakultet" setVal={(elem) => setName(elem.target.value)}/>
 				</div>
 				<div className="mb-4">
 					<label className="label-primary">Tip institucije ili grupe</label>
-						<SelectComponent data={typeObj} placeholder="Izaberite instituciju" isClearable={false} isSearchable={false} setVal={(elem) => setTypeOf(elem)} value={typeOf} />
+						<SelectComponent data={typeObj} placeholder="Izaberite instituciju" isClearable={false} isSearchable={false} setVal={(elem) => setTypeOf(elem)}  />
 				</div>
 				<div className="mb-4">
 					<label className="label-primary">Odseci, odeljenja itd.</label>
 					<div className="w-full flex gap-1">
 						<input className="input-primary" ref={inputRef} id="dptID" type="text" placeholder="Odseci, odeljenja (enter za dodavanje)" onKeyUp={(elem) => handleDepartments(elem)} onChange={(elem) => setDpt(elem.target.value)} value={dpt} />
-						<button className="btn-plus" type="text" onClick={() => handleDepartments(inputRef.current, null)}><PlusCircle /></button>
+						<button aria-label="Dodaj odsek" className="btn-plus bg-primary" type="text" onClick={() => handleDepartments(inputRef.current, null)}><PlusCircle /></button>
 					</div>
 				</div>
 				{

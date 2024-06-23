@@ -4,9 +4,11 @@ import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetSchedulesQuery } from '../../app/api/schedulesApiSlice';
 import { Helmet } from 'react-helmet';
-import { PlusCircle } from 'lucide-react';
+import { Info, Pencil, PlusCircle } from 'lucide-react';
 import CardContainer from '../../components/CardContainer/CardContainer';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import MutationState from '../../components/MutationState/MutationState';
+import DataTable from '../../components/DataTable/DataTable';
 
 const Schedules = () => {
   const session = useSelector(state => state.session);
@@ -31,67 +33,67 @@ const Schedules = () => {
   });
 
   const {
-    data: schedulesData,
+    data: scheduleData,
     isLoading: isSchedulesLoading,
     isSuccess: isSchedulesSuccess,
     isError: isSchedulesError,
     error, schedulesError
-  } = useGetSchedulesQuery({ institution, fullInfo: getRole.role !== 'User' }, {
+  } = useGetSchedulesQuery({ institution, active: getRole.role === 'User'}, {
     skip: !getRole
   });
 
   
   let content; 
-
-  if(isSchedulesLoading && isRoleLoading) {
-    content = <>Loading...</>
-  } else if (isSchedulesSuccess) {
-    // content = schedulesData.map(schedule => {
-    //   let fullDate = '';
-    //   if(schedule.validUntil) {
-    //     const date = new Date(schedule.validUntil);
-
-    //     const yyyy = date.getFullYear();
-    //     const mm = ((date.getMonth() + 1) < 10) ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-    //     const dd = (date.getDate() < 10) ? `0${date.getDate()}` : date.getDate();
-
-    //     fullDate = `${dd}.${mm}.${yyyy}.`;
-
-    //   }
-      
-    //   return (
-    //     <>
-    //       <div className="bg-red-200">
-    //         { getRole.role !== 'User' ? <Link to={`/institutions/${institution}/schedules/${schedule._id}/edit`}>Edit</Link> : null }
-    //         <Link className="hover:bg-slate-200 rounded-sm" to={`/institutions/${institution}/schedules/${schedule._id}`}>
-    //           { schedule.title || 'Raspored bez naziva' } 
-    //         </Link>
-    //         { schedule.department }
-    //         { schedule.validUntil ? <>Vazi do { fullDate }</> : null}
-    //       </div>
-    //     </>
-    //   )
-    // })
-
+	if (isSchedulesSuccess && isRoleSuccess) {
 		content = 
 		<>
 			<CardContainer large={true} onTop={true}>
 				<Breadcrumbs />
 				<h1 className="text-xl font-bold text-center py-5">Rasporedi</h1>
-					{ isRoleSuccess && getRole.role !== 'User' &&
-						<Link className="w-full flex justify-center"  to={`/institutions/${institution}/schedules/add`}>
-							<div className="w-full max-w-[500px] flex gap-2 items-center justify-center btn-primary btn-green mb-5">
-								<PlusCircle size={16} /> 
-								<p>Dodaj raspored</p>
-							</div>
-						</Link>
+					{	
+						getRole.role !== 'User' &&
+             <Link className="w-full flex justify-center" to={`/institutions/${institution}/schedules/add`}>
+						 <div className="w-full max-w-[500px] flex gap-2 items-center justify-center btn-primary btn-green mb-5">
+							 <PlusCircle size={16} /> 
+							 <p>Dodaj raspored</p>
+						 </div>
+					 </Link> 
 					}
+					
+					{
+						scheduleData.length ? 
+							scheduleData.map(schedule => 
+								<>
+								<div className="w-full flex items-center justify-between p-2 mb-2 hover:bg-primary transition-all">
+									<Link to={`/institutions/${institution}/schedules/${schedule._id}`}>
+										<div className="flex gap-2 items-center">
+										<span className="text-muted text-sm truncate">{schedule.department || ''}</span>
+											<p className="truncate">{schedule.title || 'Raspored bez naslova'}</p>
+										</div>
+									</Link>
+									<div className="flex gap-3">
+										{ isRoleSuccess && getRole.role !== 'User' ? <Link className="btn-primary bg-primary p-1" to={`/institutions/${institution}/schedules/${schedule._id}/edit`}><Pencil /></Link> : null }
+										<Link className="btn-primary bg-primary p-1" to={`/institutions/${institution}/schedules/${schedule._id}`}><Info /></Link>
+									</div>
+								</div>
+								</>
+							)
+						:
+						<div className="w-full flex items-center justify-between p-2 mb-2">
+							Izgleda da nema rasporeda... :(
+						</div>
+					}
+			
 				</CardContainer>
 		</>
   }
 
   return (
     <>
+			<MutationState
+				isLoading={isRoleLoading || isSchedulesLoading}
+
+			/>
 			<Helmet>
 				<title>Rasporedi | Rasporedar</title>
 			</Helmet>

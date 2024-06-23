@@ -31,7 +31,7 @@ const ScheduleComponent = ({
           props.rows.map((item, groupIndex) => {
             return (
               <>
-								<div className="box-shadow border-2 border-black bg-gray-50 rounded mb-5">
+								<div className="box-shadow border-2 border-black rounded mb-5">
 									<>
 										{
 											item.data[0].map((_, index) => {
@@ -54,7 +54,7 @@ const ScheduleComponent = ({
 										{
 											editable &&
 											<>
-												<div className="flex gap-2 justify-between items-center mt-4 p-2">
+												<div className="bg-primary flex gap-2 justify-between items-center mt-4 p-2">
 													<div data-tooltip-id="my-tooltip" data-tooltip-content={`Obriši poslednju vrstu`} className="btn-primary w-full btn-red md:w-1/2 lg:w-1/3 xl:w-1/4 text-center cursor-pointer" onClick={() => props.handleDeleteItem(groupIndex)}>-</div>
 													<div  data-tooltip-id="my-tooltip" data-tooltip-content={`Dodaj novu vrstu`} className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3 xl:w-1/4 text-center cursor-pointer" onClick={() => props.handleAddItem(groupIndex)}>+</div>
 												</div>

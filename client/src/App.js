@@ -56,7 +56,7 @@ function App() {
 						<Navbar />
 					</div>
 
-					<Tooltip opacity={1} id="my-tooltip" className="z-[999]" delayShow={400} />
+					<Tooltip opacity={1} id="my-tooltip" className="z-[9999]" delayShow={400} />
 					<ToastContainer />
 
 					<Routes>

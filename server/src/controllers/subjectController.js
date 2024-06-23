@@ -1,5 +1,4 @@
 import { addSubject, deleteSubject, editSubjectInfo, editSubjectProfessor, getAllSubjectsInInstitution, getAllSubjectsOfProfessor, getSubjectById } from '../services/subjectService.js';
-import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleAddSubject = async (req, res) => {
   try { 
@@ -11,7 +10,7 @@ export const handleAddSubject = async (req, res) => {
       deleted: false
     }
 
-    const done = await addSubject(req.userTokenData._id, data);
+    const done = await addSubject(data);
 
     return res.status(201).json(done);
   } catch (err) {
@@ -21,7 +20,7 @@ export const handleAddSubject = async (req, res) => {
 
 export const handleDeleteSubject = async (req, res) => {
   try {
-    const done = await deleteSubject(req.userTokenData._id, req.params.subject);
+    const done = await deleteSubject(req.params.subject);
     
 		return res.status(204).send(done);
   } catch (err) {
@@ -31,7 +30,7 @@ export const handleDeleteSubject = async (req, res) => {
 
 export const handleEditSubjectInfo = async (req, res) => {
   try {
-    const done = await editSubjectInfo(req.userTokenData, req.params.subject, req.body);
+    const done = await editSubjectInfo(req.params.subject, req.body);
     
 		return res.status(200).send(done);
   } catch (err) {
@@ -51,7 +50,7 @@ export const handleEditSubjectProfessor = async (req, res) => {
     if(!positions.includes(req.body.position)) {
       return res.status(400).send({ message: 'Nevalidna pozicija!' });
     }
-    const done = await editSubjectProfessor(req.userTokenData._id, req.params.professor, req.params.subject, req.body.position, req.body.action);
+    const done = await editSubjectProfessor(req.params.professor, req.params.subject, req.body.position, req.body.action);
     
 		return res.status(200).send(done);
   } catch (err) {
@@ -66,7 +65,7 @@ export const handleGetSubject = async (req, res) => {
       req.query.fullInfo = false;
     }
 
-    const done = await getSubjectById(req.userTokenData._id, req.params.subject, req.query.fullInfo);
+    const done = await getSubjectById(req.params.subject, req.query.fullInfo);
     
 		return res.status(200).send(done);
   } catch (err) {
@@ -80,7 +79,7 @@ export const handleGetAllSubjectsInInstitution = async (req, res) => {
       req.query.fullInfo = false;
     }
 
-		const done = await getAllSubjectsInInstitution(req.userTokenData._id, req.params.institution, req.query.fullInfo);
+		const done = await getAllSubjectsInInstitution(req.params.institution, req.query.fullInfo);
     
 		return res.status(200).send(done);
   } catch (err) {
@@ -95,7 +94,7 @@ export const handleGetAllSubjectsOfProfessor = async (req, res) => {
       req.query.fullInfo = false;
     }
     
-    const done = await getAllSubjectsOfProfessor(req.userTokenData._id, req.params.professor, req.query.fullInfo);
+    const done = await getAllSubjectsOfProfessor(req.params.professor, req.query.fullInfo);
     
 		return res.status(200).send(done);
   } catch (err) {

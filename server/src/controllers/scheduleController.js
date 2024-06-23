@@ -1,8 +1,14 @@
 import { addSchedule, checkSchedule, deleteSchedule, editSchedule, getAllSchedulesInInstitution, getSchedule } from '../services/scheduleService.js';
-import { isObjectIdValid } from '../utils/utils.js';
 
 export const handleAddSchedule = async (req, res) => {
   try {
+
+		let { validFrom, validTo } = req.body;
+
+		if(Date(validFrom || null) > Date(validTo || null)) {
+			return res.status(400).send({ message: 'Kraj roka rasporeda je u prošlosti u odnosu na početak' });
+		}
+
     const done = await addSchedule(req.userTokenData._id, req.params.institution, req.body);
     
 		return res.status(200).send(done);
@@ -13,7 +19,7 @@ export const handleAddSchedule = async (req, res) => {
 
 export const handleEditSchedule = async (req, res) => {
   try {
-    const done = await editSchedule(req.userTokenData._id, req.params.institution, req.params.schedule, req.body);
+    const done = await editSchedule(req.params.institution, req.params.schedule, req.body);
     
 		return res.status(200).send(done);
   } catch (err) {
@@ -23,7 +29,7 @@ export const handleEditSchedule = async (req, res) => {
 
 export const handleDeleteSchedule = async (req, res) => {
   try {
-    const done = await deleteSchedule(req.userTokenData._id, req.params.institution, req.params.schedule);
+    const done = await deleteSchedule(req.params.institution, req.params.schedule);
     
     return res.status(204).send(done);
   } catch (err) {

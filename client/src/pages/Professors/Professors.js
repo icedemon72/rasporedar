@@ -8,13 +8,16 @@ import MutationState from '../../components/MutationState/MutationState';
 import { Helmet } from 'react-helmet';
 import CardContainer from '../../components/CardContainer/CardContainer';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { useEffect, useState } from 'react';
 
 const Professors = () => {
   const { institution } = useParams();
   const session = useSelector(state => state.session);
+	const [ professors, setProfessors ] = useState([]);
+	const [ search, setSearch ] = useState('');
 
   const { 
-    data: professors, 
+    data: professorData, 
     isLoading: isProfessorsLoading, 
     isSuccess: isProfessorsSuccess,
     isError: isProfessorsError
@@ -29,12 +32,18 @@ const Professors = () => {
 		isError: isGetRoleError
   } = useGetRoleQuery(institution, { skip: !session.refreshToken  });
 
+	const handleSearch = (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		setProfessors(prev => professorData.filter(x => x.name.toLowerCase().search(search) !== -1 || x?.title?.toLowerCase()?.search(search) !== -1));
+	}
+
   let professorsContent;
 
 	if (isProfessorsSuccess) {
     professorsContent = 
     <>
-      <CardContainer large={true} onTop={true}>
+      <CardContainer large={true} onTop={true} containerBgClass='bg-image-primary'>
 				<Breadcrumbs />
 				<h1 className="text-xl font-bold text-center py-5">Profesori</h1>
 					{ isGetRoleSuccess && getRole.role !== 'User' &&
@@ -46,11 +55,11 @@ const Professors = () => {
 					 </Link> 
 					 }
 
-					<div className="w-full flex justify-end my-2">
-						<div className="w-full md:w-2/3 lg:w-1/2 flex gap-2">
-							<input className="input-primary" placeholder="Marko Markovic"/>
-							<button className="btn-primary bg-primary"><Search /></button>
-						</div>
+					<div className="w-full flex justify-end my-2">	
+						<form onSubmit={handleSearch} className="w-full md:w-2/3 lg:w-1/2 flex gap-2">
+							<input onChange={(e) => setSearch(e.target.value.toLowerCase())} className="input-primary" placeholder="Marko Markovic"/>
+							<button type="submit" className="btn-primary bg-primary"><Search /></button>
+						</form>
 					</div>
 
 					<DataTable 
@@ -66,11 +75,17 @@ const Professors = () => {
     </>
   } 
 
+	useEffect(() => {
+		if(isProfessorsSuccess) {
+			setProfessors(professorData);
+		}
+	}, [ isProfessorsSuccess ]);
+
   return (
     <>
 			<MutationState 
 				isLoading={isProfessorsLoading || isGetRoleLoading}
-				isError={isProfessorsError || isGetRoleError}
+				isError={isGetRoleError}
 			/>
 			<Helmet>
 				<title>Profesori | Rasporedar</title>

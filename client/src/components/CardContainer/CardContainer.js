@@ -12,7 +12,7 @@ const CardContainer = ({ children, large = false, xlarge = false, loaded = true,
 		}>
 			<div className={
 				clsx(
-					"w-full border-0 border-black bg-white dark:bg-gray-700", 
+					"w-full border-0 border-black bg-white dark:bg-gray-700 py-4 px-8", 
 					cardBgClass,
 					xlarge 
 						? 'lg:w-4/5 xl:w-3/4'

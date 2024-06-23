@@ -5,6 +5,7 @@ import ModalDelete from '../ModalDelete/ModalDelete';
 import Input from '../Input/Input';
 import SelectComponent from '../Input/SelectComponent';
 import { frequencyTypes, scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import ListItem from '../ListItem/ListItem';
 
 const ScheduleScreenOne = ({
   setTitle, setSubtitle, setComment, setDepartment,
@@ -53,7 +54,7 @@ const ScheduleScreenOne = ({
 				isInstitutionSuccess && 
 				<>
 
-					<h1 className="text-center text-xl font-bold py-5">Novi raspored</h1>
+					<h1 className="text-center text-xl font-bold py-5">{ !props.edit ? 'Novi raspored' : 'Uredjivanje rasporeda'}</h1>
 					<div className="mb-4">
 						<Input id="title" type="text" name="Naslov rasporeda" inputVal={props.title} setVal={(elem) => setTitle(elem.target.value)} placeholder="Raspored predavanja i vežbi" />
 					</div>
@@ -105,11 +106,8 @@ const ScheduleScreenOne = ({
 
 					{ added || groups.length > 1 ? 
 						groups.map((gr, i) => <>
-							<div className="flex flex-row justify-between mt-2">
-								<div>{i + 1}</div>
-								<p>{gr}</p>
-								<div className="flex justify-center cursor-pointer hover:bg-red-200 text-red-500 rounded-sm" onClick={() => handleOpenModal(i)}><Trash /></div> 
-							</div>
+							<ListItem text={gr} index={i} deleteFunc={() => handleOpenModal(i)}/>
+							
 						</>)
 					: null }
 
@@ -117,7 +115,7 @@ const ScheduleScreenOne = ({
 						<label htmlFor="groups" className="label-primary">Grupe</label>
 						<div className="w-full flex mb-4 gap-1">
 							<input id="groups" className="input-primary w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" onChange={(elem) => setGroup(elem.target.value)} ref={inputRef} value={group} onKeyUp={(elem) => handleAddGroup(elem)} placeholder="Unesite godine, razrede, odeljenja..."/>
-							<button className="input-primary w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 btn-plus" onClick={() => handleAddGroup(inputRef.current, null)}><PlusCircle /></button>
+							<button className="input-primary w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 btn-plus" aria-label="Dodaj grupu" onClick={() => handleAddGroup(inputRef.current, null)}><PlusCircle /></button>
 						</div>
 					</div>
 
@@ -151,7 +149,7 @@ const ScheduleScreenOne = ({
 
       { isDeleteGroupOpen ? 
         <ModalDelete title={'Brisanje grupe'} text={`Obrisaćete grupu '${groups[clickedIndex]}' i sve informacije o njoj (predmete u rasporedu, termine itd.). Da li ste sigurni?`} closeFunc={() => setIsDeleteGroupOpen(false)}>
-          <button className="btn-primary bg-primary " onClick={() => setIsDeleteGroupOpen(false)}>Odustani</button>
+          <button className="btn-primary bg-primary" onClick={() => setIsDeleteGroupOpen(false)}>Odustani</button>
           <button className="btn-primary btn-red" onClick={handleDeleteGroupFunc}>Potvrdi</button>
         </ModalDelete>
         : null

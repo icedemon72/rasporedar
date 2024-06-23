@@ -11,7 +11,9 @@ module.exports = {
 				'megumin': "url('assets/images/characters/megumin.png')",
 				'redar': "url('assets/images/characters/redar.png')",
 				'day': "url('assets/images/backgrounds/bg-light.png')",
-				'night': "url('assets/images/backgrounds/bg-dark.png')"
+				'night': "url('assets/images/backgrounds/bg-dark.png')",
+				'home-day': "url('assets/images/backgrounds/home-light.jpg')",
+				'home-night': "url('assets/images/backgrounds/home-dark.png')"
 			},
 		},
   },

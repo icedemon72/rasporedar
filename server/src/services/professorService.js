@@ -1,15 +1,14 @@
 import Professor from '../models/professorModel.js'
 import Subject from '../models/subjectModel.js';
-import { authSenderInInstitutionObject, senderInInstitutionObject } from '../utils/serviceHelpers.js';
 
-export const addProfessor = async (sender, data) => {
+export const addProfessor = async (data) => {
 	data.deleted = false;
 
 	const professor = await Professor.create(data);
 	return { message: 'Profesor uspešno dodat!', _id: professor._id }
 }
 
-export const deleteProfessor = async (sender, professor) => {
+export const deleteProfessor = async (professor) => {
 	const professorObj = await Professor.findOne({ _id: professor, deleted: false });
 
 	if (!professorObj) {
@@ -45,7 +44,7 @@ export const deleteProfessor = async (sender, professor) => {
 
 }
 
-export const editProfessor = async (sender, professor, data) => {
+export const editProfessor = async (professor, data) => {
 	const professorObj = await Professor.findOne({ _id: professor, deleted: false });
 
 	if (!professorObj) {
@@ -70,8 +69,8 @@ export const editProfessor = async (sender, professor, data) => {
 }
 
 // FIXME: add fullInfo (perhaps)
-export const getAllProfessorsInInstitution = async (sender, institution) => {
-	const professorObj = await Professor.find({ institution, deleted: false }, { deleted: 0 });
+export const getAllProfessorsInInstitution = async (institution) => {
+	const professorObj = await Professor.find({ institution, deleted: false }, { deleted: 0 }).sort({ title: 1, name: 1 });
 
 	if (!professorObj.length) {
 		return [];
@@ -81,7 +80,7 @@ export const getAllProfessorsInInstitution = async (sender, institution) => {
 
 }
 
-export const getAllProfessorsInSubject = async (sender, subject) => {
+export const getAllProfessorsInSubject = async (subject) => {
 	const subjectObj = await Subject.findOne({ _id: subject, deleted: false });
 
 	if (!subjectObj) {
@@ -103,7 +102,7 @@ export const getAllProfessorsInSubject = async (sender, subject) => {
 }
 
 // FIXME: 
-export const getProfessorById = async (sender, professor) => {
+export const getProfessorById = async (professor) => {
 	const professorObj = await Professor.findOne({ _id: professor, deleted: false }, { deleted: 0 });
 
 	if (!professorObj) {

@@ -95,7 +95,7 @@ const ProfessorsEdit = () => {
         name, title, education: education, bio, references
       }
 
-      await fetchEdit({ institution, id, body });
+      await fetchEdit({ institution, id, body }).unwrap();
     } catch (err) {
       console.log(err);
     } finally {
@@ -166,8 +166,8 @@ const ProfessorsEdit = () => {
 			<div className="mb-4">
 				<Input id="master" type="text" name="Master studije" placeholder="Prirodno-matematički fakultet, Univerzitet u Prištini" setVal={(elem) => setMaster(handleChangeEducation(master, 'institution', elem.target.value))} inputVal={master?.institution}/>
 				<div className="flex justify-center gap-3 w-full mt-2">
-					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setBachelor(handleChangeEducation(master, 'from', elem.target.value))} value={master?.from} />
-					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setBachelor(handleChangeEducation(master, 'to', elem.target.value))}  value={master?.to}/>
+					<input className="input-primary" type="number" min={1970} placeholder="Od" onChange={(elem) => setMaster(handleChangeEducation(master, 'from', elem.target.value))} value={master?.from} />
+					<input className="input-primary" type="number" min={1970} placeholder="Do" onChange={(elem) => setMaster(handleChangeEducation(master, 'to', elem.target.value))}  value={master?.to}/>
 				</div>
 			</div>
 
@@ -182,7 +182,7 @@ const ProfessorsEdit = () => {
 			<label className="label-primary">Reference</label>
       <div className="w-full flex gap-1 mb-4">
         <input className="input-primary w-1/2 md:w-2/3 lg:w-3/4 xl:w-4/5" type="text" placeholder="Reference profesora (Enter za unos)" value={referenceItem} ref={inputRef} onChange={(elem) => setReferenceItem(elem.target.value)} />
-        <button className="btn-plus" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
+        <button aria-label="Dodaj referencu" className="btn-plus bg-primary" onClick={() => handleAddReference(inputRef.current, null)}><PlusCircle /></button>
       </div>
 
       {

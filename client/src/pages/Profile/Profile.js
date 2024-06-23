@@ -70,7 +70,7 @@ const Profile = () => {
 			/>
 			{
 				isUserSuccess &&
-				<CardContainer>
+				<CardContainer containerBgClass='bg-image-primary'>
 					<h1 className="text-xl font-bold my-5 text-center">Moj profil</h1>
 					<div className="mb-4">
 						<Input

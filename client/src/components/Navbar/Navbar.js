@@ -81,10 +81,10 @@ const Navbar = () => {
 						<div className="hidden w-full md:block md:w-auto" id="navbar-default">
 							<ul className="font-medium flex flex-col p-4 md:p-0 mt-4 borderrounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0">
 								<li className="hidden md:block">
-									<p className="flex py-2 px-3 font-black uppercase items-center">
+									<Link to="/" className="flex py-2 px-3 font-black uppercase items-center">
 										<span>Rasporedar</span>
 										<div className="bg-redar dark:bg-megumin bg-cover w-6 h-6"></div>
-									</p>
+									</Link>
 								</li>
 								<li>
 									<NavItem url="/" text="Početna" />
@@ -107,7 +107,7 @@ const Navbar = () => {
 							<>
 								<NavItem url="/institutions" text="Moje grupe" />
 								<div id="dropdownOpen" className="relative" >
-									<button className={clsx("py-2 px-3 border-2 transition-all", dropdownOpen ? 'border-black box-shadow bg-red-600 text-white' : 'border-transparent')} onClick={handleDropdown} type="button"><SquareUserRound /></button>
+									<button className={clsx("py-2 px-3 border-2 transition-all", dropdownOpen ? 'border-black box-shadow bg-red-600 text-white' : 'border-transparent')} onClick={handleDropdown} type="button" aria-label="Profil meni"><SquareUserRound /></button>
 									<Dropdown ref={dropdownClose} open={dropdownOpen} logout={handleLogout} /> 
 								</div>
 							</>

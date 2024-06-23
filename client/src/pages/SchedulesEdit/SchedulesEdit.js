@@ -6,7 +6,7 @@ import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import SchedulesAdd from '../SchedulesAdd/SchedulesAdd';
 import { Helmet } from 'react-helmet';
 import MutationState from '../../components/MutationState/MutationState';
-import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import { frequencyTypes, scheduleStyles, scheduleTypes } from '../../models/SelectModels';
 
 const SchedulesEdit = () => {
   const session = useSelector(state => state.session);
@@ -49,14 +49,18 @@ const SchedulesEdit = () => {
       _id: scheduleData._id,
       title: scheduleData.title,
       style: scheduleStyles.find(s => s.value === scheduleData.style),
-      validUntil: scheduleData.validUntil,
+      validFrom: scheduleData.validFrom,
+			validUntil: scheduleData.validUntil,
       systemType: scheduleTypes.find(t => t.value === scheduleData.systemType),
       subtitle: scheduleData.subtitle,
       comment: scheduleData.comment,
-      department: scheduleData.department,
+      department: { value: scheduleData.department, label: scheduleData.department },
       groups: scheduleData.groups,
-      days:  scheduleData.days,
+      days: scheduleData.days,
       rows: scheduleData.instances,
+			published: scheduleData.published,
+			archived: scheduleData.archived,
+			frequency: frequencyTypes.find(f => f.value === scheduleData.frequency),
       editSchedule,
       isEditScheduleScheduleLoading,
       isEditScheduleScheduleSuccess,

@@ -111,10 +111,10 @@ const ProfessorsAdd = () => {
 				<title>Dodaj profesora | Rasporedar</title>
 			</Helmet>
 
-      <CardContainer large={true}>
+      <CardContainer large={true} containerBgClass="bg-image-primary">
 				<Breadcrumbs />
 				<h1 className="text-xl font-bold text-center py-5">Dodaj profesora</h1>
-        <form>
+        <div>
 					<div className="mb-4">
 						<Input id="name" type="text" name="Ime i prezime" placeholder="Marko Marković" setVal={(elem) => setName(elem.target.value)} inputVal={name} />
 					</div>
@@ -170,7 +170,7 @@ const ProfessorsAdd = () => {
           <div className="w-full flex justify-end mt-6">
             <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Sačuvaj profesora</button>
           </div>
-        </form>
+        </div>
       </CardContainer>
     </>
   )

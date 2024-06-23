@@ -15,8 +15,6 @@ export default (app) => {
     return res.status(200).send({ message: 'Hvala Vam što koristite naše usluge! :)' });
   });
 
-	app.get('/institutions/:institution/schedules/check', handleCheckSchedule);
-
 	app.use('/', userRouter);
 	app.use('/institutions/:institution/schedules', authenticate, scheduleRouter)
 	app.use('/institutions/:institution/professors', authenticate, professorRouter)
