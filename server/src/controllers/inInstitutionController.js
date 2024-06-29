@@ -50,12 +50,11 @@ export const handlePromoteToRole = async (req, res) => {
       return res.status(400).send({ message: 'Nepostojeća permisija!' });
     }
     
-    const sender = req.userTokenData._id;
     const user = req.params.user;
     const role = req.body.role;
     const institution = req.params.institution;
 
-    const done = await promoteToRole(sender, institution, user, role);
+    const done = await promoteToRole(institution, user, role);
     return res.status(204).send(done);
   } catch (err) {
     return res.status(err.status || 500).send({ message: err.message });

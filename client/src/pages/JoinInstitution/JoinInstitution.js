@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useJoinModeratorMutation, useJoinMutation } from '../../app/api/institutionsApiSlice';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+
 import CodeInput from './../../components/CodeInput/CodeInput';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';

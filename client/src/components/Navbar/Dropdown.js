@@ -17,7 +17,7 @@ const Dropdown = forwardRef(({ open, logout }, ref) => {
 		<>
 			{
 				open ?
-				<div ref={ref} className="absolute right-2 flex flex-col mt-2 border-2 border-black p-2 bg-white dark:bg-gray-800 w-full min-w-[300px] ">
+				<div ref={ref} className="absolute right-2 flex flex-col mt-2 border-2 border-black p-2 bg-secondary w-full min-w-[300px] box-shadow">
 					<Link to={'/my_profile'} className="dropdown-link">Profil</Link>
 					<Link to={'/institutions/join'} className="dropdown-link">Pridruži se grupi</Link>
 					<Link to={'/institutions/create'} className="dropdown-link">Napravi novu grupu</Link>

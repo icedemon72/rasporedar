@@ -7,6 +7,10 @@ export const handleUserRegister = async (req, res) => {
       ...req.body
     };
 
+		if(user.username.includes(' ')) {
+			return res.status(400).send({ message: 'Korisničko ime ne sme sadržati razmak!' });
+		}
+
     const done = await registerUser(user);
     return res.status(200).send(done);
 

@@ -1,14 +1,15 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
 import { useSelector } from 'react-redux';
 import { useGetRoleQuery } from '../../app/api/institutionsApiSlice';
 import { PlusCircle, Search } from 'lucide-react';
+import { Helmet } from 'react-helmet';
+
 import DataTable from '../../components/DataTable/DataTable';
 import MutationState from '../../components/MutationState/MutationState';
-import { Helmet } from 'react-helmet';
 import CardContainer from '../../components/CardContainer/CardContainer';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
-import { useEffect, useState } from 'react';
 
 const Professors = () => {
   const { institution } = useParams();

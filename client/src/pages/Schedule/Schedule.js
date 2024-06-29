@@ -47,7 +47,7 @@ const Schedule = () => {
       <div className="w-full flex flex-col items-center justify-center">
         <p className="flex gap-2 py-5">
           <h1 className="text-xl font-bold">{ scheduleData.title || 'Raspored' }</h1>
-          { getRole.role !== 'User' ? <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer" to={`/institutions/${institution}/schedules/${id}/edit`}><Pencil size={16} /></Link> : null}
+          { getRole.role !== 'User' ? <Link className="p-1 border-2 bg-secondary border-black hover:box-shadow cursor-pointer transition-all" to={`/institutions/${institution}/schedules/${id}/edit`}><Pencil size={16} /></Link> : null}
         </p>  
         <p className="text-lg font-semibold">{ scheduleData.subtitle }</p>
 				{ scheduleData.department }

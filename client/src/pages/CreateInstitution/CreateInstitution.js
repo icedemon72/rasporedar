@@ -3,8 +3,9 @@ import { useAddMutation } from '../../app/api/institutionsApiSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
 import { addItemToArrayOnKey, deleteItemFromArray } from '../../utils/updateArray';
-import Input from '../../components/Input/Input';
 import { Helmet } from 'react-helmet';
+
+import Input from '../../components/Input/Input';
 import SelectComponent from '../../components/Input/SelectComponent';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
@@ -65,7 +66,7 @@ const CreateInstitution = () => {
       if(!isSubmitting) {
         const result = await fetchAdd(body).unwrap();
         setTimeout(() => {
-          navigate(`/institutions/${result._id}`);
+          navigate(`/institutions/${result._id}/edit`);
         }, 1000);
       }
     } catch (err) {

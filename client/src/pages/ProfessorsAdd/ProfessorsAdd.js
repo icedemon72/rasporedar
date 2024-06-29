@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { useAddProfessorMutation } from "../../app/api/professorsApiSlice";
 import { useSelector } from "react-redux";
-import { PlusCircle, Trash } from "lucide-react";
+import { PlusCircle, Save, Trash } from "lucide-react";
 import { addItemToArrayOnKey, deleteItemFromArray } from "../../utils/updateArray";
 import Input from './../../components/Input/Input';
 import Textarea from "../../components/Input/Textarea";
@@ -168,7 +168,7 @@ const ProfessorsAdd = () => {
           }
 
           <div className="w-full flex justify-end mt-6">
-            <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}>Sačuvaj profesora</button>
+            <button type="submit" className="btn-primary btn-green w-full md:w-1/2 lg:w-1/3" onClick={handleAddProfessor}><Save /> Sačuvaj profesora</button>
           </div>
         </div>
       </CardContainer>

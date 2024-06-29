@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 
 export const registerUser = async (user) => {
 	user.role = "User";
-
+	
 	const userExists = await User.findOne({ $or: [{ email: user.email }, { username: user.username }] });
 
 	if(userExists) {

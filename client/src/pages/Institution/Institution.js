@@ -1,13 +1,16 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useGetByIdQuery, useGetRoleQuery } from '../../app/api/institutionsApiSlice';
+import { useGetByIdQuery, useGetRoleQuery, useLeaveMutation } from '../../app/api/institutionsApiSlice';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Filter, Pencil } from 'lucide-react';
-import MutationState from '../../components/MutationState/MutationState';
-import { useGetSchedulesQuery } from '../../app/api/schedulesApiSlice';
-import ScheduleComponent from '../../components/ScheduleComponent/ScheduleComponent';
 import { scheduleStyles, scheduleTypes } from '../../models/SelectModels';
+import { useGetSchedulesQuery } from '../../app/api/schedulesApiSlice';
+
+import MutationState from '../../components/MutationState/MutationState';
+import ScheduleComponent from '../../components/ScheduleComponent/ScheduleComponent';
 import InstitutionCard from '../../components/InstitutionCard/InstitutionCard';
+import ModalDelete from '../../components/ModalDelete/ModalDelete';
+
 const ProfessorImage = require('./../../assets/images/professors/wizard.png');
 const SubjectImage = require('./../../assets/images/subjects/book2.png');
 const ScheduleImage = require('./../../assets/images/schedules/scroll.png');
@@ -16,6 +19,7 @@ const UsersImage = require('./../../assets/images/users/users1.png');
 const Institution = () => {
   const { institution } = useParams();
   const session = useSelector(state => state.session);
+	const [ open, setOpen ] = useState(false);
 
   const navigate = useNavigate();
 
@@ -42,6 +46,21 @@ const Institution = () => {
 		isLoading: isSchedulesLoading,
 		isSuccess: isSchedulesSuccess
 	} = useGetSchedulesQuery({ institution, fullInfo: 1, active: 1 });
+	
+	const [ leave, leaveState ] = useLeaveMutation();
+
+	const handleLeaveInstitution = async () => {
+		try {
+			await leave(institution).unwrap();
+
+			setTimeout(() => {
+				navigate('/institutions');  
+			}, 1000);
+			
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
   if(!institution) {
     navigate('/institutions');  
@@ -53,11 +72,18 @@ const Institution = () => {
     role = getRole.role;
     
     InstitutionContent = 
-    <>
+    <div className="relative">
+			<div className="hidden lg:block absolute right-2 top-3">
+				<button onClick={() => setOpen(true)} className="btn-primary btn-red">Napusti grupu</button>
+			</div>
       <div className="w-full flex justify-center pt-5 gap-2 my-5">
 				<h1 className="text-xl font-black max-w-[500px] truncate"> { institutionData.name }</h1>
 				{ role === 'Owner' ? <Link to={`/institutions/${institution}/edit`}><span className="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer bg-secondary transition-all"><Pencil size={16} /></span></Link> : null }
       </div>
+			
+			<div className="lg:hidden w-full flex justify-center my-2">
+				<button onClick={() => setOpen(true)} className="btn-primary btn-red">Napusti grupu</button>
+			</div>
 
 			<div className="w-full flex justify-center">
 				<div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mx-2 lg:mx-10">
@@ -102,7 +128,7 @@ const Institution = () => {
 
 
           
-    </>
+    </div>
   }
   
   useEffect(() => {
@@ -112,10 +138,22 @@ const Institution = () => {
   return (
     <>
 			<MutationState
-				isLoading={isInstitutionLoading || isRoleLoading || isSchedulesLoading}
+				isLoading={isInstitutionLoading || isRoleLoading || isSchedulesLoading || leaveState.isLoading}
+				isSuccess={leaveState.isSuccess}
+				isError={leaveState.isError}
+				error={leaveState.error}
+				successMessage='Uspešno ste izašli iz grupe!'
 			/>
 
       { InstitutionContent }
+
+			{ open ? 
+        <ModalDelete title={'Izlazak iz grupe'} text={`Napustićete grupu '${institutionData.name}'. Da li ste sigurni?`} closeFunc={() => setOpen(false)}>
+          <button className="btn-primary bg-primary" onClick={() => setOpen(false)}>Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleLeaveInstitution}>Potvrdi</button>
+        </ModalDelete> 
+        : null 
+      }
     </>
   )
 }

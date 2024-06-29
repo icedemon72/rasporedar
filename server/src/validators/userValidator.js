@@ -5,14 +5,19 @@ export const userBody = {
 	username: 
 		body('username', 'Greška prilikom unosa korisničkog imena')
 			.notEmpty().withMessage('Korisničko ime je obavezno')
-			.isString().withMessage('Korisničko ime mora biti tipa string'),
+			.isString().withMessage('Korisničko ime mora biti tipa string')
+			.trim()
+			.toLowerCase(),
 
 	email:
 		body('email', 'Greška prilikom unosa e-adrese')
-			.isEmail().withMessage('Nije uneta validna e-adresa'),
+			.isEmail().withMessage('Nije uneta validna e-adresa')
+			.trim()
+			.toLowerCase(),
 
 	name:
 		body('name', 'Greška prilikom unosa imena')
+			.trim()
 			.isString().withMessage('Ime mora biti tipa string'),
 
 	password:

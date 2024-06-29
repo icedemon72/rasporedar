@@ -48,11 +48,9 @@ const Professor = () => {
     content = 
     <CardContainer large={true} containerBgClass='bg-image-primary'>
 			<Breadcrumbs />
-			<h1 className="text-xl font-bold text-center py-5">{ professorData.name }</h1>
+			<h1 className="text-xl font-bold py-5 flex justify-center items-center gap-2">{ professorData.name } { getRole.role !== 'User' && <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer rounded-sm transition-all bg-primary" to={`/institutions/${institution}/professors/${id}/edit`}><Pencil size={16} /></Link> }</h1>
       <p className="label-primary">Ime i prezime</p>
-			<div className="input-primary mb-4 flex items-center gap-2">{professorData.title} {professorData.name}  
-        { getRole.role !== 'User' && <Link className="p-1 border-2 border-black hover:box-shadow cursor-pointer" to={`/institutions/${institution}/professors/${id}/edit`}><Pencil size={16} /></Link> }
-      </div>
+			<div className="input-primary mb-4">{professorData.title} {professorData.name}</div>
 
 			<div calssName="mb-4">
 				<CollapseContainer label="Stručna biografija" data={professorData.bio} />

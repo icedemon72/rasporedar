@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDeleteProfessorMutation, useEditProfessorMutation, useGetProfessorQuery, useGetProfessorSubjectsQuery } from '../../app/api/professorsApiSlice';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, Trash, PlusCircle } from 'lucide-react';
+import { Save, PlusCircle, Trash2 } from 'lucide-react';
 import { addItemToArrayOnKey, deleteItemFromArray } from "../../utils/updateArray";
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import Input from '../../components/Input/Input';
@@ -194,7 +194,7 @@ const ProfessorsEdit = () => {
       }
 
 			<div className="w-full flex justify-between gap-4 mt-2">
-        <button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash /> Obriši</button>
+        <button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash2 /> Obriši</button>
         <button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-green " onClick={handleEditProfessor}><Save /> Sačuvaj izmene!</button>
       </div>
     </>

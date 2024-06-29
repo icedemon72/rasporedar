@@ -41,7 +41,7 @@ const Subject = () => {
 			<div className="flex justify-center gap-2 py-5">
 				<h1 className="text-xl font-bold">{ data.name }</h1> 
 				{ isGetRoleSuccess && getRole.role !== 'User' && 
-					<span className="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer">
+					<span className="flex items-center p-1 border-2 border-black hover:box-shadow cursor-pointer transition-all rounded-sm bg-primary">
 						<Link to={`/institutions/${institution}/subjects/${id}/edit`}><Pencil size={16} /></Link> 
 					</span>
 				}

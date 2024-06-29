@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useGetRoleQuery, useGetUsersInInsitutionQuery } from '../../app/api/institutionsApiSlice';
 import { useParams } from 'react-router-dom';
-import MutationState from '../../components/MutationState/MutationState';
 import { Helmet } from 'react-helmet';
 import { Contact } from 'lucide-react';
-import SelectComponent from '../../components/Input/SelectComponent';
 import { roleTypes } from '../../models/SelectModels';
+
+import MutationState from '../../components/MutationState/MutationState';
+import SelectComponent from '../../components/Input/SelectComponent';
 import CardContainer from '../../components/CardContainer/CardContainer';
 
 const InstitutionUsers = () => {

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteSubjectMutation, useEditSubjectMutation, useGetSubjectProfessorsQuery, useGetSubjectQuery } from '../../app/api/subjectsApiSlice';
 import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import { useGetProfessorsQuery } from '../../app/api/professorsApiSlice';
-import { Save, Trash } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import Input from '../../components/Input/Input';
 import Textarea from '../../components/Input/Textarea';
 import SelectComponent from '../../components/Input/SelectComponent';
@@ -165,7 +165,7 @@ const SubjectsEdit = () => {
 				
 				
 				<div className="w-full flex justify-between gap-4 mt-2">
-					<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash /> Obriši</button>
+					<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-red"  onClick={() => setOpen(true)}><Trash2 /> Obriši</button>
 					<button disabled={isSubmitting} className="w-full md:w-1/2 lg:w-1/3 flex items-center justify-center gap-2 btn-primary btn-green " onClick={handleEditSubject}><Save /> Sačuvaj izmene!</button>
 				</div>
 			</form>
@@ -213,8 +213,8 @@ const SubjectsEdit = () => {
 			/>
       { open ? 
         <ModalDelete title={'Brisanje predmeta'} text={`Obrisacete predmet '${subjectData.name}'. Da li ste sigurni?`} closeFunc={() => setOpen(false)} >
-          <button className="btn-primary bg-primary"onClick={() => setOpen(false)}>Odustani</button>
-          <button className="btn-primary btn-red" onClick={handleDeleteSubject}>Potvrdi</button>
+          <button className="btn-primary bg-primary"onClick={() => setOpen(false)}><Save /> Odustani</button>
+          <button className="btn-primary btn-red" onClick={handleDeleteSubject}><Trash2 /> Potvrdi</button>
         </ModalDelete>
       : null }
       <CardContainer large={true} loaded={isSubjectSuccess && isProfessorsSuccess} containerBgClass='bg-image-primary'>

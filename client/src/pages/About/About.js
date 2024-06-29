@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { AboutData as data } from "./AboutData";
+
 import CardContainer from "../../components/CardContainer/CardContainer";
 import CollapseContainer from "../../components/CollapseContainer/CollapseContainer";
-import { AboutData as data } from "./AboutData";
 
 const About = () => {
 	const session = useSelector(state => state.session);

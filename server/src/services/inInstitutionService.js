@@ -92,34 +92,25 @@ export const leaveInstitution = async (sender, institution) => {
 
 	if (!userJoined) {
 		throw {
-			status: 400,
-			message: 'Niste učlanjeni!'
+			status: 404,
+			message: 'Ne postoji grupa!'
 		}
 	}
 
 	if (userJoined.role === 'Owner') {
 		throw {
 			status: 400,
-			message: 'Vlasnik ste grupe!'
+			message: 'Vlasnik ste grupe, možete je obrisati!'
 		}
 	}
 
 	await InInstitution.updateOne({ _id: userJoined._id }, { $set: { left: true } });
 
-	return { message: 'Uspešno ste izašli!' };
+	return { message: 'Uspešno ste napustili grupu!' };
 
 }
 
-export const promoteToRole = async (sender, institution, user, role) => {
-	const institutionObj = await Institution.findOne({ _id: institution, createdBy: sender, deleted: false });
-
-	if (!institutionObj) {
-		throw {
-			status: 405,
-			message: 'Niste kreator grupe!'
-		}
-	}
-
+export const promoteToRole = async (institution, user, role) => {
 	const userToChange = await InInstitution.findOne({
 		user, institution, left: false
 	});
@@ -143,13 +134,6 @@ export const promoteToRole = async (sender, institution, user, role) => {
 export const getAllUsersInInstitution = async (sender, institution, limit = 10) => {
 	const userObj = await InInstitution.findOne({ user: sender, institution, left: false });
 	
-	if (!userObj) {
-		throw {
-			status: 404,
-			message: 'Niste u grupi!'
-		}
-	}
-
 	if (userObj.role === 'User') {
 		const inInstObj = await InInstitution.find({
 			institution,

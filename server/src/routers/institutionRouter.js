@@ -21,6 +21,10 @@ router.get('/:institution/role', handleGetUserRole);
 
 router.patch(
 	'/role/users/:user', 
+	RouteGuard([{
+		role: '*',
+		when: isOwnerInInstitution,
+	}]),
 	validateRoleChange,	
 	handlePromoteToRole
 );
@@ -36,7 +40,14 @@ router.get(
 
 router.patch('/:institution/change_code', handleChangeCodes);
 
-router.post('/:institution/leave', handleLeaveInstitution);
+router.post(
+	'/:institution/leave',
+	RouteGuard([{
+		role: '*',
+		when: isInInstitution,
+	}]),
+	handleLeaveInstitution
+);
 
 router.get('/:institution/auth', handleGetIsUserAuth);
 

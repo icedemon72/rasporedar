@@ -10,6 +10,7 @@ import SelectComponent from '../../components/Input/SelectComponent';
 import MutationState from '../../components/MutationState/MutationState';
 import CardContainer from '../../components/CardContainer/CardContainer';
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs';
+import { Save } from 'lucide-react';
 
 /* ADD ASS functionality!!!! */
 const SubjectsAdd = () => {
@@ -140,7 +141,7 @@ const SubjectsAdd = () => {
 							</div>      
 								
 							<div className="flex justify-end">
-							<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green">Sačuvaj predmet</button>
+							<button className="w-full md:w-1/2 lg:w-1/3 btn-primary btn-green"><Save /> Sačuvaj predmet</button>
 							</div>
 						</form>
 					</CardContainer>

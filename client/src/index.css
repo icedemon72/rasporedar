@@ -63,7 +63,7 @@ body {
 	}
 
 	.btn-primary {
-		@apply p-2 border-2 rounded-md border-black hover:box-shadow active:scale-95 transition-all;
+		@apply flex justify-center gap-2 p-2 border-2 rounded-md border-black hover:box-shadow active:scale-95 transition-all;
 	}
 	
 	.btn-plus {
@@ -71,7 +71,7 @@ body {
 	}
 
 	.dropdown-link {
-		@apply py-2 px-4 hover:bg-black hover:text-white transition-all cursor-pointer;
+		@apply py-2 px-4 hover:bg-primary transition-all cursor-pointer;
 	}
 
 	.dark {
@@ -79,18 +79,18 @@ body {
 	}
 	
 	.bg-image-primary {
-		@apply bg-fixed bg-cover bg-home-day dark:bg-home-night bg-blend-darken bg-black bg-opacity-60;
+		@apply bg-fixed bg-cover bg-home-day dark:bg-home-night bg-blend-darken bg-black bg-opacity-70 dark:bg-opacity-60;
 	}
 }
 
 @font-face {
-	font-family: "Darker Grotesque";
-	src: url("./assets/fonts/DarkerGrotesque.ttf");
+	font-family: "Kode Mono", monospace;
+	src: local('"Kode Mono", monospace'), url("./assets/fonts/KodeMono.ttf");
 }
 
 
 body {
-	font-family: "Dark Grotesque", monospace;
+	font-family: "Kode Mono", monospace;
 	@apply bg-primary;
 	/* background-color: rgb(160, 160, 160); */
 }
@@ -99,4 +99,14 @@ body {
 
 .collapse-container {
   transition: height 400ms;
+}
+
+:root:has(.no-doc-scroll) {
+	overflow: hidden;
+}
+
+:root:has(.lg-no-doc-scroll) {
+	@media (max-width: 1024px) {
+		overflow: hidden;
+	}
 }

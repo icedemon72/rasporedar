@@ -9,7 +9,7 @@ const CollapseContainer = ({ label, data, isOpen = true }) => {
 		<>
 			<p className="label-primary inline-flex items-center gap-2"  onClick={() => setOpen(prev => !prev)}>
 				{ label }
-				<div className="inline-flex btn-primary p-0 cursor-pointer bg-secondary" >
+				<div className={clsx("inline-flex btn-primary p-0 cursor-pointer transition-all hover:bg-primary", open ? 'bg-primary' : 'bg-secondary')} >
 					{ 
 						open ?
 						<ChevronDown size={16} />

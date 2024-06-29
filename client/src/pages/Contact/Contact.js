@@ -1,9 +1,10 @@
+import { useState } from "react";
+import { Helmet } from "react-helmet";
 import { Instagram, Mail, Phone } from "lucide-react";
+
 import CardContainer from "../../components/CardContainer/CardContainer";
 import Input from "../../components/Input/Input";
-import { useState } from "react";
 import Textarea from "../../components/Input/Textarea";
-import { Helmet } from "react-helmet";
 
 const Contact = () => {
 	const [ email, setEmail ] = useState('');

@@ -47,7 +47,7 @@ const Schedules = () => {
 	if (isSchedulesSuccess && isRoleSuccess) {
 		content = 
 		<>
-			<CardContainer large={true} onTop={true}>
+			<CardContainer large={true} onTop={true} containerBgClass='bg-image-primary'>
 				<Breadcrumbs />
 				<h1 className="text-xl font-bold text-center py-5">Rasporedi</h1>
 					{	

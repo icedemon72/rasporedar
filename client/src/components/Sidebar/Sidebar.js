@@ -30,8 +30,8 @@ const Sidebar = forwardRef(({ open, btn }, ref) => {
     <>
     { 
 			open &&
-				<nav ref={ref} className="min-h-screen h-full w-full lg:w-[500px] fixed left-0 top-[74px] bg-secondary z-[99999] animate-in slide-in-from-left duration-300 lg:border-r-2 border-t-2 border-black overflow-y-auto">
-					<div className='min-h-[calc(100vh+76px)] flex flex-col'>
+				<nav ref={ref} className="min-h-[calc(100vh-76px)] w-full lg:w-[500px] fixed left-0 top-[74px] bottom-[calc(100vh-76px)] bg-secondary z-[99999] animate-in slide-in-from-left duration-300 lg:border-r-2 border-t-2 border-black overflow-y-auto lg-no-doc-scroll">
+					<div className='flex flex-col flex-1 overflow-y-auto'>
 						<SidebarItem url="/" text="Početna"/>
 						<SidebarItem url="/about" text="O nama" />
 						<SidebarItem url="/contact" text="Kontakt" />

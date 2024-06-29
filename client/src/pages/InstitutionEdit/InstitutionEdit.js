@@ -1,14 +1,13 @@
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetByIdQuery, useGetRoleQuery, useEditInstitutionMutation, useDeleteInstitutionMutation, useInstitutionChangeCodeMutation } from '../../app/api/institutionsApiSlice';
 import { useState, useEffect, useRef } from 'react';
-import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import { addItemToArrayOnKey, deleteItemFromArray } from '../../utils/updateArray';
-import { RefreshCcw, Copy, Trash, Save, PlusCircle } from 'lucide-react';
+import { RefreshCcw, Trash2, Save, PlusCircle } from 'lucide-react';
+
+import ModalDelete from '../../components/ModalDelete/ModalDelete';
 import Input from '../../components/Input/Input';
 import SelectComponent from '../../components/Input/SelectComponent';
-import getLabel from '../../utils/getLabel';
-import Loader from '../../components/Loader/Loader';
 import MutationState from '../../components/MutationState/MutationState';
 import CopyField from '../../components/CopyField/CopyField';
 import CardContainer from '../../components/CardContainer/CardContainer';
@@ -219,7 +218,7 @@ const InstitutionEdit = () => {
 
 			<div className="flex justify-between gap-4 mt-2">
 				<div className="w-full  flex justify-center items-center">
-					<button className="flex gap-2 w-full justify-center btn-primary btn-red" onClick={() => setOpen(true)} disabled={isSubmitting}><Trash /> Obriši grupu</button>
+					<button className="flex gap-2 w-full justify-center btn-primary btn-red" onClick={() => setOpen(true)} disabled={isSubmitting}><Trash2 /> Obriši grupu</button>
 				</div>
 				<div className="w-full flex justify-center items-center">
 					<button className="flex gap-2 w-full justify-center btn-primary btn-green" onClick={handleEditInstitution} disabled={isSubmitting}><Save /> Sačuvaj promene!</button>

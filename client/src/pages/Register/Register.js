@@ -67,6 +67,7 @@ const Register = () => {
         <form onSubmit={handleRegister}>
 					<div className="mb-2">
 						<Input id="username" type="text" name="Korisničko ime" placeholder="marko.markovic" setVal={(elem) => setUsername(elem.target.value)} inputVal={username} />
+						<span className="text-xs text-muted">* Korisničko ime ne sme sadržati razmak</span>
 					</div>
 					<div className="mb-2">
 						<Input id="email" type="email" name="E-adresa" placeholder="marko.markovic@primer.com" setVal={(elem) => setEmail(elem.target.value)} inputVal={email} />
