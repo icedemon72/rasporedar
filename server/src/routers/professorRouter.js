@@ -19,7 +19,7 @@ router.route('/')
 	.post(
 		RouteGuard([{
 			role: '*',
-			when: isInInstitution
+			when: isAuthInInstitution
 		}]),
 		validateProfessor, 
 		handleAddProfessor

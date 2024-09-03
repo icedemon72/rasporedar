@@ -96,11 +96,6 @@ const Institution = () => {
 
 			<div className="w-full flex flex-col items-center justify-center mt-5">
 				<h1 className="text-xl font-bold my-5">Aktivni rasporedi</h1>
-				<div className="w-full lg:w-3/4 flex justify-end">
-					<div className="flex gap-2 border-2 rounded-md">
-						<Filter /> Filteri
-					</div>
-				</div>
 				{
 					schedules.length === 0 ? <span>Nema aktivnih rasporeda...</span> : null
 				}
